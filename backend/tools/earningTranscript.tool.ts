@@ -5,8 +5,82 @@ import { nseClient } from "./financial.tool";
 import { ChatGroq } from "@langchain/groq";
 import { z } from "zod";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
-import { AIMessage, HumanMessage, SystemMessage } from "langchain";
+import { HumanMessage } from "langchain";
+import {
+  chunkSystemPrompt,
+  finalSummarySystemPrompt,
+} from "../prompts/summary.prompt";
+
+const chunkSummarySchema = z.object({
+  financial_figures: z
+    .array(
+      z
+        .string()
+        .describe(
+          "neceassary details regarding Revenue, growth, margin, eps, pat and financial ratios",
+        ),
+    )
+    .optional(),
+  deals: z
+    .array(
+      z.string().describe("details regarding new deals, investments, TVC etc"),
+    )
+    .optional(),
+  achievements: z
+    .array(
+      z.string().describe("new mega deals, achievements, breakthrough etc"),
+    )
+    .optional(),
+  guidance: z
+    .array(z.string().describe("key management guidance and remark for future"))
+    .optional(),
+  risk: z
+    .array(
+      z
+        .string()
+        .describe("major risks, concerns, headwinds explicitly mentioned"),
+    )
+    .optional(),
+});
+
+export const finalSummarySchema = z.object({
+  financial_figures: z
+    .array(
+      z
+        .string()
+        .describe(
+          "neceassary details regarding Revenue, growth, operational margin, eps, pat and other financial ratios",
+        ),
+    )
+    .max(15)
+    .optional(),
+  deals: z
+    .array(
+      z.string().describe("details regarding new deals, investments, TVC etc"),
+    )
+    .max(5)
+    .optional(),
+  achievements: z
+    .array(
+      z.string().describe("new mega deals, achievements, breakthrough etc"),
+    )
+    .max(6)
+    .optional(),
+  guidance: z
+    .array(z.string().describe("key management guidance and remark for future"))
+    .max(4)
+    .optional(),
+  risk: z
+    .array(
+      z
+        .string()
+        .describe("major risks, concerns, headwinds explicitly mentioned"),
+    )
+    .max(4)
+    .optional(),
+});
 
 export async function extractEarningCallPDF(state: AppStateType) {
   try {
@@ -37,8 +111,6 @@ export async function extractEarningCallPDF(state: AppStateType) {
   }
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export async function earningCallPDFSummarizer(state: any) {
   const pdfFile = state.earningCallTranscriptURL;
   const response = await nseClient.get(pdfFile, {
@@ -46,87 +118,66 @@ export async function earningCallPDFSummarizer(state: any) {
   });
 
   const blob = new Blob([response.data], { type: "application/pdf" }); //create blob object from array buffer
-
   const loader = new PDFLoader(blob);
   const docs = await loader.load();
   const fullText = docs.map((doc) => doc.pageContent).join("\n\n"); //extracts the pageContent from every single page and stitches them all together into one massive string.
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 6000,
-    chunkOverlap: 400,
+    chunkSize: 15000,
+    chunkOverlap: 500,
+  });
+  const chunks = await splitter.createDocuments([fullText]);
+
+  const model = new ChatGoogleGenerativeAI({
+    model: "gemini-3.1-flash-lite-preview",
+    maxRetries: 2,
+    apiKey: process.env.GOOGLE_API_KEY,
   });
 
-  const optimizedChunks = await splitter.createDocuments([fullText]);
+  // map part
+  let summaries = [];
 
-  const model = new ChatGroq({
+  const smodel = model.withStructuredOutput(chunkSummarySchema);
+
+  try {
+    for (let i = 0; i < chunks.length; i++) {
+      let chunk = chunks[i];
+      if (chunk == null) continue;
+
+      const response = await smodel.invoke([
+        chunkSystemPrompt,
+        new HumanMessage(
+          `Company details: -  ${state.companyName} belongs to ${state.industry} \\n
+           chunk number: ${i}\nchunk content:\n${chunk.pageContent}`,
+        ),
+      ]);
+
+      summaries.push(response);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  console.log("summary : - ");
+  console.log(summaries);
+  console.log(`\n\n`);
+
+  //reducer part
+  const groqModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
-    maxRetries: 0,
+    maxRetries: 2,
     apiKey: process.env.GROQ_API_KEY,
   });
 
-  const summarySchema = z.object({
-    summary: z.string().describe("summary of the given text"),
-  });
-
-  const structuredMapModel = model.withStructuredOutput(summarySchema);
-
-  let summaries: string[] = [];
-
-  for (let i = 0; i < optimizedChunks.length; i++) {
-    const chunk = optimizedChunks[i];
-    if (chunk == null || chunk == undefined) return;
-    const messages: Array<SystemMessage | HumanMessage | AIMessage> = [
-      new SystemMessage(
-        `You are analyzing an earnings call transcript for ${state.companyName}.
-Extract ONLY: revenue figures, margins, EPS, deal wins, guidance, and other key strategic insights.
-Be concise — 4 sentences max. Do not include greetings, filler, or repetition.`,
-      ),
-
-      new HumanMessage(
-        `Chunk ${i + 1} of ${optimizedChunks.length}:\n\n${chunk.pageContent}`,
-      ),
-    ];
-    const response = await structuredMapModel.invoke(messages);
-    summaries.push(response.summary);
-    await delay(4000);
-  }
-
-  const finalSummarySchema = z.object({
-    revenue: z.string().describe("details on Revenue figures, growth rates"),
-    margins: z
-      .string()
-      .describe("details around Operating margin and net margin "),
-    deals: z.string().describe("details around new Deal wins, TCV"),
-    guidance: z.string().describe("Forward-looking statements and FY guidance"),
-    strategy: z
-      .string()
-      .describe("details around new strategy, investments and plans "),
-    risks: z
-      .string()
-      .describe(
-        "details around risks, shorcoming, headwinds, cautionary notes mentioned",
-      ),
-  });
-
-  const structuredReduceModel = model.withStructuredOutput(finalSummarySchema);
-
-  const finalSummary = await structuredReduceModel.invoke([
-    new SystemMessage(
-      `You are synthesizing chunk summaries from a ${state.companyName} earnings call into a structured financial summary.
-Consolidate without repetition. Prioritize hard numbers over qualitative statements.`,
-    ),
+  const groqStructuredMode = groqModel.withStructuredOutput(finalSummarySchema);
+  const messages = [
+    finalSummarySystemPrompt,
     new HumanMessage(
-      `Here are ${summaries.length} chunk summaries. Synthesize them into a structured summary:\n\n` +
-        summaries.map((s, i) => `[Chunk ${i + 1}]: ${s}`).join("\n\n"),
+      `Company details:- ${state.companyName} belongs to ${state.industry} \\n
+       chunk summaries are : - \n ${JSON.stringify(summaries, null, 2)}`,
     ),
-  ]);
+  ];
+  const resp = await groqStructuredMode.invoke(messages);
+  console.log("final reduced summary: - ");
+  console.log(resp);
 
-  console.log(finalSummary);
-  //   return { earningCallSummary: summaries };
+  return { earningCallSummary: summaries };
 }
-
-earningCallPDFSummarizer({
-  earningCallTranscriptURL:
-    "https://nsearchives.nseindia.com/corporate/TCS_CORPCS_14042026200132_SEInt14042026_signed.pdf",
-
-  companyName: "Tata consultancy Services",
-});

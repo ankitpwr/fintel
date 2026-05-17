@@ -7,7 +7,8 @@ import {
 import {
   earningCallPDFSummarizer,
   extractEarningCallPDF,
-} from "../tools/earningTanscript.tool";
+  finalSummarySchema,
+} from "../tools/earningTranscript.tool";
 
 interface StockInfo {
   symbol: string;
@@ -59,7 +60,7 @@ export const AppState = Annotation.Root({
   peerInfo: Annotation<PeersInfo[]>,
   shareHoldingInfo: Annotation<ShareHoldingInfo[]>,
   earningCallTranscriptURL: Annotation<string>,
-  earningCallSummary: Annotation<string[]>,
+  earningCallSummary: Annotation<typeof finalSummarySchema>,
   finalResponse: Annotation<string>,
 });
 
@@ -82,7 +83,7 @@ graph
 async function init() {
   const workflow = graph.compile();
 
-  const result = await workflow.invoke({ companySymbol: "TCS" });
+  const result = await workflow.invoke({ companySymbol: "HDFCBANK" });
 
   console.log(result);
 }
