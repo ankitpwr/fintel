@@ -1,6 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
-import type { AppStateType, ShareHoldingInfo } from "../worker/agent";
+import type { AppStateType } from "../worker/agent";
+import type { ShareHoldingInfo } from "../types/agent.types";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
@@ -23,30 +24,29 @@ export async function extractStockInfo(state: AppStateType) {
 
     return {
       stockInfo: {
-        symbol: data.info.symbol,
-        companyName: data.info.companyName,
-        industry: data.info.industry,
-        sector: data.industryInfo.sector,
-        basicIndustry: data.industryInfo.basicIndustry,
-        faceValue: data.securityInfo.faceValue,
+        symbol: data.info?.symbol ?? "",
+        companyName: data.info?.companyName ?? "",
+        industry: data.info?.industry ?? "",
+        sector: data.industryInfo?.sector ?? "",
+        basicIndustry: data.industryInfo?.basicIndustry ?? "",
+        faceValue: data.securityInfo?.faceValue ?? "",
 
-        lastPrice: data.priceInfo.lastPrice,
-        open: data.priceInfo.open,
-        close: data.priceInfo.close,
-        vwap: data.priceInfo.vwap,
-        change: data.priceInfo.change,
-        pChange: data.priceInfo.pChange,
+        lastTradedPrice: data.priceInfo?.lastPrice,
+        openPrice: data.priceInfo?.open,
+        closePrice: data.priceInfo?.close,
+        volumeWeightedAveragePrice: data.priceInfo?.vwap,
+        priceChange: data.priceInfo?.change,
+        percentageChange: data.priceInfo?.pChange,
 
-        dayHigh: data.priceInfo.intraDayHighLow.max,
-        dayLow: data.priceInfo.intraDayHighLow.min,
-        weekHigh52: data.priceInfo.weekHighLow.max,
-        weekLow52: data.priceInfo.weekHighLow.min,
-        weekHighDate: data.priceInfo.weekHighLow.maxDate,
-        weekLowDate: data.priceInfo.weekHighLow.minDate,
+        intradayHigh: data.priceInfo?.intraDayHighLow?.ma,
+        intradayLow: data.priceInfo.intraDayHighLow?.min,
+        fiftyTwoWeekHigh: data.priceInfo.weekHighLow.max,
+        fiftyTwoWeekLow: data.priceInfo.weekHighLow.min,
+        fiftyTwoWeekHighDate: data.priceInfo.weekHighLow.maxDate,
+        fiftyTwoWeekLowDate: data.priceInfo.weekHighLow.minDate,
 
-        sectorPE: data.metadata.pdSectorPe,
-        symbolPE: data.metadata.pdSymbolPe,
-
+        sectorPriceToEarningsRatio: data.metadata.pdSectorPe,
+        stockPriceToEarningsRatio: data.metadata.pdSymbolPe,
         primaryIndex: data.metadata.pdSectorInd,
       },
     };
@@ -67,13 +67,13 @@ export async function extractPeersInfo(state: AppStateType) {
       peerInfo: data.map((peer: any) => ({
         symbol: peer.symbol,
         price: peer.ltp,
-        pe: peer.pe,
-        eps: peer.eps,
-        pat: peer.pat,
+        priceToEarningsRatio: peer.pe,
+        earningsPerShare: peer.eps,
+        profitAfterTax: peer.pat,
         totalIncome: peer.totalIncome,
         marketCap: peer.marketCap,
-        promoterHolding: peer.promoterHolding,
-        dayChange: peer.pChange,
+        promoterHoldingPercentage: peer.promoterHolding,
+        dayChangePercentage: peer.pChange,
       })),
     };
   } catch (error) {
@@ -92,8 +92,12 @@ export async function extractShareHoldingInfo(state: AppStateType) {
     Object.entries(data).forEach(([key, value]: [string, any]) => {
       shareHoldingPattern.push({
         date: key as string,
-        promotorHolding: Number(value.promoter_group.value),
-        publicHolding: Number(value.public.value),
+        promoterHoldingPercentage:
+          "promoter_group" in value
+            ? (value.promoter_group.value as number)
+            : 0,
+        publicHoldingPercentage:
+          "public" in value ? (value.public.value as number) : 0,
       });
     });
 
@@ -101,5 +105,22 @@ export async function extractShareHoldingInfo(state: AppStateType) {
   } catch (error) {
     console.log("error in extract-share-holding-info");
     console.log(error);
+  }
+}
+
+export async function extractSymbol(state: AppStateType) {
+  try {
+    const url =
+      `NextApi/globalSearch/equity?symbol=` +
+      encodeURIComponent(state.companyName);
+    const { data } = await nseClient.get(url);
+
+    if (data["data"].length == 0) return { companySymbol: "" };
+
+    return { companySymbol: data["data"][0]["symbol"] };
+  } catch (error) {
+    console.log("error in extract-symbol");
+    console.log(error);
+    return { companySymbol: "" };
   }
 }

@@ -98,7 +98,6 @@ export async function extractEarningCallPDF(state: AppStateType) {
           "informed the Exchange about Transcript",
         )
       ) {
-        console.log("get-earningCall-data :  -", obj["attchmntFile"]);
         pdfURL = obj["attchmntFile"];
         break;
       }
@@ -156,14 +155,12 @@ export async function earningCallPDFSummarizer(state: any) {
   } catch (error) {
     console.log(error);
   }
-  console.log("summary : - ");
-  console.log(summaries);
-  console.log(`\n\n`);
 
   //reducer part
   const groqModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
     maxRetries: 2,
+    temperature: 0,
     apiKey: process.env.GROQ_API_KEY,
   });
 
@@ -175,9 +172,7 @@ export async function earningCallPDFSummarizer(state: any) {
        chunk summaries are : - \n ${JSON.stringify(summaries, null, 2)}`,
     ),
   ];
-  const resp = await groqStructuredMode.invoke(messages);
-  console.log("final reduced summary: - ");
-  console.log(resp);
+  const result = await groqStructuredMode.invoke(messages);
 
-  return { earningCallSummary: summaries };
+  return { earningCallSummary: result };
 }
