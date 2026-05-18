@@ -10,7 +10,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage } from "langchain";
 import {
   chunkSystemPrompt,
-  finalSummarySystemPrompt,
+  earningCallSummarySystemPrompt,
 } from "../prompts/summary.prompt";
 
 const chunkSummarySchema = z.object({
@@ -54,22 +54,26 @@ export const finalSummarySchema = z.object({
           "neceassary details regarding Revenue, growth, operational margin, eps, pat and other financial ratios",
         ),
     )
+    .describe("maximum 15 elements in array")
     .max(15)
     .optional(),
   deals: z
     .array(
       z.string().describe("details regarding new deals, investments, TVC etc"),
     )
+    .describe("maximum 5 elements in array")
     .max(5)
     .optional(),
   achievements: z
     .array(
       z.string().describe("new mega deals, achievements, breakthrough etc"),
     )
+    .describe("maximum 6 elements in array")
     .max(6)
     .optional(),
   guidance: z
     .array(z.string().describe("key management guidance and remark for future"))
+    .describe("maximum 4 elements in array")
     .max(4)
     .optional(),
   risk: z
@@ -78,6 +82,7 @@ export const finalSummarySchema = z.object({
         .string()
         .describe("major risks, concerns, headwinds explicitly mentioned"),
     )
+    .describe("maximum 4 elements in array")
     .max(4)
     .optional(),
 });
@@ -166,7 +171,7 @@ export async function earningCallPDFSummarizer(state: any) {
 
   const groqStructuredMode = groqModel.withStructuredOutput(finalSummarySchema);
   const messages = [
-    finalSummarySystemPrompt,
+    earningCallSummarySystemPrompt,
     new HumanMessage(
       `Company details:- ${state.companyName} belongs to ${state.industry} \\n
        chunk summaries are : - \n ${JSON.stringify(summaries, null, 2)}`,
