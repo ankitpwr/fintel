@@ -146,3 +146,39 @@ async function extractBalanceSheet(state: AppStateType) {
     console.error("Error fetching fundamentals:", error);
   }
 }
+
+async function extractCashFlow(state: AppStateType) {
+  try {
+    const result = await yahooFinance.fundamentalsTimeSeries(
+      `${state.companySymbol}.NS`,
+      {
+        period1: "2026-01-01",
+        type: "annual",
+        module: "cash-flow",
+      },
+    );
+
+    console.log("--- DETAILED cash flow DATA ---");
+    console.log(JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("Error fetching fundamentals:", error);
+  }
+}
+
+async function extractIncomeStatement(state: AppStateType) {
+  try {
+    const result = await yahooFinance.fundamentalsTimeSeries(
+      `${state.companySymbol}.NS`,
+      {
+        period1: "2026-01-01",
+        type: "annual",
+        module: "financials",
+      },
+    );
+
+    console.log("--- DETAILED income statement DATA ---");
+    console.log(JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("Error fetching fundamentals:", error);
+  }
+}
