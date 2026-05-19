@@ -1,5 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
+import YahooFinance from "yahoo-finance2";
+
 import type { AppStateType } from "../worker/agent";
 import type { ShareHoldingInfo } from "../types/agent.types";
 
@@ -13,6 +15,8 @@ export const nseClient = axios.create({
     Referer: process.env.BASE_URL,
   },
 });
+
+const yahooFinance = new YahooFinance();
 
 export async function extractStockInfo(state: AppStateType) {
   try {
@@ -122,5 +126,23 @@ export async function extractSymbol(state: AppStateType) {
     console.log("error in extract-symbol");
     console.log(error);
     return { companySymbol: "" };
+  }
+}
+
+async function extractBalanceSheet(state: AppStateType) {
+  try {
+    const result = await yahooFinance.fundamentalsTimeSeries(
+      `${state.companySymbol}.NS`,
+      {
+        period1: "2026-01-01",
+        type: "annual",
+        module: "balance-sheet",
+      },
+    );
+
+    console.log("--- DETAILED Balance sheet DATA ---");
+    console.log(JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("Error fetching fundamentals:", error);
   }
 }
