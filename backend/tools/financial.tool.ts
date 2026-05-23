@@ -20,38 +20,47 @@ const yahooFinance = new YahooFinance();
 
 export async function extractStockInfo(state: AppStateType) {
   try {
-    const { data } = await nseClient.get(
-      `/quote-equity?symbol=${state.companySymbol}`,
-    );
+    const data = await yahooFinance.quoteSummary(`${state.companySymbol}.NS`, {
+      modules: [
+        "assetProfile",
+        "indexTrend",
+        "defaultKeyStatistics",
+        "industryTrend",
+        "summaryDetail",
+        "price",
+        "summaryProfile",
+        "financialData",
+      ],
+    });
 
     // console.log("extract-stock-info ", data);
 
     return {
       stockInfo: {
-        symbol: data.info?.symbol ?? "",
-        companyName: data.info?.companyName ?? "",
-        industry: data.info?.industry ?? "",
-        sector: data.industryInfo?.sector ?? "",
-        basicIndustry: data.industryInfo?.basicIndustry ?? "",
-        faceValue: data.securityInfo?.faceValue ?? "",
+        companyName: data.price?.longName,
+        industry: data.assetProfile?.industry,
 
-        lastTradedPrice: data.priceInfo?.lastPrice,
-        openPrice: data.priceInfo?.open,
-        closePrice: data.priceInfo?.close,
-        volumeWeightedAveragePrice: data.priceInfo?.vwap,
-        priceChange: data.priceInfo?.change,
-        percentageChange: data.priceInfo?.pChange,
+        lastTradedPrice: data.price?.regularMarketPrice,
+        openPrice: data.price?.regularMarketOpen,
+        closePrice: data.price?.regularMarketPreviousClose,
+        priceChange: data.price?.regularMarketChange,
 
-        intradayHigh: data.priceInfo?.intraDayHighLow?.ma,
-        intradayLow: data.priceInfo.intraDayHighLow?.min,
-        fiftyTwoWeekHigh: data.priceInfo.weekHighLow.max,
-        fiftyTwoWeekLow: data.priceInfo.weekHighLow.min,
-        fiftyTwoWeekHighDate: data.priceInfo.weekHighLow.maxDate,
-        fiftyTwoWeekLowDate: data.priceInfo.weekHighLow.minDate,
+        intradayHigh: data.price?.regularMarketDayHigh,
+        intradayLow: data.price?.regularMarketDayLow,
+        fiftyTwoWeekHigh: data.summaryDetail?.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: data.summaryDetail?.fiftyTwoWeekLow,
 
-        sectorPriceToEarningsRatio: data.metadata.pdSectorPe,
-        stockPriceToEarningsRatio: data.metadata.pdSymbolPe,
-        primaryIndex: data.metadata.pdSectorInd,
+        peRatio: data.summaryDetail?.trailingPE,
+        marketCap: data.summaryDetail?.marketCap,
+        pegRatio: data.defaultKeyStatistics?.pegRatio,
+        eps: data.defaultKeyStatistics?.trailingEps,
+
+        dividendRate: data.summaryDetail?.dividendRate,
+        payoutRatio: data.summaryDetail?.payoutRatio,
+        beta: data.summaryDetail?.beta,
+
+        bookValue: data.defaultKeyStatistics?.bookValue,
+        priceToBook: data.defaultKeyStatistics?.priceToBook,
       },
     };
   } catch (error) {
@@ -128,10 +137,9 @@ export async function extractSymbol(state: AppStateType) {
     return { companySymbol: "" };
   }
 }
-
-async function extractBalanceSheet(state: AppStateType) {
+export async function extractBalanceSheet(state: any) {
   try {
-    const result = await yahooFinance.fundamentalsTimeSeries(
+    const response = await yahooFinance.fundamentalsTimeSeries(
       `${state.companySymbol}.NS`,
       {
         period1: "2026-01-01",
@@ -139,17 +147,36 @@ async function extractBalanceSheet(state: AppStateType) {
         module: "balance-sheet",
       },
     );
-
-    console.log("--- DETAILED Balance sheet DATA ---");
-    console.log(JSON.stringify(result, null, 2));
+    const data: any = response[0];
+    return {
+      balanceSheet: {
+        totalAssets: data.totalAssets,
+        totalDebt: data.totalDebt,
+        longTermDebt: data.longTermDebt,
+        netDebt: data.netDebt,
+        cashAndEquivalents: data.cashAndCashEquivalents,
+        shareholdersEquity: data.stockholdersEquity,
+        currentAssets: data.currentAssets,
+        currentLiabilities: data.currentLiabilities,
+        workingCapital: data.workingCapital,
+        inventory: data.inventory,
+        accountsReceivable: data.accountsReceivable,
+        accountsPayable: data.accountsPayable,
+        goodwillAndIntangiblesAsssets: data.goodwillAndOtherIntangibleAssets,
+        netPPE: data.netPPE,
+        periodType: data.periodType,
+        date: data.date,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching fundamentals:", error);
+    console.error("Error fetching balance sheet:", error);
+    console.log(error);
   }
 }
 
-async function extractCashFlow(state: AppStateType) {
+export async function extractCashFlow(state: AppStateType) {
   try {
-    const result = await yahooFinance.fundamentalsTimeSeries(
+    const response = await yahooFinance.fundamentalsTimeSeries(
       `${state.companySymbol}.NS`,
       {
         period1: "2026-01-01",
@@ -157,17 +184,30 @@ async function extractCashFlow(state: AppStateType) {
         module: "cash-flow",
       },
     );
-
-    console.log("--- DETAILED cash flow DATA ---");
-    console.log(JSON.stringify(result, null, 2));
+    const data: any = response[0];
+    return {
+      cashFlowStatement: {
+        operatingCashFlow: data.operatingCashFlow,
+        freeCashFlow: data.freeCashFlow,
+        capitalExpenditure: data.capitalExpenditure,
+        investingCashFlow: data.investingCashFlow,
+        financingCashFlow: data.financingCashFlow,
+        depreciation: data.depreciation,
+        changeInWorkingCapital: data.changeInWorkingCapital,
+        cashDividendsPaid: data.cashDividendsPaid,
+        periodType: data.periodType,
+        date: data.date,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching fundamentals:", error);
+    console.error("Error cash flow tool:", error);
+    console.log(error);
   }
 }
 
-async function extractIncomeStatement(state: AppStateType) {
+export async function extractIncomeStatement(state: AppStateType) {
   try {
-    const result = await yahooFinance.fundamentalsTimeSeries(
+    const response = await yahooFinance.fundamentalsTimeSeries(
       `${state.companySymbol}.NS`,
       {
         period1: "2026-01-01",
@@ -175,10 +215,26 @@ async function extractIncomeStatement(state: AppStateType) {
         module: "financials",
       },
     );
-
-    console.log("--- DETAILED income statement DATA ---");
-    console.log(JSON.stringify(result, null, 2));
+    const data: any = response[0];
+    return {
+      incomeStatement: {
+        totalRevenue: data.totalRevenue,
+        grossProfit: data.grossProfit,
+        operatingIncome: data.operatingIncome,
+        ebit: data.EBIT,
+        ebitda: data.EBITDA,
+        pretaxIncome: data.pretaxIncome,
+        netIncome: data.netIncome,
+        interestExpense: data.interestExpense,
+        totalExpenses: data.totalExpenses,
+        costOfRevenue: data.costOfRevenue,
+        periodType: data.periodType,
+        date: data.date,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching fundamentals:", error);
+    console.error("Error income statement:", error);
+
+    console.log(error);
   }
 }

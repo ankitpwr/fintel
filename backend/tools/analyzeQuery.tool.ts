@@ -29,7 +29,7 @@ export async function analyzeQuery(state: AppStateType) {
     if (result.comapanyName == "none") return { companyName: "" };
     else return { companyName: result.comapanyName };
   } catch (error) {
-    console.log("erro in analyze-user-query");
+    console.log("error in analyze-user-query");
     console.log(error);
   }
 }
