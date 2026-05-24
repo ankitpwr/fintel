@@ -2,27 +2,24 @@ export interface StockInfo {
   symbol: string;
   companyName: string;
   industry: string;
-  sector: string;
-  basicIndustry: string;
-  faceValue: string;
 
   lastTradedPrice: number;
   openPrice: number;
   closePrice: number;
-  volumeWeightedAveragePrice: number;
   priceChange: number;
-  percentageChange: number;
 
   intradayHigh: number;
   intradayLow: number;
   fiftyTwoWeekHigh: number;
   fiftyTwoWeekLow: number;
-  fiftyTwoWeekHighDate: string;
-  fiftyTwoWeekLowDate: string;
+  peRatio: number;
 
-  sectorPriceToEarningsRatio: number;
-  stockPriceToEarningsRatio: number;
-  primaryIndex: string;
+  marketCap: number;
+  eps: number;
+
+  dividendRate: number;
+  payoutRatio: number;
+  beta: number;
 }
 
 export interface PeersInfo {
@@ -45,7 +42,6 @@ export interface ShareHoldingInfo {
 export interface BalanceSheet {
   totalAssets: number;
   totalDebt: number;
-  currentDebt?: number;
   longTermDebt: number;
   netDebt: number;
   cashAndEquivalents: number;
@@ -70,7 +66,6 @@ export interface CashFlow {
   depreciation: number;
   changeInWorkingCapital?: number;
   cashDividendsPaid?: number;
-  endCashPosition: number;
   periodType: string;
   date: string;
 }
