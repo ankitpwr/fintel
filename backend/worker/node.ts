@@ -1,18 +1,11 @@
 import { ChatGroq } from "@langchain/groq";
 import { tools, type AppStateType } from "../worker/agent";
 import { z } from "zod";
-import {
-  AIMessage,
-  HumanMessage,
-  modelRetryMiddleware,
-  toolRetryMiddleware,
-} from "langchain";
+import { AIMessage, HumanMessage } from "langchain";
 import {
   queryAnalyzerSystemPrompt,
   finalSummary as finalSummaryPrompt,
-  llmWithToolsSystemPrompt,
 } from "../prompts/prompt";
-import { createAgent } from "langchain";
 
 const querySchema = z.object({
   companyName: z.string().describe("company name extracted form user query"),
@@ -91,8 +84,3 @@ export async function finalSummary(state: AppStateType) {
     };
   }
 }
-
-// stock_Information: - ${JSON.stringify(state.stockInfo)}\n
-// Peers_Information: - ${JSON.stringify(state.peerInfo)} \n
-// share_Holding_Information: - ${JSON.stringify(state.shareHoldingInfo)}
-// earning_call_Summary: - ${JSON.stringify(state.earningCallSummary)}

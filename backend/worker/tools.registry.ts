@@ -20,10 +20,11 @@ export const stockInfoTool = tool(
       return JSON.stringify(data?.stockInfo);
     } catch (error) {
       console.log("error in stock info tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_stock_information",
+    name: "fetch_stock_information",
     description:
       "Get the information such as intraday data, 52-week high/low, marketCap and other important ratio like peg, eps, beta etc for a company stock symbol",
     schema: z.object({
@@ -39,10 +40,11 @@ export const peersInfoTool = tool(
       return JSON.stringify(data?.peerInfo);
     } catch (error) {
       console.log("error in peers info tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_stocks_peers_information",
+    name: "fetch_stocks_peers_information",
     description:
       "Get the information of peers and compititor for a company stock symbol",
     schema: z.object({
@@ -58,10 +60,11 @@ export const shareholdingInfoTool = tool(
       return JSON.stringify(data?.shareHoldingInfo);
     } catch (error) {
       console.log("error in shareholding info tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_stocks_shareholding_information",
+    name: "fetch_stocks_shareholding_information",
     description:
       "Get the information of shareholding patterns for a company stock symbol",
     schema: z.object({
@@ -89,18 +92,19 @@ export const earningCallPdfSummary = tool(
           industry: industry,
         });
 
-        return JSON.stringify(data);
+        return JSON.stringify(data.earningCallSummary);
       } else {
         return "Some fields are missing. tools require symbol, companyName and industry";
       }
     } catch (error) {
       console.log("error in shareholding info tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_stocks_shareholding_information",
+    name: "fetch_earning_call_summary",
     description:
-      "Get the information of shareholding patterns for a company stock symbol",
+      "Get the earning call summary which include financial figures, new deals, achievements, guidance from executives and potential risks for a company stock symbol",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       comapanyName: z.string().describe("name of the company"),
@@ -116,10 +120,11 @@ export const balanceSheetTool = tool(
       return JSON.stringify(data?.balanceSheet);
     } catch (error) {
       console.log("error in balance sheet tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_balance_sheet",
+    name: "fetch_balance_sheet",
     description:
       "Get the balance sheet financial statement for a company stock symbol",
     schema: z.object({
@@ -135,10 +140,11 @@ export const cashFlowStatementTool = tool(
       return JSON.stringify(data?.cashFlowStatement);
     } catch (error) {
       console.log("error in cash flow tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_cash_flow_statement",
+    name: "fetch_cash_flow_statement",
     description:
       "Get the cash flow financial statement for a company stock symbol",
     schema: z.object({
@@ -154,10 +160,11 @@ export const incomeStatementTool = tool(
       return JSON.stringify(data?.incomeStatement);
     } catch (error) {
       console.log("error in income statement tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "extract_income_statement",
+    name: "fetch_income_statement",
     description:
       "Get the income financial statement for a company stock symbol",
     schema: z.object({

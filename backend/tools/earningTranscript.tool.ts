@@ -11,7 +11,7 @@ import { HumanMessage } from "langchain";
 import {
   chunkSystemPrompt,
   earningCallSummarySystemPrompt,
-} from "../prompts/summary.prompt";
+} from "../prompts/prompt";
 
 const chunkSummarySchema = z.object({
   financial_figures: z
@@ -87,10 +87,10 @@ export const finalSummarySchema = z.object({
     .optional(),
 });
 
-export async function extractEarningCallPDF(state: AppStateType) {
+export async function fetchEarningCallPDF(symbol: string) {
   try {
     const { data } = await nseClient.get(
-      `/corporate-announcements?index=equities&symbol=${state.companySymbol}&category=Transcript`,
+      `/corporate-announcements?index=equities&symbol=${symbol}&category=Transcript`,
     );
 
     let pdfURL = "";
@@ -115,8 +115,12 @@ export async function extractEarningCallPDF(state: AppStateType) {
   }
 }
 
-export async function earningCallPDFSummarizer(state: any) {
-  const pdfFile = state.earningCallTranscriptURL;
+export async function earningCallPDFSummarizer(state: {
+  url: string;
+  companyName: string;
+  industry: string;
+}) {
+  const pdfFile = state.url;
   const response = await nseClient.get(pdfFile, {
     responseType: "arraybuffer", // get raw binary bytes not json.
   });

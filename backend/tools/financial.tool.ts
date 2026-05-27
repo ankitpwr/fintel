@@ -4,6 +4,7 @@ import YahooFinance from "yahoo-finance2";
 
 import type { AppStateType } from "../worker/agent";
 import type { ShareHoldingInfo } from "../types/agent.types";
+import { HumanMessage } from "langchain";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
@@ -16,11 +17,13 @@ export const nseClient = axios.create({
   },
 });
 
-const yahooFinance = new YahooFinance();
+const yahooFinance = new YahooFinance({
+  suppressNotices: ["yahooSurvey"],
+});
 
-export async function extractStockInfo(state: AppStateType) {
+export async function fetchStockInfo(symbol: string) {
   try {
-    const data = await yahooFinance.quoteSummary(`${state.companySymbol}.NS`, {
+    const data = await yahooFinance.quoteSummary(`${symbol}.NS`, {
       modules: [
         "assetProfile",
         "indexTrend",
@@ -69,10 +72,10 @@ export async function extractStockInfo(state: AppStateType) {
   }
 }
 
-export async function extractPeersInfo(state: AppStateType) {
+export async function fetchPeersInfo(symbol: string) {
   try {
     const { data } = await nseClient.get(
-      `/NextApi/apiClient/GetQuoteApi?functionName=getPeerComparisonData&symbol=${state.companySymbol}&type=S&quarter=2025-12&param=industry&index=`,
+      `/NextApi/apiClient/GetQuoteApi?functionName=getPeerComparisonData&symbol=${symbol}&type=S&quarter=2025-12&param=industry&index=`,
     );
 
     // console.log("extract-peers-info ", data);
@@ -95,10 +98,10 @@ export async function extractPeersInfo(state: AppStateType) {
   }
 }
 
-export async function extractShareHoldingInfo(state: AppStateType) {
+export async function fetchShareHoldingInfo(symbol: string) {
   try {
     const { data } = await nseClient.get(
-      `/NextApi/apiClient/GetQuoteApi?functionName=getShareHoldingPatternCorp&symbol=${state.companySymbol}&type=W&noOfRecords=3`,
+      `/NextApi/apiClient/GetQuoteApi?functionName=getShareHoldingPatternCorp&symbol=${symbol}&type=W&noOfRecords=3`,
     );
 
     const shareHoldingPattern: ShareHoldingInfo[] = [];
@@ -114,6 +117,8 @@ export async function extractShareHoldingInfo(state: AppStateType) {
       });
     });
 
+    console.log("shareholding data is ", shareHoldingPattern);
+
     return { shareHoldingInfo: shareHoldingPattern };
   } catch (error) {
     console.log("error in extract-share-holding-info");
@@ -121,7 +126,7 @@ export async function extractShareHoldingInfo(state: AppStateType) {
   }
 }
 
-export async function extractSymbol(state: AppStateType) {
+export async function fetchSymbol(state: AppStateType) {
   try {
     const url =
       `NextApi/globalSearch/equity?symbol=` +
@@ -129,24 +134,28 @@ export async function extractSymbol(state: AppStateType) {
     const { data } = await nseClient.get(url);
 
     if (data["data"].length == 0) return { companySymbol: "" };
-
-    return { companySymbol: data["data"][0]["symbol"] };
+    console.log("data of fetch symbol is ", data["data"][0]["symbol"]);
+    return {
+      symbol: data["data"][0]["symbol"],
+      messages: [
+        new HumanMessage(
+          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${state.symbol}`,
+        ),
+      ],
+    };
   } catch (error) {
     console.log("error in extract-symbol");
     console.log(error);
-    return { companySymbol: "" };
+    return { symbol: "" };
   }
 }
-export async function extractBalanceSheet(state: any) {
+export async function fetchBalanceSheet(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(
-      `${state.companySymbol}.NS`,
-      {
-        period1: "2026-01-01",
-        type: "annual",
-        module: "balance-sheet",
-      },
-    );
+    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2026-01-01",
+      type: "annual",
+      module: "balance-sheet",
+    });
     const data: any = response[0];
     return {
       balanceSheet: {
@@ -174,16 +183,13 @@ export async function extractBalanceSheet(state: any) {
   }
 }
 
-export async function extractCashFlow(state: AppStateType) {
+export async function fetchCashFlow(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(
-      `${state.companySymbol}.NS`,
-      {
-        period1: "2026-01-01",
-        type: "annual",
-        module: "cash-flow",
-      },
-    );
+    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2026-01-01",
+      type: "annual",
+      module: "cash-flow",
+    });
     const data: any = response[0];
     return {
       cashFlowStatement: {
@@ -205,16 +211,13 @@ export async function extractCashFlow(state: AppStateType) {
   }
 }
 
-export async function extractIncomeStatement(state: AppStateType) {
+export async function fetchIncomeStatement(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(
-      `${state.companySymbol}.NS`,
-      {
-        period1: "2026-01-01",
-        type: "annual",
-        module: "financials",
-      },
-    );
+    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2026-01-01",
+      type: "annual",
+      module: "financials",
+    });
     const data: any = response[0];
     return {
       incomeStatement: {
