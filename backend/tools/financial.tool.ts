@@ -241,3 +241,16 @@ export async function fetchIncomeStatement(symbol: string) {
     console.log(error);
   }
 }
+
+export async function marketSnapshot() {
+  const indices = ["^NSEI", "^BSESN", "^NSEBANK"];
+
+  const result = await Promise.all(indices.map((i) => yahooFinance.quote(i)));
+
+  return result.map((r) => ({
+    name: r.shortName,
+    price: r.regularMarketPrice,
+
+    change: r.regularMarketChangePercent,
+  }));
+}
