@@ -242,15 +242,42 @@ export async function fetchIncomeStatement(symbol: string) {
   }
 }
 
-export async function marketSnapshot() {
-  const indices = ["^NSEI", "^BSESN", "^NSEBANK"];
+export async function fetchMarketOverview() {
+  const indices = [
+    "^NSEI", // Nifty 50
+    "^BSESN", // Sensex
+    "^NSEBANK", // Bank Nifty
+    "^CNXIT", // Nifty IT
+    "^CNXAUTO", // Auto
+    "^CNXPHARMA", // Pharma
+  ];
 
-  const result = await Promise.all(indices.map((i) => yahooFinance.quote(i)));
+  const result = await Promise.all(
+    indices.map((symbol) => yahooFinance.quote(symbol)),
+  );
 
-  return result.map((r) => ({
+  const data = result.map((r) => ({
+    symbol: r.symbol,
+
     name: r.shortName,
+
     price: r.regularMarketPrice,
 
-    change: r.regularMarketChangePercent,
+    change: r.regularMarketChange,
+
+    changePercent: r.regularMarketChangePercent,
+
+    dayHigh: r.regularMarketDayHigh,
+
+    dayLow: r.regularMarketDayLow,
+
+    previousClose: r.regularMarketPreviousClose,
+
+    updatedAt: r.regularMarketTime,
+
+    fiftyTwoWeekHigh: r.fiftyTwoWeekHigh,
+
+    fiftyTwoWeekLow: r.fiftyTwoWeekLow,
   }));
+  return data;
 }
