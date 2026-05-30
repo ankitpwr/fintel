@@ -3,6 +3,7 @@ import {
   fetchBalanceSheet,
   fetchCashFlow,
   fetchIncomeStatement,
+  fetchMarketOverview,
   fetchPeersInfo,
   fetchShareHoldingInfo,
   fetchStockInfo,
@@ -170,5 +171,22 @@ export const incomeStatementTool = tool(
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
     }),
+  },
+);
+
+export const marketOverview = tool(
+  async () => {
+    try {
+      const data = await fetchMarketOverview();
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in income statement tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_market_overview",
+    description:
+      "Get overall Indian market performance, index movement, NIFTY, Sensex, Bank Nifty, market sentiment, market overview or today's market condition.",
   },
 );
