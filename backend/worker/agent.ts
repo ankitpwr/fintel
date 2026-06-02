@@ -1,6 +1,5 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { fetchSymbol } from "../tools/financial.tool";
-import { analyzeQuery, llmWithTools } from "./node";
+import { analyzeQuery, fetchSymbol, finalSummary, llmWithTools } from "./node";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import {
   HumanMessage,
@@ -16,7 +15,17 @@ import {
   peersInfoTool,
   shareholdingInfoTool,
   stockInfoTool,
+  marketOverview,
 } from "./tools.registry";
+import type {
+  BalanceSheet,
+  CashFlow,
+  IncomeStatement,
+  PeersInfo,
+  ShareHoldingInfo,
+  StockInfo,
+} from "../types/agent.types";
+import { finalSummarySchema } from "../tools/earningTranscript.tool";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -39,6 +48,7 @@ export const tools = [
   balanceSheetTool,
   cashFlowStatementTool,
   incomeStatementTool,
+  marketOverview,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -47,6 +57,7 @@ graph
   .addNode("fetch_symbol", fetchSymbol)
   .addNode("llm_with_tools", llmWithTools)
   .addNode("tools", toolNode)
+  .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
   .addConditionalEdges("analyze_query", (state: AppStateType) => {
     if (state.companyName == "" || state.companyName == "none") {
@@ -70,15 +81,16 @@ graph
       return "tools";
     }
     console.log("no tools to call");
-    return END;
+    return "final_summary";
   })
-  .addEdge("tools", "llm_with_tools");
+  .addEdge("tools", "llm_with_tools")
+  .addEdge("final_summary", END);
 
 async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery: "How financially healthy is Reliance",
+      userQuery: "what is current price of RELIANCE industry",
     });
     console.log(result);
   } catch (error) {

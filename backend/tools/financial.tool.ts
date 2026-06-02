@@ -2,9 +2,7 @@ import "dotenv/config";
 import axios from "axios";
 import YahooFinance from "yahoo-finance2";
 
-import type { AppStateType } from "../worker/agent";
 import type { ShareHoldingInfo } from "../types/agent.types";
-import { HumanMessage } from "langchain";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
@@ -126,29 +124,6 @@ export async function fetchShareHoldingInfo(symbol: string) {
   }
 }
 
-export async function fetchSymbol(state: AppStateType) {
-  try {
-    const url =
-      `NextApi/globalSearch/equity?symbol=` +
-      encodeURIComponent(state.companyName);
-    const { data } = await nseClient.get(url);
-
-    if (data["data"].length == 0) return { companySymbol: "" };
-    console.log("data of fetch symbol is ", data["data"][0]["symbol"]);
-    return {
-      symbol: data["data"][0]["symbol"],
-      messages: [
-        new HumanMessage(
-          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${state.symbol}`,
-        ),
-      ],
-    };
-  } catch (error) {
-    console.log("error in extract-symbol");
-    console.log(error);
-    return { symbol: "" };
-  }
-}
 export async function fetchBalanceSheet(symbol: string) {
   try {
     const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {

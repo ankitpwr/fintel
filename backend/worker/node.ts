@@ -6,6 +6,8 @@ import {
   queryAnalyzerSystemPrompt,
   finalSummary as finalSummaryPrompt,
 } from "../prompts/prompt";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { nseClient } from "../tools/financial.tool";
 
 const querySchema = z.object({
   companyName: z.string().describe("company name extracted form user query"),
@@ -33,19 +35,46 @@ export async function analyzeQuery(state: AppStateType) {
   }
 }
 
+export async function fetchSymbol(state: AppStateType) {
+  try {
+    console.log("ib fetch symbol");
+    const url =
+      `NextApi/globalSearch/equity?symbol=` +
+      encodeURIComponent(state.companyName);
+    const { data } = await nseClient.get(url);
+    console.log("data of fetch symbol is ", data["data"][0]["symbol"]);
+
+    if (data["data"].length == 0) return { companySymbol: "" };
+    return {
+      symbol: data["data"][0]["symbol"],
+      messages: [
+        new HumanMessage(
+          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${state.symbol}`,
+        ),
+      ],
+    };
+  } catch (error) {
+    console.log("error in extract-symbol");
+    console.log(error);
+    return { symbol: "" };
+  }
+}
+
 export async function llmWithTools(state: AppStateType) {
   try {
     console.log("inside llm withh tools");
-    const groqModel = new ChatGroq({
+
+    const model = new ChatGroq({
       model: "openai/gpt-oss-120b",
       maxRetries: 2,
       temperature: 0,
       apiKey: process.env.GROQ_API_KEY,
     });
-    const modelWithTools = groqModel.bindTools(tools);
+
+    const modelWithTools = model.bindTools(tools);
 
     const response = await modelWithTools.invoke(state.messages, {
-      recursionLimit: 5,
+      recursionLimit: 7,
     });
     console.log("in llm with tools  --> ", response);
     return { messages: [response] };
@@ -59,20 +88,17 @@ export async function llmWithTools(state: AppStateType) {
 
 export async function finalSummary(state: AppStateType) {
   try {
-    const model = new ChatGroq({
-      model: "openai/gpt-oss-120b",
+    const model = new ChatGoogleGenerativeAI({
+      model: "gemini-3.1-flash-lite",
       maxRetries: 2,
-      temperature: 0,
-      apiKey: process.env.GROQ_API_KEY,
+      apiKey: process.env.GOOGLE_API_KEY,
     });
     const response = await model.invoke([
       finalSummaryPrompt,
+      ...state.messages,
       new HumanMessage(`
         User Query: - ${state.userQuery}\n 
-        companyName:- ${state.companyName}
-        //
-        
-        `),
+        companyName:- ${state.companyName}`),
     ]);
 
     return { finalResponse: response.content };

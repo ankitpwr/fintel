@@ -13,13 +13,16 @@ export interface StockInfo {
   fiftyTwoWeekHigh: number;
   fiftyTwoWeekLow: number;
   peRatio: number;
-
   marketCap: number;
+  pegRatio: number;
+
   eps: number;
 
   dividendRate: number;
   payoutRatio: number;
   beta: number;
+  bookValue: number;
+  priceToBook: number;
 }
 
 export interface PeersInfo {
