@@ -17,15 +17,6 @@ import {
   stockInfoTool,
   marketOverview,
 } from "./tools.registry";
-import type {
-  BalanceSheet,
-  CashFlow,
-  IncomeStatement,
-  PeersInfo,
-  ShareHoldingInfo,
-  StockInfo,
-} from "../types/agent.types";
-import { finalSummarySchema } from "../tools/earningTranscript.tool";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -59,13 +50,9 @@ graph
   .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
-  .addConditionalEdges("analyze_query", (state: AppStateType) => {
-    if (state.companyName == "" || state.companyName == "none") {
-      return END;
-    } else return "fetch_symbol";
-  })
+  .addEdge("analyze_query", "fetch_symbol")
   .addConditionalEdges("fetch_symbol", (state: AppStateType) => {
-    if (state.symbol == "" || state.companyName == "none") {
+    if (state.symbol == "" || state.companyName == "None") {
       return END;
     } else {
       return "llm_with_tools";
@@ -90,7 +77,7 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery: "what is current price of RELIANCE industry",
+      userQuery: "tell me how balance sheet of MRF doing",
     });
     console.log(result);
   } catch (error) {

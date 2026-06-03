@@ -15,7 +15,7 @@ const querySchema = z.object({
 export async function analyzeQuery(state: AppStateType) {
   try {
     const model = new ChatGroq({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       maxRetries: 2,
       temperature: 0,
       apiKey: process.env.GROQ_API_KEY,
@@ -49,7 +49,7 @@ export async function fetchSymbol(state: AppStateType) {
       symbol: data["data"][0]["symbol"],
       messages: [
         new HumanMessage(
-          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${state.symbol}`,
+          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${data["data"][0]["symbol"]}`,
         ),
       ],
     };
@@ -62,10 +62,8 @@ export async function fetchSymbol(state: AppStateType) {
 
 export async function llmWithTools(state: AppStateType) {
   try {
-    console.log("inside llm withh tools");
-
     const model = new ChatGroq({
-      model: "openai/gpt-oss-120b",
+      model: "llama-3.3-70b-versatile",
       maxRetries: 2,
       temperature: 0,
       apiKey: process.env.GROQ_API_KEY,
@@ -74,9 +72,8 @@ export async function llmWithTools(state: AppStateType) {
     const modelWithTools = model.bindTools(tools);
 
     const response = await modelWithTools.invoke(state.messages, {
-      recursionLimit: 7,
+      recursionLimit: 10,
     });
-    console.log("in llm with tools  --> ", response);
     return { messages: [response] };
   } catch (error) {
     console.log("error in llm_with_tools ", error);
@@ -93,12 +90,18 @@ export async function finalSummary(state: AppStateType) {
       maxRetries: 2,
       apiKey: process.env.GOOGLE_API_KEY,
     });
+    const toolContext = state.messages
+      .filter((m) => m._getType() === "tool")
+      .map((m) => m.content)
+      .join("\n\n---\n\n");
+
     const response = await model.invoke([
       finalSummaryPrompt,
-      ...state.messages,
       new HumanMessage(`
-        User Query: - ${state.userQuery}\n 
-        companyName:- ${state.companyName}`),
+      Fetched Data Context:\n${toolContext}
+      \n\nUser Query: ${state.userQuery}
+      Company: ${state.companyName}
+  `),
     ]);
 
     return { finalResponse: response.content };
