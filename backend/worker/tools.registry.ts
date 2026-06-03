@@ -5,10 +5,11 @@ import {
   fetchIncomeStatement,
   fetchMarketOverview,
   fetchPeersInfo,
+  fetchPriceHistory,
   fetchShareHoldingInfo,
   fetchStockInfo,
 } from "../tools/financial.tool";
-import { z } from "zod";
+import { symbol, z } from "zod";
 import {
   earningCallPDFSummarizer,
   fetchEarningCallPDF,
@@ -168,6 +169,25 @@ export const incomeStatementTool = tool(
     name: "fetch_income_statement",
     description:
       "Get the income financial statement for a company stock symbol",
+    schema: z.object({
+      symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+    }),
+  },
+);
+
+export const priceHistoryTool = tool(
+  async ({ symbol }: { symbol: string }) => {
+    try {
+      const data = await fetchPriceHistory(symbol);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in income statement tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_price_history",
+    description: "Get the historic price for a company stock symbol",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
     }),

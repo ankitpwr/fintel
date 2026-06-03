@@ -67,6 +67,7 @@ export async function fetchStockInfo(symbol: string) {
   } catch (error) {
     console.log("error in extract-stock-info");
     console.log(error);
+    return { stockInfo: { error: "Tool Failed" } };
   }
 }
 
@@ -93,6 +94,7 @@ export async function fetchPeersInfo(symbol: string) {
   } catch (error) {
     console.log("error in extract-peers-info");
     console.log(error);
+    return { peerInfo: { error: "Tool Failed" } };
   }
 }
 
@@ -115,12 +117,11 @@ export async function fetchShareHoldingInfo(symbol: string) {
       });
     });
 
-    console.log("shareholding data is ", shareHoldingPattern);
-
     return { shareHoldingInfo: shareHoldingPattern };
   } catch (error) {
     console.log("error in extract-share-holding-info");
     console.log(error);
+    return { shareHoldingInfo: { error: "Tool Failed" } };
   }
 }
 
@@ -155,6 +156,9 @@ export async function fetchBalanceSheet(symbol: string) {
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
     console.log(error);
+    return {
+      balanceSheet: { error: "Tool Failed" },
+    };
   }
 }
 
@@ -183,6 +187,7 @@ export async function fetchCashFlow(symbol: string) {
   } catch (error) {
     console.error("Error cash flow tool:", error);
     console.log(error);
+    return { cashFlowStatement: { error: "Tool Failed" } };
   }
 }
 
@@ -212,8 +217,23 @@ export async function fetchIncomeStatement(symbol: string) {
     };
   } catch (error) {
     console.error("Error income statement:", error);
-
     console.log(error);
+    return { incomeStatement: { error: "Tool Failed" } };
+  }
+}
+
+export async function fetchPriceHistory(symbol: string) {
+  try {
+    const response = await yahooFinance.chart(`${symbol}.NS`, {
+      period1: "2025-01-01",
+      interval: "1mo",
+    });
+
+    return response.quotes;
+  } catch (error) {
+    console.log("error in fech_price_history");
+    console.log(error);
+    return "Tool Failed";
   }
 }
 
@@ -226,33 +246,37 @@ export async function fetchMarketOverview() {
     "^CNXAUTO", // Auto
     "^CNXPHARMA", // Pharma
   ];
+  try {
+    const result = await Promise.all(
+      indices.map((symbol) => yahooFinance.quote(symbol)),
+    );
+    const data = result.map((r) => ({
+      symbol: r.symbol,
 
-  const result = await Promise.all(
-    indices.map((symbol) => yahooFinance.quote(symbol)),
-  );
+      name: r.shortName,
 
-  const data = result.map((r) => ({
-    symbol: r.symbol,
+      price: r.regularMarketPrice,
 
-    name: r.shortName,
+      change: r.regularMarketChange,
 
-    price: r.regularMarketPrice,
+      changePercent: r.regularMarketChangePercent,
 
-    change: r.regularMarketChange,
+      dayHigh: r.regularMarketDayHigh,
 
-    changePercent: r.regularMarketChangePercent,
+      dayLow: r.regularMarketDayLow,
 
-    dayHigh: r.regularMarketDayHigh,
+      previousClose: r.regularMarketPreviousClose,
 
-    dayLow: r.regularMarketDayLow,
+      updatedAt: r.regularMarketTime,
 
-    previousClose: r.regularMarketPreviousClose,
+      fiftyTwoWeekHigh: r.fiftyTwoWeekHigh,
 
-    updatedAt: r.regularMarketTime,
-
-    fiftyTwoWeekHigh: r.fiftyTwoWeekHigh,
-
-    fiftyTwoWeekLow: r.fiftyTwoWeekLow,
-  }));
-  return data;
+      fiftyTwoWeekLow: r.fiftyTwoWeekLow,
+    }));
+    return data;
+  } catch (error) {
+    console.log("error in fetch_market_overview");
+    console.log(error);
+    return "Tool Failed";
+  }
 }

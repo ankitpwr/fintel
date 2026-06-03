@@ -16,6 +16,7 @@ import {
   shareholdingInfoTool,
   stockInfoTool,
   marketOverview,
+  priceHistoryTool,
 } from "./tools.registry";
 
 export const AppState = Annotation.Root({
@@ -39,6 +40,7 @@ export const tools = [
   balanceSheetTool,
   cashFlowStatementTool,
   incomeStatementTool,
+  priceHistoryTool,
   marketOverview,
 ];
 const graph = new StateGraph(AppState);
@@ -77,7 +79,8 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery: "tell me how balance sheet of MRF doing",
+      userQuery:
+        "How historic price of tata steel did. is this good time to invest with current price on tata steel",
     });
     console.log(result);
   } catch (error) {
