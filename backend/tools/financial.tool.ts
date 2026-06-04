@@ -45,23 +45,26 @@ export async function fetchStockInfo(symbol: string) {
         openPrice: data.price?.regularMarketOpen,
         closePrice: data.price?.regularMarketPreviousClose,
         priceChange: data.price?.regularMarketChange,
-
         intradayHigh: data.price?.regularMarketDayHigh,
         intradayLow: data.price?.regularMarketDayLow,
         fiftyTwoWeekHigh: data.summaryDetail?.fiftyTwoWeekHigh,
         fiftyTwoWeekLow: data.summaryDetail?.fiftyTwoWeekLow,
 
         peRatio: data.summaryDetail?.trailingPE,
-        marketCap: data.summaryDetail?.marketCap,
         pegRatio: data.defaultKeyStatistics?.pegRatio,
-        eps: data.defaultKeyStatistics?.trailingEps,
-
-        dividendRate: data.summaryDetail?.dividendRate,
         payoutRatio: data.summaryDetail?.payoutRatio,
-        beta: data.summaryDetail?.beta,
+        quickRatio: data.financialData?.quickRatio,
+        currentRatio: data.financialData?.currentRatio,
 
+        eps: data.defaultKeyStatistics?.trailingEps,
+        beta: data.summaryDetail?.beta,
         bookValue: data.defaultKeyStatistics?.bookValue,
         priceToBook: data.defaultKeyStatistics?.priceToBook,
+
+        marketCap: data.summaryDetail?.marketCap,
+        dividendRate: data.summaryDetail?.dividendRate,
+        returnOnAsset: data.financialData?.returnOnAssets,
+        returnOnEquity: data.financialData?.returnOnEquity,
       },
     };
   } catch (error) {

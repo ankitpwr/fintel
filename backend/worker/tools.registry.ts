@@ -11,7 +11,7 @@ import {
   fetchTopGainers,
   fetchTopLosers,
 } from "../tools/financial.tool";
-import { symbol, z } from "zod";
+import { z } from "zod";
 import {
   earningCallPDFSummarizer,
   fetchEarningCallPDF,
@@ -240,7 +240,7 @@ export const topLosersTool = tool(
     }
   },
   {
-    name: "fetch_top_gainers",
+    name: "fetch_top_loser",
     description: "Get today's biggest declining stocks in market",
   },
 );

@@ -56,7 +56,7 @@ graph
   .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
-  .addEdge("analyze_query", "llm_with_tools")
+  .addEdge("analyze_query", "fetch_symbol")
   .addEdge("fetch_symbol", "llm_with_tools")
   .addConditionalEdges("llm_with_tools", (state: AppStateType) => {
     const messages = state.messages as any;
@@ -77,7 +77,8 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery: "tell me the highlight of todays  stock market ",
+      userQuery:
+        "Why Infosys stock price is in downward trend. what is the reason behind it.",
     });
     console.log(result);
   } catch (error) {

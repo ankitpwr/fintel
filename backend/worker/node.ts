@@ -5,6 +5,7 @@ import { AIMessage, HumanMessage } from "langchain";
 import {
   queryAnalyzerSystemPrompt,
   finalSummary as finalSummaryPrompt,
+  llmWithToolsSystemPrompt,
 } from "../prompts/prompt";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { nseClient } from "../tools/financial.tool";
@@ -37,14 +38,27 @@ export async function analyzeQuery(state: AppStateType) {
 
 export async function fetchSymbol(state: AppStateType) {
   try {
-    console.log("ib fetch symbol");
+    if (
+      !state.companyName ||
+      state.companyName === "none" ||
+      state.companyName === ""
+    ) {
+      return {
+        symbol: "",
+        messages: [new HumanMessage(`userQuery: ${state.userQuery}`)],
+      };
+    }
+
     const url =
       `NextApi/globalSearch/equity?symbol=` +
       encodeURIComponent(state.companyName);
     const { data } = await nseClient.get(url);
-    console.log("data of fetch symbol is ", data["data"][0]["symbol"]);
 
-    if (data["data"].length == 0) return { companySymbol: "" };
+    if (data["data"] == null || data["data"].length == 0)
+      return {
+        symbol: "",
+        messages: [new HumanMessage(`userQuery: ${state.userQuery}}`)],
+      };
     return {
       symbol: data["data"][0]["symbol"],
       messages: [
@@ -56,7 +70,10 @@ export async function fetchSymbol(state: AppStateType) {
   } catch (error) {
     console.log("error in extract-symbol");
     console.log(error);
-    return { symbol: "" };
+    return {
+      symbol: "",
+      messages: [new HumanMessage(`userQuery: ${state.userQuery}}`)],
+    };
   }
 }
 
@@ -70,8 +87,8 @@ export async function llmWithTools(state: AppStateType) {
     });
 
     const modelWithTools = model.bindTools(tools);
-
-    const response = await modelWithTools.invoke(state.messages, {
+    const messages = [llmWithToolsSystemPrompt, ...state.messages];
+    const response = await modelWithTools.invoke(messages, {
       recursionLimit: 10,
     });
     return { messages: [response] };
