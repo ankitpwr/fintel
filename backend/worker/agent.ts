@@ -15,8 +15,10 @@ import {
   peersInfoTool,
   shareholdingInfoTool,
   stockInfoTool,
-  marketOverview,
+  marketOverviewTool,
   priceHistoryTool,
+  topGainersTool,
+  topLosersTool,
 } from "./tools.registry";
 
 export const AppState = Annotation.Root({
@@ -41,7 +43,9 @@ export const tools = [
   cashFlowStatementTool,
   incomeStatementTool,
   priceHistoryTool,
-  marketOverview,
+  marketOverviewTool,
+  topGainersTool,
+  topLosersTool,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -52,14 +56,8 @@ graph
   .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
-  .addEdge("analyze_query", "fetch_symbol")
-  .addConditionalEdges("fetch_symbol", (state: AppStateType) => {
-    if (state.symbol == "" || state.companyName == "None") {
-      return END;
-    } else {
-      return "llm_with_tools";
-    }
-  })
+  .addEdge("analyze_query", "llm_with_tools")
+  .addEdge("fetch_symbol", "llm_with_tools")
   .addConditionalEdges("llm_with_tools", (state: AppStateType) => {
     const messages = state.messages as any;
     console.log(" message ", messages);
@@ -79,8 +77,7 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery:
-        "How historic price of tata steel did. is this good time to invest with current price on tata steel",
+      userQuery: "tell me the highlight of todays  stock market ",
     });
     console.log(result);
   } catch (error) {

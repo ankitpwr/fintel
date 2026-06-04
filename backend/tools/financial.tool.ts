@@ -280,3 +280,55 @@ export async function fetchMarketOverview() {
     return "Tool Failed";
   }
 }
+
+export async function fetchTopGainers() {
+  try {
+    const gainers = await nseClient(
+      `/NextApi/apiClient?functionName=getMarketSnapshot&&type=G`,
+    );
+    console.log(gainers.data.data.topGainers);
+
+    const data = gainers.data.data.topGainers.map((stock: any) => ({
+      tickerSymbol: stock.symbol,
+      currentPrice: stock.lastPrice,
+      previousClosePrice: stock.previousClose,
+      priceChange: stock.change,
+      percentChange: stock.pchange,
+      openingPrice: stock.openPrice,
+      dayHighPrice: stock.highPrice,
+      dayLowPrice: stock.lowPrice,
+      corporateActionExDate: stock.caExDt,
+    }));
+    return data;
+  } catch (error) {
+    console.log("error in top_gainer_tool");
+    console.log(error);
+    return "Tool Failed";
+  }
+}
+
+export async function fetchTopLosers() {
+  try {
+    const gainers = await nseClient(
+      `/NextApi/apiClient?functionName=getMarketSnapshot&&type=L`,
+    );
+    console.log(gainers.data.data.topLoosers);
+
+    const data = gainers.data.data.topLoosers.map((stock: any) => ({
+      tickerSymbol: stock.symbol,
+      currentPrice: stock.lastPrice,
+      previousClosePrice: stock.previousClose,
+      priceChange: stock.change,
+      percentChange: stock.pchange,
+      openingPrice: stock.openPrice,
+      dayHighPrice: stock.highPrice,
+      dayLowPrice: stock.lowPrice,
+      corporateActionExDate: stock.caExDt,
+    }));
+    return data;
+  } catch (error) {
+    console.log("error in top_losers_tool");
+    console.log(error);
+    return "Tool Failed";
+  }
+}

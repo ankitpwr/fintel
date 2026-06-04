@@ -8,6 +8,8 @@ import {
   fetchPriceHistory,
   fetchShareHoldingInfo,
   fetchStockInfo,
+  fetchTopGainers,
+  fetchTopLosers,
 } from "../tools/financial.tool";
 import { symbol, z } from "zod";
 import {
@@ -194,7 +196,7 @@ export const priceHistoryTool = tool(
   },
 );
 
-export const marketOverview = tool(
+export const marketOverviewTool = tool(
   async () => {
     try {
       const data = await fetchMarketOverview();
@@ -208,5 +210,37 @@ export const marketOverview = tool(
     name: "fetch_market_overview",
     description:
       "Get overall Indian market performance, index movement, NIFTY, Sensex, Bank Nifty, market sentiment, market overview or today's market condition.",
+  },
+);
+
+export const topGainersTool = tool(
+  async () => {
+    try {
+      const data = await fetchTopGainers();
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in top gainer tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_top_gainers",
+    description: "Get today's highest gaining stocks in market",
+  },
+);
+
+export const topLosersTool = tool(
+  async () => {
+    try {
+      const data = await fetchTopLosers();
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in top looser tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_top_gainers",
+    description: "Get today's biggest declining stocks in market",
   },
 );
