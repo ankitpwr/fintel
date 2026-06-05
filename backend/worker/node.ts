@@ -23,9 +23,7 @@ export async function analyzeQuery(state: AppStateType) {
       temperature: 0,
       apiKey: process.env.GROQ_API_KEY,
     });
-
     const structuredQueryModel = model.withStructuredOutput(querySchema);
-
     const result = await structuredQueryModel.invoke([
       queryAnalyzerSystemPrompt,
       new HumanMessage(state.userQuery),
@@ -56,7 +54,6 @@ export async function fetchSymbol(state: AppStateType) {
       if (data["data"] == null || data["data"].length == 0) continue;
       symbols.push(data["data"][0]["symbol"]);
     }
-
     return {
       symbol: symbols,
       messages: [new HumanMessage(`userQuery: ${state.userQuery}\n  }`)],

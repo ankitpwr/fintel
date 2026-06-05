@@ -141,7 +141,7 @@ export const cashFlowStatementTool = tool(
   async ({ symbol }: { symbol: string }) => {
     try {
       const data = await fetchCashFlow(symbol);
-      return JSON.stringify(data?.cashFlowStatement);
+      return JSON.stringify(data);
     } catch (error) {
       console.log("error in cash flow tool ", error);
       return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
@@ -161,7 +161,7 @@ export const incomeStatementTool = tool(
   async ({ symbol }: { symbol: string }) => {
     try {
       const data = await fetchIncomeStatement(symbol);
-      return JSON.stringify(data?.incomeStatement);
+      return JSON.stringify(data);
     } catch (error) {
       console.log("error in income statement tool ", error);
       return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;

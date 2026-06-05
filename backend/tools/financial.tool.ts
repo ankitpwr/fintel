@@ -130,32 +130,18 @@ export async function fetchShareHoldingInfo(symbol: string) {
 
 export async function fetchBalanceSheet(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2026-01-01",
+    const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2024-01-01",
+      period2: new Date().toISOString().split("T")[0],
       type: "annual",
       module: "balance-sheet",
     });
-    const data: any = response[0];
-    return {
-      balanceSheet: {
-        totalAssets: data.totalAssets,
-        totalDebt: data.totalDebt,
-        longTermDebt: data.longTermDebt,
-        netDebt: data.netDebt,
-        cashAndEquivalents: data.cashAndCashEquivalents,
-        shareholdersEquity: data.stockholdersEquity,
-        currentAssets: data.currentAssets,
-        currentLiabilities: data.currentLiabilities,
-        workingCapital: data.workingCapital,
-        inventory: data.inventory,
-        accountsReceivable: data.accountsReceivable,
-        accountsPayable: data.accountsPayable,
-        goodwillAndIntangiblesAsssets: data.goodwillAndOtherIntangibleAssets,
-        netPPE: data.netPPE,
-        periodType: data.periodType,
-        date: data.date,
-      },
-    };
+    const data = result[result.length - 1];
+
+    if (data) {
+      Object.assign(data, { symbol });
+    }
+    return data;
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
     console.log(error);
@@ -167,26 +153,18 @@ export async function fetchBalanceSheet(symbol: string) {
 
 export async function fetchCashFlow(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2026-01-01",
+    const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2024-01-01",
+      period2: new Date().toISOString().split("T")[0],
       type: "annual",
       module: "cash-flow",
     });
-    const data: any = response[0];
-    return {
-      cashFlowStatement: {
-        operatingCashFlow: data.operatingCashFlow,
-        freeCashFlow: data.freeCashFlow,
-        capitalExpenditure: data.capitalExpenditure,
-        investingCashFlow: data.investingCashFlow,
-        financingCashFlow: data.financingCashFlow,
-        depreciation: data.depreciation,
-        changeInWorkingCapital: data.changeInWorkingCapital,
-        cashDividendsPaid: data.cashDividendsPaid,
-        periodType: data.periodType,
-        date: data.date,
-      },
-    };
+    const data = result[result.length - 1];
+
+    if (data) {
+      Object.assign(data, { symbol });
+    }
+    return data;
   } catch (error) {
     console.error("Error cash flow tool:", error);
     console.log(error);
@@ -196,28 +174,18 @@ export async function fetchCashFlow(symbol: string) {
 
 export async function fetchIncomeStatement(symbol: string) {
   try {
-    const response = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2026-01-01",
+    const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
+      period1: "2024-01-01",
+      period2: new Date().toISOString().split("T")[0],
       type: "annual",
       module: "financials",
     });
-    const data: any = response[0];
-    return {
-      incomeStatement: {
-        totalRevenue: data.totalRevenue,
-        grossProfit: data.grossProfit,
-        operatingIncome: data.operatingIncome,
-        ebit: data.EBIT,
-        ebitda: data.EBITDA,
-        pretaxIncome: data.pretaxIncome,
-        netIncome: data.netIncome,
-        interestExpense: data.interestExpense,
-        totalExpenses: data.totalExpenses,
-        costOfRevenue: data.costOfRevenue,
-        periodType: data.periodType,
-        date: data.date,
-      },
-    };
+    const data = result[result.length - 1];
+
+    if (data) {
+      Object.assign(data, { symbol });
+    }
+    return data;
   } catch (error) {
     console.error("Error income statement:", error);
     console.log(error);
