@@ -121,7 +121,7 @@ export const balanceSheetTool = tool(
   async ({ symbol }: { symbol: string }) => {
     try {
       const data = await fetchBalanceSheet(symbol);
-      return JSON.stringify(data?.balanceSheet);
+      return JSON.stringify(data);
     } catch (error) {
       console.log("error in balance sheet tool ", error);
       return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;

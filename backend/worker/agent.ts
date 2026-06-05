@@ -23,8 +23,8 @@ import {
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
-  companyName: Annotation<string>,
-  symbol: Annotation<string>,
+  companyName: Annotation<string[]>,
+  symbol: Annotation<string[]>,
   messages: Annotation<
     (AIMessage | HumanMessage | SystemMessage | ToolMessage)[]
   >({
@@ -78,7 +78,7 @@ async function init() {
     const workflow = graph.compile();
     const result = await workflow.invoke({
       userQuery:
-        "Why Infosys stock price is in downward trend. what is the reason behind it.",
+        "Compare the cash flow statement of SBI and HDFC bank. which one is stronger and why?",
     });
     console.log(result);
   } catch (error) {

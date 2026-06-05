@@ -11,7 +11,9 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { nseClient } from "../tools/financial.tool";
 
 const querySchema = z.object({
-  companyName: z.string().describe("company name extracted form user query"),
+  companyName: z
+    .array(z.string())
+    .describe("companies name extracted form user query"),
 });
 export async function analyzeQuery(state: AppStateType) {
   try {
@@ -28,8 +30,7 @@ export async function analyzeQuery(state: AppStateType) {
       queryAnalyzerSystemPrompt,
       new HumanMessage(state.userQuery),
     ]);
-    if (result.companyName == "none") return { companyName: "" };
-    else return { companyName: result.companyName };
+    return { companyName: result.companyName };
   } catch (error) {
     console.log("error in analyze-user-query");
     console.log(error);
@@ -38,34 +39,27 @@ export async function analyzeQuery(state: AppStateType) {
 
 export async function fetchSymbol(state: AppStateType) {
   try {
-    if (
-      !state.companyName ||
-      state.companyName === "none" ||
-      state.companyName === ""
-    ) {
+    if (state.companyName.length == 0) {
       return {
-        symbol: "",
+        symbol: [],
         messages: [new HumanMessage(`userQuery: ${state.userQuery}`)],
       };
     }
 
-    const url =
-      `NextApi/globalSearch/equity?symbol=` +
-      encodeURIComponent(state.companyName);
-    const { data } = await nseClient.get(url);
+    const symbols: string[] = [];
+    for (let i = 0; i < state.companyName.length; i++) {
+      const name = state.companyName[i];
+      if (!name) continue;
+      const url =
+        `NextApi/globalSearch/equity?symbol=` + encodeURIComponent(name);
+      const { data } = await nseClient.get(url);
+      if (data["data"] == null || data["data"].length == 0) continue;
+      symbols.push(data["data"][0]["symbol"]);
+    }
 
-    if (data["data"] == null || data["data"].length == 0)
-      return {
-        symbol: "",
-        messages: [new HumanMessage(`userQuery: ${state.userQuery}}`)],
-      };
     return {
-      symbol: data["data"][0]["symbol"],
-      messages: [
-        new HumanMessage(
-          `userQuery: ${state.userQuery}\n companyName: ${state.companyName}\n symbol: ${data["data"][0]["symbol"]}`,
-        ),
-      ],
+      symbol: symbols,
+      messages: [new HumanMessage(`userQuery: ${state.userQuery}\n  }`)],
     };
   } catch (error) {
     console.log("error in extract-symbol");
