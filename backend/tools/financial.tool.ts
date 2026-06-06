@@ -1,7 +1,6 @@
 import "dotenv/config";
 import axios from "axios";
 import YahooFinance from "yahoo-finance2";
-
 import type { ShareHoldingInfo } from "../types/agent.types";
 
 export const nseClient = axios.create({

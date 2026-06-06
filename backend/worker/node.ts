@@ -54,9 +54,17 @@ export async function fetchSymbol(state: AppStateType) {
       if (data["data"] == null || data["data"].length == 0) continue;
       symbols.push(data["data"][0]["symbol"]);
     }
+
+    console.log("symbol are ", symbols);
     return {
       symbol: symbols,
-      messages: [new HumanMessage(`userQuery: ${state.userQuery}\n  }`)],
+      messages: [
+        new HumanMessage(
+          `userQuery: ${state.userQuery}\n  ` +
+            `NSE Symbols to use for tool calls: ${symbols.join(", ")}\n` +
+            `IMPORTANT: Use ONLY these exact symbols in all tool calls. Do not guess or use alternative symbols.`,
+        ),
+      ],
     };
   } catch (error) {
     console.log("error in extract-symbol");

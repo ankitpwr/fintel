@@ -78,7 +78,7 @@ async function init() {
     const workflow = graph.compile();
     const result = await workflow.invoke({
       userQuery:
-        "Compare the cash flow statement of SBI and HDFC bank. which one is stronger and why?",
+        "Long-term investment comparison between Maruti Suzuki India  and Bajaj Auto",
     });
     console.log(result);
   } catch (error) {

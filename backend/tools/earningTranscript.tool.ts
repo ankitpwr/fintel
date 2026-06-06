@@ -19,28 +19,44 @@ const chunkSummarySchema = z.object({
       z
         .string()
         .describe(
-          "neceassary details regarding Revenue, growth, margin, eps, pat and financial ratios",
+          "neceassary details regarding Revenue, growth, margin, eps, pat and financial ratios. if nothing relevent just return 'nothing' ",
         ),
     )
     .optional(),
   deals: z
     .array(
-      z.string().describe("details regarding new deals, investments, TVC etc"),
+      z
+        .string()
+        .describe(
+          "details regarding new deals, investments, TVC etc.  if nothing relevent just return 'nothing' ",
+        ),
     )
     .optional(),
   achievements: z
     .array(
-      z.string().describe("new mega deals, achievements, breakthrough etc"),
+      z
+        .string()
+        .describe(
+          "new mega deals, achievements, breakthrough etc,  if nothing relevent just return 'nothing' ",
+        ),
     )
     .optional(),
   guidance: z
-    .array(z.string().describe("key management guidance and remark for future"))
+    .array(
+      z
+        .string()
+        .describe(
+          "key management guidance and remark for future,  if nothing relevent just return 'nothing' ",
+        ),
+    )
     .optional(),
   risk: z
     .array(
       z
         .string()
-        .describe("major risks, concerns, headwinds explicitly mentioned"),
+        .describe(
+          "major risks, concerns, headwinds explicitly mentioned.   if nothing relevent just return 'nothing'",
+        ),
     )
     .optional(),
 });
@@ -51,7 +67,7 @@ export const finalSummarySchema = z.object({
       z
         .string()
         .describe(
-          "neceassary details regarding Revenue, growth, operational margin, eps, pat and other financial ratios",
+          "neceassary details regarding Revenue, growth, operational margin, eps, pat and other financial ratios.  if nothing relevent just return 'nothing'",
         ),
     )
     .describe("maximum 15 elements in array")
@@ -59,28 +75,46 @@ export const finalSummarySchema = z.object({
     .optional(),
   deals: z
     .array(
-      z.string().describe("details regarding new deals, investments, TVC etc"),
+      z
+        .string()
+        .describe(
+          "details regarding new deals, investments, TVC etc.  if nothing relevent just return 'nothing'",
+        ),
     )
     .describe("maximum 5 elements in array")
     .max(5)
     .optional(),
   achievements: z
     .array(
-      z.string().describe("new mega deals, achievements, breakthrough etc"),
+      z
+        .string()
+        .describe(
+          "new mega deals, achievements, breakthrough etc.  if nothing relevent just return 'nothing'",
+        ),
     )
     .describe("maximum 6 elements in array")
     .max(6)
     .optional(),
   guidance: z
-    .array(z.string().describe("key management guidance and remark for future"))
-    .describe("maximum 4 elements in array")
+    .array(
+      z
+        .string()
+        .describe(
+          "key management guidance and remark for future.  if nothing relevent just return 'nothing'",
+        ),
+    )
+    .describe(
+      "maximum 4 elements in array.  if nothing relevent just return 'nothing'",
+    )
     .max(4)
     .optional(),
   risk: z
     .array(
       z
         .string()
-        .describe("major risks, concerns, headwinds explicitly mentioned"),
+        .describe(
+          "major risks, concerns, headwinds explicitly mentioned.  if nothing relevent just return 'nothing'",
+        ),
     )
     .describe("maximum 4 elements in array")
     .max(4)
@@ -167,7 +201,7 @@ export async function earningCallPDFSummarizer(state: {
 
   //reducer part
   const groqModel = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-120b",
     maxRetries: 2,
     temperature: 0,
     apiKey: process.env.GROQ_API_KEY,
