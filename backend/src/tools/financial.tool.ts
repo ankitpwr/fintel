@@ -2,6 +2,7 @@ import "dotenv/config";
 import axios from "axios";
 import YahooFinance from "yahoo-finance2";
 import type { ShareHoldingInfo } from "../types/agent.types";
+import { TavilySearch } from "@langchain/tavily";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
@@ -13,6 +14,8 @@ export const nseClient = axios.create({
     Referer: process.env.BASE_URL,
   },
 });
+
+console.log(process.env.TAVILY_API_KEY);
 
 const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
@@ -256,7 +259,6 @@ export async function fetchTopGainers() {
     const gainers = await nseClient(
       `/NextApi/apiClient?functionName=getMarketSnapshot&&type=G`,
     );
-    console.log(gainers.data.data.topGainers);
 
     const data = gainers.data.data.topGainers.map((stock: any) => ({
       tickerSymbol: stock.symbol,
@@ -282,7 +284,6 @@ export async function fetchTopLosers() {
     const gainers = await nseClient(
       `/NextApi/apiClient?functionName=getMarketSnapshot&&type=L`,
     );
-    console.log(gainers.data.data.topLoosers);
 
     const data = gainers.data.data.topLoosers.map((stock: any) => ({
       tickerSymbol: stock.symbol,
@@ -296,6 +297,32 @@ export async function fetchTopLosers() {
       corporateActionExDate: stock.caExDt,
     }));
     return data;
+  } catch (error) {
+    console.log("error in top_losers_tool");
+    console.log(error);
+    return "Tool Failed";
+  }
+}
+
+export async function fetchLatestNews(searchQuery: string) {
+  try {
+    const tool = new TavilySearch({
+      maxResults: 5,
+      topic: "news",
+      includeImages: false,
+      searchDepth: "basic",
+      tavilyApiKey: process.env.TAVILY_API_KEY,
+    });
+
+    const modelGeneratedToolCall = {
+      args: { query: searchQuery },
+      id: "1",
+      name: tool.name,
+      type: "tool_call" as const,
+    };
+    const toolMsg = await tool.invoke(modelGeneratedToolCall);
+    console.log(toolMsg);
+    return toolMsg;
   } catch (error) {
     console.log("error in top_losers_tool");
     console.log(error);

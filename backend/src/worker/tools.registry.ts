@@ -3,6 +3,7 @@ import {
   fetchBalanceSheet,
   fetchCashFlow,
   fetchIncomeStatement,
+  fetchLatestNews,
   fetchMarketOverview,
   fetchPeersInfo,
   fetchPriceHistory,
@@ -242,5 +243,24 @@ export const topLosersTool = tool(
   {
     name: "fetch_top_loser",
     description: "Get today's biggest declining stocks in market",
+  },
+);
+
+export const newsTool = tool(
+  async (searchQuery: string) => {
+    try {
+      const data = await fetchLatestNews(searchQuery);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in top looser tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_latest_news",
+    description: "Get the latest news about stock, company or market",
+    schema: z.object({
+      symbol: z.string().describe("searh query"),
+    }),
   },
 );
