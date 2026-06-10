@@ -247,7 +247,7 @@ export const topLosersTool = tool(
 );
 
 export const newsTool = tool(
-  async (searchQuery: string) => {
+  async ({ searchQuery }: { searchQuery: string }) => {
     try {
       const data = await fetchLatestNews(searchQuery);
       return JSON.stringify(data);
@@ -260,7 +260,7 @@ export const newsTool = tool(
     name: "fetch_latest_news",
     description: "Get the latest news about stock, company or market",
     schema: z.object({
-      symbol: z.string().describe("searh query"),
+      searchQuery: z.string().describe("brief searh query"),
     }),
   },
 );

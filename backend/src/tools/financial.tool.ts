@@ -324,7 +324,7 @@ export async function fetchLatestNews(searchQuery: string) {
     console.log(toolMsg);
     return toolMsg;
   } catch (error) {
-    console.log("error in top_losers_tool");
+    console.log("error in search tool");
     console.log(error);
     return "Tool Failed";
   }

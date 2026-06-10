@@ -19,6 +19,7 @@ import {
   priceHistoryTool,
   topGainersTool,
   topLosersTool,
+  newsTool,
 } from "./tools.registry";
 
 export const AppState = Annotation.Root({
@@ -46,6 +47,7 @@ export const tools = [
   marketOverviewTool,
   topGainersTool,
   topLosersTool,
+  newsTool,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -77,8 +79,7 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery:
-        "Long-term investment comparison between Maruti Suzuki India  and Bajaj Auto",
+      userQuery: "latest news about tata steel ",
     });
     console.log(result);
   } catch (error) {
