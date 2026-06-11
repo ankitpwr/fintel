@@ -329,3 +329,20 @@ export async function fetchLatestNews(searchQuery: string) {
     return "Tool Failed";
   }
 }
+
+export async function corporateAction(symbol: string) {
+  try {
+    const response = await yahooFinance.chart(`${symbol}.NS`, {
+      period1: "2025-01-01",
+      period2: "2026-01-01",
+      events: "div|split|earn",
+    });
+
+    console.log(response.events);
+    return response.events;
+  } catch (error) {
+    console.log("error in fech_price_history");
+    console.log(error);
+    return "Tool Failed";
+  }
+}
