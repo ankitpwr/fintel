@@ -330,11 +330,11 @@ export async function fetchLatestNews(searchQuery: string) {
   }
 }
 
-export async function corporateAction(symbol: string) {
+export async function fetchcorporateAction(symbol: string) {
   try {
     const response = await yahooFinance.chart(`${symbol}.NS`, {
       period1: "2025-01-01",
-      period2: "2026-01-01",
+      period2: new Date().toISOString().split("T")[0],
       events: "div|split|earn",
     });
 

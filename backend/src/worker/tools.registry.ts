@@ -2,6 +2,7 @@ import { tool } from "@langchain/core/tools";
 import {
   fetchBalanceSheet,
   fetchCashFlow,
+  fetchcorporateAction,
   fetchIncomeStatement,
   fetchLatestNews,
   fetchMarketOverview,
@@ -258,9 +259,32 @@ export const newsTool = tool(
   },
   {
     name: "fetch_latest_news",
-    description: "Get the latest news about stock, company or market",
+    description:
+      "Get the latest news articles about a stock, company, or market event",
     schema: z.object({
-      searchQuery: z.string().describe("brief searh query"),
+      searchQuery: z
+        .string()
+        .describe("A highly specific search query for the news engine"),
+    }),
+  },
+);
+
+export const corporateActionTool = tool(
+  async ({ symbol }: { symbol: string }) => {
+    try {
+      const data = await fetchcorporateAction(symbol);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in top looser tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fetch_corporate_action",
+    description:
+      "Get the latest corporate actions such as historical dividends, stock splits, and earnings dates for a specific NSE stock.",
+    schema: z.object({
+      symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
     }),
   },
 );
