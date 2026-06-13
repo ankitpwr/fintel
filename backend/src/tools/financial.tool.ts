@@ -15,8 +15,6 @@ export const nseClient = axios.create({
   },
 });
 
-console.log(process.env.TAVILY_API_KEY);
-
 const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
 });
@@ -333,7 +331,7 @@ export async function fetchLatestNews(searchQuery: string) {
 export async function fetchcorporateAction(symbol: string) {
   try {
     const response = await yahooFinance.chart(`${symbol}.NS`, {
-      period1: "2025-01-01",
+      period1: "2024-01-01",
       period2: new Date().toISOString().split("T")[0],
       events: "div|split|earn",
     });

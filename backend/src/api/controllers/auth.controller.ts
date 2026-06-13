@@ -1,0 +1,92 @@
+import jwt from "jsonwebtoken";
+import type { Request, Response } from "express";
+import { signupSchema } from "../../lib/zod-schema";
+import { client } from "../../lib/google-client";
+import { prisma } from "../../lib/prisma";
+
+export const googleSignup = async (req: Request, res: Response) => {
+  try {
+    const parsedBody = signupSchema.safeParse(req.body);
+    if (!parsedBody.success) {
+      return res.status(401).json({
+        message: "Validation failed",
+        error: parsedBody.error.issues[0]?.message,
+      });
+    }
+
+    const code = parsedBody.data.authCode;
+    const { tokens } = await client.getToken(code);
+
+    if (!tokens.id_token) {
+      return res.status(400).json({
+        message: "signup failed",
+        error: "Unable to singup",
+      });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+      return res.status(400).json({
+        message: "Signup failed",
+        error: "Failed to get payload",
+      });
+    }
+
+    const { email, name, picture } = payload;
+
+    if (!email || !name) {
+      return res.status(400).json({
+        message: "signup failed",
+        error: "Failed to get Email and Name",
+      });
+    }
+
+    const userExist = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (userExist) {
+      return res.status(401).json({
+        message: "Signup failed",
+        error: "User already exist",
+      });
+    }
+
+    const user = await prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        picture: picture,
+      },
+    });
+
+    const { id } = user;
+
+    const token = jwt.sign({ id, email }, process.env.JWT_SECRET!, {
+      expiresIn: "20d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 480,
+    });
+
+    return res.status(200).json({
+      message: "Signup successful",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+};

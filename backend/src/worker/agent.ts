@@ -20,6 +20,7 @@ import {
   topGainersTool,
   topLosersTool,
   newsTool,
+  corporateActionTool,
 } from "./tools.registry";
 
 export const AppState = Annotation.Root({
@@ -48,6 +49,7 @@ export const tools = [
   topGainersTool,
   topLosersTool,
   newsTool,
+  corporateActionTool,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -79,7 +81,7 @@ async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
-      userQuery: "latest news about tata steel ",
+      userQuery: "latest corporate actions about tata steel ",
     });
     console.log(result);
   } catch (error) {
