@@ -1,6 +1,7 @@
 import express, { Router } from "express";
-import { googleSignup } from "../controllers/auth.controller";
+import { googleSignup, login } from "../controllers/auth.controller";
 
 const authRouter = Router();
 
 authRouter.get("/signup", googleSignup);
+authRouter.get("/login", login);
