@@ -1,6 +1,8 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
 import { analyzeQuery, fetchSymbol, finalSummary, llmWithTools } from "./node";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
+import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
+
 import {
   HumanMessage,
   SystemMessage,
@@ -53,6 +55,8 @@ export const tools = [
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
+const tracer = new LangChainTracer();
+
 graph
   .addNode("analyze_query", analyzeQuery)
   .addNode("fetch_symbol", fetchSymbol)
@@ -80,9 +84,12 @@ graph
 export async function init() {
   try {
     const workflow = graph.compile();
-    const result = await workflow.invoke({
-      userQuery: "latest corporate actions about tata steel ",
-    });
+    const result = await workflow.invoke(
+      {
+        userQuery: "latest corporate actions about tata steel ",
+      },
+      { callbacks: [tracer] },
+    );
     console.log(result);
   } catch (error) {
     console.log("error in init");
