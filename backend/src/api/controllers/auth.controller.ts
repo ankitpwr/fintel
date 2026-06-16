@@ -4,7 +4,7 @@ import { loginSchema, signupSchema } from "../../lib/zod-schema";
 import { client } from "../../lib/google-client";
 import { prisma } from "../../lib/prisma";
 
-export const googleSignup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   try {
     const parsedBody = signupSchema.safeParse(req.body);
     if (!parsedBody.success) {

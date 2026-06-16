@@ -77,7 +77,7 @@ graph
   .addEdge("tools", "llm_with_tools")
   .addEdge("final_summary", END);
 
-async function init() {
+export async function init() {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke({
