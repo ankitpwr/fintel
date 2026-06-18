@@ -86,8 +86,7 @@ export async function init() {
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
-        userQuery:
-          "What short-term-borrowings figure did Dilip Buildcon reports at consolidated level",
+        userQuery: "analyze the historic price of MRF stocks from FY24 ",
       },
       { callbacks: [tracer] },
     );

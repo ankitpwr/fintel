@@ -130,11 +130,11 @@ export async function fetchShareHoldingInfo(symbol: string) {
 
 export async function fetchBalanceSheet(
   symbol: string,
-  period1: string,
-  period2: string,
+  period1?: string,
+  period2?: string,
 ) {
   try {
-    const start = period1 || "2025-01-01";
+    const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
       period1: start,
@@ -153,22 +153,23 @@ export async function fetchBalanceSheet(
     };
   }
 }
-fetchBalanceSheet("MRF", "2024-01-01", "2023-01-01");
 
-export async function fetchCashFlow(symbol: string) {
+export async function fetchCashFlow(
+  symbol: string,
+  period1?: string,
+  period2?: string,
+) {
   try {
+    const start = period1 || "2026-01-01";
+    const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2024-01-01",
-      period2: new Date().toISOString().split("T")[0],
+      period1: start,
+      period2: end,
       type: "annual",
       module: "cash-flow",
     });
-    const data = result[result.length - 1];
-
-    if (data) {
-      Object.assign(data, { symbol });
-    }
-    return data;
+    const dateWithSymbol = result.map((item) => ({ ...item, symbol }));
+    return dateWithSymbol;
   } catch (error) {
     console.error("Error cash flow tool:", error);
     console.log(error);
@@ -176,20 +177,22 @@ export async function fetchCashFlow(symbol: string) {
   }
 }
 
-export async function fetchIncomeStatement(symbol: string) {
+export async function fetchIncomeStatement(
+  symbol: string,
+  period1?: string,
+  period2?: string,
+) {
   try {
+    const start = period1 || "2026-01-01";
+    const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2024-01-01",
-      period2: new Date().toISOString().split("T")[0],
+      period1: start,
+      period2: end,
       type: "annual",
       module: "financials",
     });
-    const data = result[result.length - 1];
-
-    if (data) {
-      Object.assign(data, { symbol });
-    }
-    return data;
+    const dateWithSymbol = result.map((item) => ({ ...item, symbol }));
+    return dateWithSymbol;
   } catch (error) {
     console.error("Error income statement:", error);
     console.log(error);
@@ -197,13 +200,14 @@ export async function fetchIncomeStatement(symbol: string) {
   }
 }
 
-export async function fetchPriceHistory(symbol: string) {
+export async function fetchPriceHistory(symbol: string, startDate: string) {
   try {
+    const start = startDate || "2025-01-01";
     const response = await yahooFinance.chart(`${symbol}.NS`, {
-      period1: "2025-01-01",
+      period1: start,
       interval: "1mo",
     });
-
+    console.log(response.quotes);
     return response.quotes;
   } catch (error) {
     console.log("error in fech_price_history");

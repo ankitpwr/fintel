@@ -18,6 +18,7 @@ import {
   earningCallPDFSummarizer,
   fetchEarningCallPDF,
 } from "../tools/earningTranscript.tool";
+import { start } from "node:repl";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }) => {
@@ -120,9 +121,17 @@ export const earningCallPdfSummary = tool(
 );
 
 export const balanceSheetTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({
+    symbol,
+    period1,
+    period2,
+  }: {
+    symbol: string;
+    period1?: string;
+    period2?: string;
+  }) => {
     try {
-      const data = await fetchBalanceSheet(symbol);
+      const data = await fetchBalanceSheet(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in balance sheet tool ", error);
@@ -132,17 +141,33 @@ export const balanceSheetTool = tool(
   {
     name: "fetch_balance_sheet",
     description:
-      "Get the balance sheet financial statement for a company stock symbol",
+      "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      period1: z
+        .string()
+        .optional()
+        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+      period2: z
+        .string()
+        .optional()
+        .describe("End date in YYYY-MM-DD format (e.g., '2026-04-01')"),
     }),
   },
 );
 
 export const cashFlowStatementTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({
+    symbol,
+    period1,
+    period2,
+  }: {
+    symbol: string;
+    period1?: string;
+    period2?: string;
+  }) => {
     try {
-      const data = await fetchCashFlow(symbol);
+      const data = await fetchCashFlow(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in cash flow tool ", error);
@@ -152,17 +177,33 @@ export const cashFlowStatementTool = tool(
   {
     name: "fetch_cash_flow_statement",
     description:
-      "Get the cash flow financial statement for a company stock symbol",
+      "Get the cash flow financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      period1: z
+        .string()
+        .optional()
+        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+      period2: z
+        .string()
+        .optional()
+        .describe("End date in YYYY-MM-DD format (e.g., '2026-04-01')"),
     }),
   },
 );
 
 export const incomeStatementTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({
+    symbol,
+    period1,
+    period2,
+  }: {
+    symbol: string;
+    period1?: string;
+    period2?: string;
+  }) => {
     try {
-      const data = await fetchIncomeStatement(symbol);
+      const data = await fetchIncomeStatement(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in income statement tool ", error);
@@ -172,17 +213,25 @@ export const incomeStatementTool = tool(
   {
     name: "fetch_income_statement",
     description:
-      "Get the income financial statement for a company stock symbol",
+      "Get the income financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      period1: z
+        .string()
+        .optional()
+        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+      period2: z
+        .string()
+        .optional()
+        .describe("End date in YYYY-MM-DD format (e.g., '2026-04-01')"),
     }),
   },
 );
 
 export const priceHistoryTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({ symbol, startDate }: { symbol: string; startDate: string }) => {
     try {
-      const data = await fetchPriceHistory(symbol);
+      const data = await fetchPriceHistory(symbol, startDate);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in income statement tool ", error);
@@ -191,9 +240,14 @@ export const priceHistoryTool = tool(
   },
   {
     name: "fetch_price_history",
-    description: "Get the historic price for a company stock symbol",
+    description:
+      "Get the historic price for a company stock symbol, If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      startDate: z
+        .string()
+        .optional()
+        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
     }),
   },
 );
