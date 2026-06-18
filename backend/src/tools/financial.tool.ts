@@ -128,20 +128,23 @@ export async function fetchShareHoldingInfo(symbol: string) {
   }
 }
 
-export async function fetchBalanceSheet(symbol: string) {
+export async function fetchBalanceSheet(
+  symbol: string,
+  period1: string,
+  period2: string,
+) {
   try {
+    const start = period1 || "2025-01-01";
+    const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
-      period1: "2024-01-01",
-      period2: new Date().toISOString().split("T")[0],
+      period1: start,
+      period2: end,
       type: "annual",
       module: "balance-sheet",
     });
-    const data = result[result.length - 1];
-
-    if (data) {
-      Object.assign(data, { symbol });
-    }
-    return data;
+    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    console.log(dataWithSymbol);
+    return dataWithSymbol;
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
     console.log(error);
@@ -150,6 +153,7 @@ export async function fetchBalanceSheet(symbol: string) {
     };
   }
 }
+fetchBalanceSheet("MRF", "2024-01-01", "2023-01-01");
 
 export async function fetchCashFlow(symbol: string) {
   try {

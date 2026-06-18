@@ -86,7 +86,8 @@ export async function init() {
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
-        userQuery: "latest corporate actions about tata steel ",
+        userQuery:
+          "What short-term-borrowings figure did Dilip Buildcon reports at consolidated level",
       },
       { callbacks: [tracer] },
     );
