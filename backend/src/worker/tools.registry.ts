@@ -241,7 +241,7 @@ export const priceHistoryTool = tool(
   {
     name: "fetch_price_history",
     description:
-      "Get the historic price for a company stock symbol, If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
+      "Get the historic price for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       startDate: z
@@ -324,9 +324,9 @@ export const newsTool = tool(
 );
 
 export const corporateActionTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({ symbol, startDate }: { symbol: string; startDate: string }) => {
     try {
-      const data = await fetchcorporateAction(symbol);
+      const data = await fetchcorporateAction(symbol, startDate);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in top looser tool ", error);
@@ -336,9 +336,13 @@ export const corporateActionTool = tool(
   {
     name: "fetch_corporate_action",
     description:
-      "Get the latest corporate actions such as historical dividends, stock splits, and earnings dates for a specific NSE stock.",
+      "Get the latest corporate actions such as historical dividends, stock splits, and earnings dates for a specific NSE stock. If the user asks for a specific year, provide the start date else provide nothing.",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      startDate: z
+        .string()
+        .optional()
+        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
     }),
   },
 );

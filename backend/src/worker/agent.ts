@@ -86,7 +86,7 @@ export async function init() {
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
-        userQuery: "analyze the historic price of MRF stocks from FY24 ",
+        userQuery: "analyze the corporate action of MRF stocks from FY24",
       },
       { callbacks: [tracer] },
     );
