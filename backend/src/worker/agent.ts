@@ -81,19 +81,19 @@ graph
   .addEdge("tools", "llm_with_tools")
   .addEdge("final_summary", END);
 
-export async function init() {
+export async function startAgent(query: string) {
   try {
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
-        userQuery: "analyze the corporate action of MRF stocks from FY24",
+        userQuery: query,
       },
       { callbacks: [tracer] },
     );
     console.log(result);
+    return result.finalResponse;
   } catch (error) {
     console.log("error in init");
     console.log(error);
   }
 }
-init();

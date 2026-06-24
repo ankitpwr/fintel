@@ -9,7 +9,6 @@ export const signup = async (req: Request, res: Response) => {
     const parsedBody = signupSchema.safeParse(req.body);
     if (!parsedBody.success) {
       return res.status(401).json({
-        message: "Validation failed",
         error: parsedBody.error.issues[0]?.message,
       });
     }
@@ -19,7 +18,6 @@ export const signup = async (req: Request, res: Response) => {
 
     if (!tokens.id_token) {
       return res.status(400).json({
-        message: "signup failed",
         error: "Unable to singup",
       });
     }
@@ -33,7 +31,6 @@ export const signup = async (req: Request, res: Response) => {
 
     if (!payload) {
       return res.status(400).json({
-        message: "Signup failed",
         error: "Failed to get payload",
       });
     }
@@ -42,7 +39,6 @@ export const signup = async (req: Request, res: Response) => {
 
     if (!email || !name) {
       return res.status(400).json({
-        message: "signup failed",
         error: "Failed to get Email and Name",
       });
     }
@@ -53,7 +49,6 @@ export const signup = async (req: Request, res: Response) => {
 
     if (userExist) {
       return res.status(401).json({
-        message: "Signup failed",
         error: "User already exist",
       });
     }

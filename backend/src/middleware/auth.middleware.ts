@@ -2,17 +2,21 @@ import "dotenv/config";
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
-interface CustomPayload extends JwtPayload {
+export interface CustomPayload extends JwtPayload {
   email: string;
   id: string;
 }
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
   email: string;
   id: string;
 }
 
-function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export function authMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const token = req.cookies.token || "";
     if (!token || token == "") {

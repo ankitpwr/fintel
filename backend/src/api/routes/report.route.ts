@@ -1,5 +1,7 @@
-import Router from "express";
+import { Router } from "express";
+import { authMiddleware } from "../../middleware/auth.middleware";
+import { generateReport } from "../controllers/report.controller";
 
-const reportRouter = Router();
+export const reportRouter = Router();
 
-reportRouter.post("/report");
+reportRouter.post("/generate", generateReport);
