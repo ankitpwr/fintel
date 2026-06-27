@@ -19,10 +19,9 @@ import {
   stockInfoTool,
   marketOverviewTool,
   priceHistoryTool,
-  topGainersTool,
-  topLosersTool,
   newsTool,
   corporateActionTool,
+  topMoversTool,
 } from "./tools.registry";
 
 export const AppState = Annotation.Root({
@@ -48,8 +47,7 @@ export const tools = [
   incomeStatementTool,
   priceHistoryTool,
   marketOverviewTool,
-  topGainersTool,
-  topLosersTool,
+  topMoversTool,
   newsTool,
   corporateActionTool,
 ];

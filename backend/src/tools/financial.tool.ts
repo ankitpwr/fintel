@@ -260,38 +260,16 @@ export async function fetchMarketOverview() {
   }
 }
 
-export async function fetchTopGainers() {
+export async function fetchTopMovers() {
   try {
     const gainers = await nseClient(
       `/NextApi/apiClient?functionName=getMarketSnapshot&&type=G`,
     );
-
-    const data = gainers.data.data.topGainers.map((stock: any) => ({
-      tickerSymbol: stock.symbol,
-      currentPrice: stock.lastPrice,
-      previousClosePrice: stock.previousClose,
-      priceChange: stock.change,
-      percentChange: stock.pchange,
-      openingPrice: stock.openPrice,
-      dayHighPrice: stock.highPrice,
-      dayLowPrice: stock.lowPrice,
-      corporateActionExDate: stock.caExDt,
-    }));
-    return data;
-  } catch (error) {
-    console.log("error in top_gainer_tool");
-    console.log(error);
-    return "Tool Failed";
-  }
-}
-
-export async function fetchTopLosers() {
-  try {
-    const gainers = await nseClient(
+    const looser = await nseClient(
       `/NextApi/apiClient?functionName=getMarketSnapshot&&type=L`,
     );
 
-    const data = gainers.data.data.topLoosers.map((stock: any) => ({
+    const data1 = gainers.data.data.topGainers.map((stock: any) => ({
       tickerSymbol: stock.symbol,
       currentPrice: stock.lastPrice,
       previousClosePrice: stock.previousClose,
@@ -302,9 +280,21 @@ export async function fetchTopLosers() {
       dayLowPrice: stock.lowPrice,
       corporateActionExDate: stock.caExDt,
     }));
-    return data;
+
+    const data2 = looser.data.data.topLoosers.map((stock: any) => ({
+      tickerSymbol: stock.symbol,
+      currentPrice: stock.lastPrice,
+      previousClosePrice: stock.previousClose,
+      priceChange: stock.change,
+      percentChange: stock.pchange,
+      openingPrice: stock.openPrice,
+      dayHighPrice: stock.highPrice,
+      dayLowPrice: stock.lowPrice,
+      corporateActionExDate: stock.caExDt,
+    }));
+    return { topGainers: data1, topLosers: data2 };
   } catch (error) {
-    console.log("error in top_losers_tool");
+    console.log("error in top_gainer_tool");
     console.log(error);
     return "Tool Failed";
   }

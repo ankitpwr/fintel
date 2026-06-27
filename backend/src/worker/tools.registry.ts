@@ -10,8 +10,7 @@ import {
   fetchPriceHistory,
   fetchShareHoldingInfo,
   fetchStockInfo,
-  fetchTopGainers,
-  fetchTopLosers,
+  fetchTopMovers,
 } from "../tools/financial.tool";
 import { z } from "zod";
 import {
@@ -269,10 +268,10 @@ export const marketOverviewTool = tool(
   },
 );
 
-export const topGainersTool = tool(
+export const topMoversTool = tool(
   async () => {
     try {
-      const data = await fetchTopGainers();
+      const data = await fetchTopMovers();
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in top gainer tool ", error);
@@ -281,23 +280,7 @@ export const topGainersTool = tool(
   },
   {
     name: "fetch_top_gainers",
-    description: "Get today's highest gaining stocks in market",
-  },
-);
-
-export const topLosersTool = tool(
-  async () => {
-    try {
-      const data = await fetchTopLosers();
-      return JSON.stringify(data);
-    } catch (error) {
-      console.log("error in top looser tool ", error);
-      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
-    }
-  },
-  {
-    name: "fetch_top_loser",
-    description: "Get today's biggest declining stocks in market",
+    description: "Get today's top gaining and lossing stocks in market",
   },
 );
 
