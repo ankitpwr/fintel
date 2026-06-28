@@ -22,7 +22,7 @@ import {
   newsTool,
   corporateActionTool,
   topMoversTool,
-} from "./tools.registry";
+} from "./tools/tools.registry";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,

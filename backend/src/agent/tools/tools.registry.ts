@@ -11,12 +11,12 @@ import {
   fetchShareHoldingInfo,
   fetchStockInfo,
   fetchTopMovers,
-} from "../tools/financial.tool";
+} from "./financial.tool";
 import { z } from "zod";
 import {
   earningCallPDFSummarizer,
   fetchEarningCallPDF,
-} from "../tools/earningTranscript.tool";
+} from "./earning-transcript.tool";
 import { start } from "node:repl";
 
 export const stockInfoTool = tool(
