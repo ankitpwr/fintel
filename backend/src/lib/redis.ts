@@ -5,4 +5,5 @@ const HOST = "localhost";
 export const redisClient = new Redis({
   host: HOST,
   port: 6379,
+  maxRetriesPerRequest: null,
 });

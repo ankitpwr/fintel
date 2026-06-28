@@ -1,14 +1,14 @@
 import { ChatGroq } from "@langchain/groq";
-import { tools, type AppStateType } from "../worker/agent";
+import { tools, type AppStateType } from "./agent";
 import { z } from "zod";
 import { AIMessage, HumanMessage } from "langchain";
 import {
   queryAnalyzerSystemPrompt,
   finalSummary as finalSummaryPrompt,
   llmWithToolsSystemPrompt,
-} from "../prompts/prompt";
+} from "./prompts/prompt";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { nseClient } from "../tools/financial.tool";
+import { nseClient } from "./tools/financial.tool";
 
 const querySchema = z.object({
   companyName: z

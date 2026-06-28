@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import type { AppStateType } from "../worker/agent";
+import type { AppStateType } from "../agent";
 import { nseClient } from "./financial.tool";
 import { ChatGroq } from "@langchain/groq";
 import { z } from "zod";

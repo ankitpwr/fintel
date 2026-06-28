@@ -81,6 +81,7 @@ graph
 
 export async function startAgent(query: string) {
   try {
+    console.log("query is ", query);
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
