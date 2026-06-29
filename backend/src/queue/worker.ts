@@ -10,9 +10,10 @@ const worker = new Worker(
     );
     await startAgent(job.data["userQuery"]);
   },
-  { connection: redisClient as any },
+  { connection: redisClient as any, concurrency: 2 },
 );
 
+// Worker Event Listeners
 worker.on("completed", (job) => {
   console.log(`${job.id} has completed!`);
 });

@@ -13,13 +13,20 @@ export const generateReport = async (req: Request, res: Response) => {
         error: parsedBody.error.issues[0]?.message,
       });
     }
+
+    // custom jobids
     await queryQueue.add(
       "user-queury",
       {
         userQuery: parsedBody.data.userQuery,
       },
-      { removeOnComplete: 100, removeOnFail: 500 },
+      {
+        jobId: `report-${parsedBody.data.userQuery}-${new Date().toISOString()}`,
+        attempts: 3,
+        backoff: { type: "exponential", delay: 1000 },
+      },
     );
+
     return res.status(200).json({
       message: "query is currently executing",
     });
