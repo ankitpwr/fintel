@@ -23,9 +23,11 @@ import {
   corporateActionTool,
   topMoversTool,
 } from "./tools/tools.registry";
+import { publisherClient } from "../lib/redis";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
+  userId: Annotation<string>,
   companyName: Annotation<string[]>,
   symbol: Annotation<string[]>,
   messages: Annotation<
@@ -79,17 +81,19 @@ graph
   .addEdge("tools", "llm_with_tools")
   .addEdge("final_summary", END);
 
-export async function startAgent(query: string) {
+export async function startAgent(query: string, userId: string) {
   try {
     console.log("query is ", query);
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
         userQuery: query,
+        userId: userId,
       },
       { callbacks: [tracer] },
     );
     console.log(result);
+    await publisherClient.publish("agent-updates", JSON.stringify(result));
     return result.finalResponse;
   } catch (error) {
     console.log("error in init");

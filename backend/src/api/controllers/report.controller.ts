@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import type { CustomRequest } from "../../middleware/auth.middleware";
-import { z } from "zod";
 import { reportSchemaBody } from "../../lib/zod-schema";
 import { queryQueue } from "../../queue/queue";
+import crypto from "crypto";
+import { subscriber } from "../../lib/redis";
+const userId = crypto.randomUUID();
 
 export const generateReport = async (req: Request, res: Response) => {
   try {
@@ -13,15 +15,16 @@ export const generateReport = async (req: Request, res: Response) => {
         error: parsedBody.error.issues[0]?.message,
       });
     }
-
+    const uuid = crypto.randomUUID();
     // custom jobids
     await queryQueue.add(
       "user-queury",
       {
         userQuery: parsedBody.data.userQuery,
+        userId: userId,
       },
       {
-        jobId: `report-${parsedBody.data.userQuery}-${new Date().toISOString()}`,
+        jobId: `report-${userId}-${uuid}`,
         attempts: 3,
         backoff: { type: "exponential", delay: 1000 },
       },
@@ -38,3 +41,48 @@ export const generateReport = async (req: Request, res: Response) => {
     });
   }
 };
+
+const connectedClients = new Map<string, Response>();
+subscriber.subscribe("agent-updates", (err) => {
+  if (err) console.log("failed to subscribe");
+});
+
+subscriber.on("message", (channel, message) => {
+  if (channel == "agent-updates") {
+    const parsedMessage = JSON.parse(message);
+    sendUpdateToClient(parsedMessage.userId, parsedMessage.finalResponse);
+  }
+});
+
+export const streamResponse = async (req: Request, res: Response) => {
+  try {
+    connectedClients.set(userId, res);
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders(); //send header to client
+    const heartbeat = setInterval(
+      () => res.write("data: heartbeat\n\n"),
+      25000,
+    );
+    res.on("close", () => {
+      connectedClients.delete(userId);
+      clearInterval(heartbeat);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+async function sendUpdateToClient(userId: string, text: string) {
+  try {
+    if (
+      connectedClients.has(userId) &&
+      connectedClients.get(userId) != undefined
+    ) {
+      connectedClients.get(userId)?.write(`data: ${JSON.stringify(text)}\n\n`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -8,7 +8,7 @@ const worker = new Worker(
     console.log(
       `Worker picked up Job ${job.id} of type ${job.name} with job data as ${job.data}`,
     );
-    await startAgent(job.data["userQuery"]);
+    await startAgent(job.data["userQuery"], job.data["userId"]);
   },
   { connection: redisClient as any, concurrency: 2 },
 );

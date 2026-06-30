@@ -7,3 +7,13 @@ export const redisClient = new Redis({
   port: 6379,
   maxRetriesPerRequest: null,
 });
+
+export const publisherClient = new Redis({
+  host: HOST,
+  port: 6379,
+});
+
+export const subscriber = new Redis({
+  host: HOST,
+  port: 6379,
+});
