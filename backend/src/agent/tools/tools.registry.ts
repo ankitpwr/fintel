@@ -18,6 +18,8 @@ import {
   fetchEarningCallPDF,
 } from "./earning-transcript.tool";
 import { start } from "node:repl";
+import { calculator } from "./calculator.tool";
+import { mathsSubagent } from "../math-expert.agent";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }) => {
@@ -79,7 +81,7 @@ export const shareholdingInfoTool = tool(
   },
 );
 
-export const earningCallPdfSummary = tool(
+export const earningCallPdfSummaryTool = tool(
   async ({
     symbol,
     comapanyName,
@@ -312,7 +314,7 @@ export const corporateActionTool = tool(
       const data = await fetchcorporateAction(symbol, startDate);
       return JSON.stringify(data);
     } catch (error) {
-      console.log("error in top looser tool ", error);
+      console.log("error in corporate action tool ", error);
       return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
@@ -326,6 +328,59 @@ export const corporateActionTool = tool(
         .string()
         .optional()
         .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+    }),
+  },
+);
+
+export const calculatorTool = tool(
+  async ({ expression }: { expression: string }) => {
+    try {
+      const data = await calculator(expression);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in calculator tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "calculator",
+    description:
+      "Use this tool to evaluate complex mathematical expressions, decimals, and matrices etc.",
+    schema: z.object({
+      expression: z.string().describe(`The math expression to evaluate.
+          Example of expression: - 
+          a. "2^3 * 4.5",
+          b. "2 + 3 * sqrt(4) / 2",
+          c. "cos(45 deg)",
+          d. "sqrt(3^2 + 4^2)"
+          e. "derivative('x^3 + 2x^2 + 5', 'x')"
+          
+          `),
+    }),
+  },
+);
+
+export const mathExpertTool = tool(
+  async ({ queries, rawData }: { queries: string[]; rawData: object }) => {
+    try {
+      const data = await mathsSubagent(queries, rawData);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in math expert tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "math_expert_tool",
+    description:
+      "Use this tool to calculate and find the missing financial metric.",
+    schema: z.object({
+      queries: z
+        .array(z.string())
+        .describe(`array containing one of more financial missing metric`),
+      rawData: z
+        .object()
+        .describe("raw input data for calculating the missing metric"),
     }),
   },
 );

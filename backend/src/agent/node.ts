@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AIMessage, HumanMessage } from "langchain";
 import {
   queryAnalyzerSystemPrompt,
-  finalSummary as finalSummaryPrompt,
+  finalSummaryPrompt,
   llmWithToolsSystemPrompt,
 } from "./prompts/prompt";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
@@ -76,7 +76,7 @@ export async function fetchSymbol(state: AppStateType) {
   }
 }
 
-export async function llmWithTools(state: AppStateType) {
+export async function supervisor(state: AppStateType) {
   try {
     const model = new ChatGroq({
       model: "llama-3.3-70b-versatile",

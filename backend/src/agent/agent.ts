@@ -1,5 +1,5 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { analyzeQuery, fetchSymbol, finalSummary, llmWithTools } from "./node";
+import { analyzeQuery, fetchSymbol, finalSummary, supervisor } from "./node";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 
@@ -12,7 +12,7 @@ import {
 import {
   balanceSheetTool,
   cashFlowStatementTool,
-  earningCallPdfSummary,
+  earningCallPdfSummaryTool,
   incomeStatementTool,
   peersInfoTool,
   shareholdingInfoTool,
@@ -22,6 +22,8 @@ import {
   newsTool,
   corporateActionTool,
   topMoversTool,
+  calculatorTool,
+  mathExpertTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
 
@@ -43,7 +45,7 @@ export const tools = [
   stockInfoTool,
   peersInfoTool,
   shareholdingInfoTool,
-  earningCallPdfSummary,
+  earningCallPdfSummaryTool,
   balanceSheetTool,
   cashFlowStatementTool,
   incomeStatementTool,
@@ -52,6 +54,7 @@ export const tools = [
   topMoversTool,
   newsTool,
   corporateActionTool,
+  mathExpertTool,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -60,7 +63,7 @@ const tracer = new LangChainTracer();
 graph
   .addNode("analyze_query", analyzeQuery)
   .addNode("fetch_symbol", fetchSymbol)
-  .addNode("llm_with_tools", llmWithTools)
+  .addNode("llm_with_tools", supervisor)
   .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
@@ -93,10 +96,12 @@ export async function startAgent(query: string, userId: string) {
       { callbacks: [tracer] },
     );
     console.log(result);
-    await publisherClient.publish("agent-updates", JSON.stringify(result));
+    // await publisherClient.publish("agent-updates", JSON.stringify(result));
     return result.finalResponse;
   } catch (error) {
     console.log("error in init");
     console.log(error);
   }
 }
+
+startAgent("what is CAGR of HDFC Bank", "adfhakldfjlk");
