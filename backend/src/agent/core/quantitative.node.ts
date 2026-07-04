@@ -1,5 +1,5 @@
-import { calculatorTool } from "./tools/tools.registry";
-import { mathsExpertPrompt } from "./prompts/prompt";
+import { calculatorTool } from "../tools/tools.registry";
+import { mathsExpertPrompt } from "../prompts/prompt";
 import { createAgent, HumanMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 

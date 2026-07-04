@@ -15,7 +15,7 @@ export const nseClient = axios.create({
   },
 });
 
-const yahooFinance = new YahooFinance({
+export const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
 });
 
@@ -209,133 +209,6 @@ export async function fetchPriceHistory(symbol: string, startDate?: string) {
     });
     console.log(response.quotes);
     return response.quotes;
-  } catch (error) {
-    console.log("error in fech_price_history");
-    console.log(error);
-    return "Tool Failed";
-  }
-}
-
-export async function fetchMarketOverview() {
-  const indices = [
-    "^NSEI", // Nifty 50
-    "^BSESN", // Sensex
-    "^NSEBANK", // Bank Nifty
-    "^CNXIT", // Nifty IT
-    "^CNXAUTO", // Auto
-    "^CNXPHARMA", // Pharma
-  ];
-  try {
-    const result = await Promise.all(
-      indices.map((symbol) => yahooFinance.quote(symbol)),
-    );
-    const data = result.map((r) => ({
-      symbol: r.symbol,
-
-      name: r.shortName,
-
-      price: r.regularMarketPrice,
-
-      change: r.regularMarketChange,
-
-      changePercent: r.regularMarketChangePercent,
-
-      dayHigh: r.regularMarketDayHigh,
-
-      dayLow: r.regularMarketDayLow,
-
-      previousClose: r.regularMarketPreviousClose,
-
-      updatedAt: r.regularMarketTime,
-
-      fiftyTwoWeekHigh: r.fiftyTwoWeekHigh,
-
-      fiftyTwoWeekLow: r.fiftyTwoWeekLow,
-    }));
-    return data;
-  } catch (error) {
-    console.log("error in fetch_market_overview");
-    console.log(error);
-    return "Tool Failed";
-  }
-}
-
-export async function fetchTopMovers() {
-  try {
-    const gainers = await nseClient(
-      `/NextApi/apiClient?functionName=getMarketSnapshot&&type=G`,
-    );
-    const looser = await nseClient(
-      `/NextApi/apiClient?functionName=getMarketSnapshot&&type=L`,
-    );
-
-    const data1 = gainers.data.data.topGainers.map((stock: any) => ({
-      tickerSymbol: stock.symbol,
-      currentPrice: stock.lastPrice,
-      previousClosePrice: stock.previousClose,
-      priceChange: stock.change,
-      percentChange: stock.pchange,
-      openingPrice: stock.openPrice,
-      dayHighPrice: stock.highPrice,
-      dayLowPrice: stock.lowPrice,
-      corporateActionExDate: stock.caExDt,
-    }));
-
-    const data2 = looser.data.data.topLoosers.map((stock: any) => ({
-      tickerSymbol: stock.symbol,
-      currentPrice: stock.lastPrice,
-      previousClosePrice: stock.previousClose,
-      priceChange: stock.change,
-      percentChange: stock.pchange,
-      openingPrice: stock.openPrice,
-      dayHighPrice: stock.highPrice,
-      dayLowPrice: stock.lowPrice,
-      corporateActionExDate: stock.caExDt,
-    }));
-    return { topGainers: data1, topLosers: data2 };
-  } catch (error) {
-    console.log("error in top_gainer_tool");
-    console.log(error);
-    return "Tool Failed";
-  }
-}
-
-export async function fetchLatestNews(searchQuery: string) {
-  try {
-    const tool = new TavilySearch({
-      maxResults: 5,
-      topic: "news",
-      includeImages: false,
-      searchDepth: "basic",
-      tavilyApiKey: process.env.TAVILY_API_KEY,
-    });
-
-    const modelGeneratedToolCall = {
-      args: { query: searchQuery },
-      id: "1",
-      name: tool.name,
-      type: "tool_call" as const,
-    };
-    const toolMsg = await tool.invoke(modelGeneratedToolCall);
-    console.log(toolMsg);
-    return toolMsg;
-  } catch (error) {
-    console.log("error in search tool");
-    console.log(error);
-    return "Tool Failed";
-  }
-}
-
-export async function fetchcorporateAction(symbol: string, startDate?: string) {
-  try {
-    const response = await yahooFinance.chart(`${symbol}.NS`, {
-      period1: startDate || "2024-01-01",
-      period2: new Date().toISOString().split("T")[0],
-      events: "div|split|earn",
-    });
-
-    console.log(response.events);
-    return response.events;
   } catch (error) {
     console.log("error in fech_price_history");
     console.log(error);

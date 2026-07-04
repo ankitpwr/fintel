@@ -1,5 +1,4 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { analyzeQuery, fetchSymbol, finalSummary, supervisor } from "./node";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 
@@ -25,6 +24,10 @@ import {
   mathExpertTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
+import { analyzeQuery } from "./core/query-analyzer.node";
+import { fetchSymbol } from "./core/symbol-extractor.node";
+import { supervisor } from "./core/supervisior.node";
+import { finalSummary } from "./core/report-generator.node";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,

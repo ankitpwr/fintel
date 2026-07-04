@@ -1,6 +1,7 @@
 import "dotenv/config";
+import { yahooFinance } from "./financial.tool";
+import { TavilySearch } from "@langchain/tavily";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import type { AppStateType } from "../agent";
 import { nseClient } from "./financial.tool";
 import { ChatGroq } from "@langchain/groq";
 import { z } from "zod";
@@ -12,6 +13,49 @@ import {
   chunkSystemPrompt,
   earningCallSummarySystemPrompt,
 } from "../prompts/prompt";
+
+export async function fetchcorporateAction(symbol: string, startDate?: string) {
+  try {
+    const response = await yahooFinance.chart(`${symbol}.NS`, {
+      period1: startDate || "2024-01-01",
+      period2: new Date().toISOString().split("T")[0],
+      events: "div|split|earn",
+    });
+
+    console.log(response.events);
+    return response.events;
+  } catch (error) {
+    console.log("error in fech_price_history");
+    console.log(error);
+    return "Tool Failed";
+  }
+}
+
+export async function fetchLatestNews(searchQuery: string) {
+  try {
+    const tool = new TavilySearch({
+      maxResults: 5,
+      topic: "news",
+      includeImages: false,
+      searchDepth: "basic",
+      tavilyApiKey: process.env.TAVILY_API_KEY,
+    });
+
+    const modelGeneratedToolCall = {
+      args: { query: searchQuery },
+      id: "1",
+      name: tool.name,
+      type: "tool_call" as const,
+    };
+    const toolMsg = await tool.invoke(modelGeneratedToolCall);
+    console.log(toolMsg);
+    return toolMsg;
+  } catch (error) {
+    console.log("error in search tool");
+    console.log(error);
+    return "Tool Failed";
+  }
+}
 
 const chunkSummarySchema = z.object({
   financial_figures: z
