@@ -9,6 +9,7 @@ import {
 } from "./prompts/prompt";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { nseClient } from "./tools/financial.tool";
+import { ChatOpenAI } from "@langchain/openai";
 
 const querySchema = z.object({
   companyName: z
@@ -78,11 +79,13 @@ export async function fetchSymbol(state: AppStateType) {
 
 export async function supervisor(state: AppStateType) {
   try {
-    const model = new ChatGroq({
-      model: "llama-3.3-70b-versatile",
-      maxRetries: 2,
+    const model = new ChatOpenAI({
+      model: "z-ai/glm-5.2",
+      apiKey: process.env.NVIDIA_TOKEN,
       temperature: 0,
-      apiKey: process.env.GROQ_API_KEY,
+      configuration: {
+        baseURL: "https://integrate.api.nvidia.com/v1",
+      },
     });
 
     const modelWithTools = model.bindTools(tools);

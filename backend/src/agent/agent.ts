@@ -22,7 +22,6 @@ import {
   newsTool,
   corporateActionTool,
   topMoversTool,
-  calculatorTool,
   mathExpertTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
@@ -104,4 +103,7 @@ export async function startAgent(query: string, userId: string) {
   }
 }
 
-startAgent("what is CAGR of HDFC Bank", "adfhakldfjlk");
+startAgent(
+  "what is ROIC and Return on assets of MRF Bank from FY25",
+  "adfhakldfjlk",
+);

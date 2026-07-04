@@ -17,9 +17,8 @@ import {
   earningCallPDFSummarizer,
   fetchEarningCallPDF,
 } from "./earning-transcript.tool";
-import { start } from "node:repl";
 import { calculator } from "./calculator.tool";
-import { mathsSubagent } from "../math-expert.agent";
+import { mathsSubagent } from "../quantitative";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }) => {
@@ -361,9 +360,9 @@ export const calculatorTool = tool(
 );
 
 export const mathExpertTool = tool(
-  async ({ queries, rawData }: { queries: string[]; rawData: object }) => {
+  async ({ queries }: { queries: string[] }) => {
     try {
-      const data = await mathsSubagent(queries, rawData);
+      const data = await mathsSubagent(queries);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in math expert tool ", error);
@@ -377,10 +376,9 @@ export const mathExpertTool = tool(
     schema: z.object({
       queries: z
         .array(z.string())
-        .describe(`array containing one of more financial missing metric`),
-      rawData: z
-        .object()
-        .describe("raw input data for calculating the missing metric"),
+        .describe(
+          `Array containing one of more missing financial metric with input raw data values for finding that metric. no mathamatics formula for metric is required`,
+        ),
     }),
   },
 );
