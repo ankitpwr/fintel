@@ -13,6 +13,7 @@ import {
   chunkSystemPrompt,
   earningCallSummarySystemPrompt,
 } from "../prompts/prompt";
+import axios from "axios";
 
 export async function fetchcorporateAction(symbol: string, startDate?: string) {
   try {
@@ -262,4 +263,27 @@ export async function earningCallPDFSummarizer(state: {
   const result = await groqStructuredMode.invoke(messages);
 
   return { earningCallSummary: result };
+}
+
+export async function fetchNews(keyword: string) {
+  try {
+    const response = await axios.get(
+      `https://newsdata.io/api/1/market?apikey=pub_2136412a33cb4aac9cb6f127b80186f5&q=${keyword}&country=in&language=en`,
+    );
+
+    const data = response.data.results.map((n: any) => ({
+      newTitle: n.title,
+      description: n.description,
+      publishDate: n.pubDate,
+      link: n.link,
+      sourceName: n.source_name,
+    }));
+    if (data.length > 0) {
+      return { availableNews: data };
+    }
+    return { availableNews: "no available news" };
+  } catch (error) {
+    console.log("error in fetch news ", error);
+    return { fetchNews: { error: "Tool Failed" } };
+  }
 }

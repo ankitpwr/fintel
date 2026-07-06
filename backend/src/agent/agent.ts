@@ -21,7 +21,8 @@ import {
   newsTool,
   corporateActionTool,
   topMoversTool,
-  mathExpertTool,
+  quantitativeSubagentTool,
+  sentimentSubagentTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
 import { analyzeQuery } from "./core/query-analyzer.node";
@@ -56,7 +57,8 @@ export const tools = [
   topMoversTool,
   newsTool,
   corporateActionTool,
-  mathExpertTool,
+  quantitativeSubagentTool,
+  sentimentSubagentTool,
 ];
 const graph = new StateGraph(AppState);
 const toolNode = new ToolNode(tools);
@@ -106,7 +108,4 @@ export async function startAgent(query: string, userId: string) {
   }
 }
 
-startAgent(
-  "what is ROIC and Return on assets of MRF Bank from FY25",
-  "adfhakldfjlk",
-);
+startAgent("What is market sentiment about TCS?", "adfhakldfjlk");

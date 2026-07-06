@@ -3,7 +3,6 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
 import { calculator } from "./calculator.tool";
-import { mathsSubagent } from "../core/quantitative.node";
 import {
   fetchBalanceSheet,
   fetchCashFlow,
@@ -18,8 +17,11 @@ import {
   fetchcorporateAction,
   fetchEarningCallPDF,
   fetchLatestNews,
+  fetchNews,
 } from "./sentiment.tools";
 import { fetchMarketOverview, fetchTopMovers } from "./market.tools";
+import { quantitativeSubagent } from "../subagents/quantitative.node";
+import { sentimentSubagent } from "../subagents/sentiment.subagent";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }) => {
@@ -360,10 +362,33 @@ export const calculatorTool = tool(
   },
 );
 
-export const mathExpertTool = tool(
+export const newsAggregatorTool = tool(
+  async ({ keyword }: { keyword: string }) => {
+    try {
+      const data = await fetchNews(keyword);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in news tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "new_aggregator_tool",
+    description:
+      "Use this tools to fetch latest news about stock, company or market",
+    schema: z.object({
+      keyword: z.string()
+        .describe(`keyword for which tool need to serach news for.
+          example 1:- "Reliance"
+          example 2:- "Tata steel"`),
+    }),
+  },
+);
+
+export const quantitativeSubagentTool = tool(
   async ({ queries }: { queries: string[] }) => {
     try {
-      const data = await mathsSubagent(queries);
+      const data = await quantitativeSubagent(queries);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in math expert tool ", error);
@@ -371,15 +396,36 @@ export const mathExpertTool = tool(
     }
   },
   {
-    name: "math_expert_tool",
+    name: "quantitative_subagent_tool",
     description:
-      "Use this tool to calculate and find the missing financial metric.",
+      "Use this subagent as tool to calculate and find the missing financial metric.",
     schema: z.object({
       queries: z
         .array(z.string())
         .describe(
           `Array containing one of more missing financial metric with input raw data values for finding that metric. no mathamatics formula for metric is required`,
         ),
+    }),
+  },
+);
+
+export const sentimentSubagentTool = tool(
+  async ({ query }: { query: string }) => {
+    try {
+      const data = await sentimentSubagent(query);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in sentiment tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "sentiment_subagent_tool",
+    description:
+      "Use this subagent as tool to get the sentiment analysis about stock, company or market",
+    schema: z.object({
+      query: z.string().describe(`company name, sector or stock name.
+        example: - 'Tata motors', 'Reliance', 'NIFTY50'`),
     }),
   },
 );
