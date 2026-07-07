@@ -385,6 +385,26 @@ export const newsAggregatorTool = tool(
   },
 );
 
+export const symbolTool = tool(
+  async ({ compnay }: { compnay: string }) => {
+    try {
+      const data = await fetchNews(compnay);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in symbol tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "symbol_extractor_tool",
+    description: "Use this tools to fetch possible symbol for a company",
+    schema: z.object({
+      company: z.string().describe(`name of the company
+          example - "Reliance Industries", "Tata steel", "HDFC", "Infosys"`),
+    }),
+  },
+);
+
 export const quantitativeSubagentTool = tool(
   async ({ queries }: { queries: string[] }) => {
     try {
@@ -422,7 +442,7 @@ export const sentimentSubagentTool = tool(
   {
     name: "sentiment_subagent_tool",
     description:
-      "Use this subagent as tool to get the sentiment analysis about stock, company or market",
+      "Use this subagent as tool to get the sentiment of stock, company or market",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
         example: - 'Tata motors', 'Reliance', 'NIFTY50'`),

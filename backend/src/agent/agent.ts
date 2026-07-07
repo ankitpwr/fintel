@@ -25,13 +25,13 @@ import {
   sentimentSubagentTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
-import { analyzeQuery } from "./core/query-analyzer.node";
-import { fetchSymbol } from "./core/symbol-extractor.node";
 import { supervisor } from "./core/supervisior.node";
 import { finalSummary } from "./core/report-generator.node";
+import { queryAnalyzerSubagent } from "./core/query.subagent";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
+  relevent: Annotation<boolean>,
   userId: Annotation<string>,
   companyName: Annotation<string[]>,
   symbol: Annotation<string[]>,
@@ -65,15 +65,18 @@ const toolNode = new ToolNode(tools);
 const tracer = new LangChainTracer();
 
 graph
-  .addNode("analyze_query", analyzeQuery)
-  .addNode("fetch_symbol", fetchSymbol)
-  .addNode("llm_with_tools", supervisor)
+  .addNode("analyze_query", queryAnalyzerSubagent)
+  .addNode("supervisor", supervisor)
   .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
-  .addEdge("analyze_query", "fetch_symbol")
-  .addEdge("fetch_symbol", "llm_with_tools")
-  .addConditionalEdges("llm_with_tools", (state: AppStateType) => {
+  .addConditionalEdges("analyze_query", (state: AppStateType) => {
+    if (!state.relevent) {
+      return END;
+    }
+    return "supervisor";
+  })
+  .addConditionalEdges("supervisor", (state: AppStateType) => {
     const messages = state.messages as any;
     console.log(" message ", messages);
 
@@ -85,27 +88,29 @@ graph
     console.log("no tools to call");
     return "final_summary";
   })
-  .addEdge("tools", "llm_with_tools")
+  .addEdge("tools", "supervisor")
   .addEdge("final_summary", END);
 
-export async function startAgent(query: string, userId: string) {
+export async function startAgent(query: string, userId?: string) {
   try {
     console.log("query is ", query);
     const workflow = graph.compile();
     const result = await workflow.invoke(
       {
         userQuery: query,
-        userId: userId,
+        userId: userId || "",
       },
       { callbacks: [tracer] },
     );
     console.log(result);
     // await publisherClient.publish("agent-updates", JSON.stringify(result));
+
     return result.finalResponse;
   } catch (error) {
     console.log("error in init");
     console.log(error);
   }
 }
-
-startAgent("What is market sentiment about TCS?", "adfhakldfjlk");
+startAgent(
+  "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
+);

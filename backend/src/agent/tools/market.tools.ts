@@ -76,6 +76,9 @@ export async function fetchTopMovers() {
       dayLowPrice: stock.lowPrice,
       corporateActionExDate: stock.caExDt,
     }));
+
+    console.log(data1);
+    console.log(data2);
     return { topGainers: data1, topLosers: data2 };
   } catch (error) {
     console.log("error in top_gainer_tool");

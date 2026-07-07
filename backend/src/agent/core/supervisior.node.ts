@@ -1,12 +1,12 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
 import { llmWithToolsSystemPrompt } from "../prompts/prompt";
-import { AIMessage } from "langchain";
+import { AIMessage, HumanMessage } from "langchain";
 
 export async function supervisor(state: AppStateType) {
   try {
     const model = new ChatOpenAI({
-      model: "z-ai/glm-5.2",
+      model: "qwen/qwen3.5-397b-a17b",
       apiKey: process.env.NVIDIA_TOKEN,
       temperature: 0,
       configuration: {
@@ -15,7 +15,11 @@ export async function supervisor(state: AppStateType) {
     });
 
     const modelWithTools = model.bindTools(tools);
-    const messages = [llmWithToolsSystemPrompt, ...state.messages];
+    console.log("state is --> ", JSON.stringify(state));
+    const messages = [
+      llmWithToolsSystemPrompt,
+      new HumanMessage(`${JSON.stringify(state)}`),
+    ];
     const response = await modelWithTools.invoke(messages, {
       recursionLimit: 10,
     });
@@ -23,7 +27,7 @@ export async function supervisor(state: AppStateType) {
   } catch (error) {
     console.log("error in llm_with_tools ", error);
     return {
-      messages: [new AIMessage("I encountered an error fetching that data.")],
+      messages: [new AIMessage("I encountered an error")],
     };
   }
 }
