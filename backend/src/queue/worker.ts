@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { startAgent } from "../agent/agent";
 import { redisClient } from "../lib/redis";
 
-const worker = new Worker(
+const queryWorker = new Worker(
   "user-query-queue",
   async (job) => {
     console.log(
@@ -13,10 +13,32 @@ const worker = new Worker(
   { connection: redisClient as any, concurrency: 2 },
 );
 
-// Worker Event Listeners
-worker.on("completed", (job) => {
+const marketSummaryWorker = new Worker(
+  "market-summary-queue",
+  async (job) => {
+    const response = await startAgent(job.data["userQuery"]);
+
+    //store in redis
+    await redisClient.set(
+      "market-summary",
+      JSON.stringify({
+        generatedAt: new Date(),
+        summary: response,
+      }),
+    );
+
+    return JSON.stringify({
+      generatedAt: new Date(),
+      summary: response,
+    });
+  },
+  { connection: redisClient as any },
+);
+
+// Query Worker Event Listeners
+queryWorker.on("completed", (job) => {
   console.log(`${job.id} has completed!`);
 });
-worker.on("failed", (job, err) => {
+queryWorker.on("failed", (job, err) => {
   console.log(`${err.message}`);
 });
