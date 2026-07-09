@@ -5,9 +5,8 @@ export async function getMarketSummary() {
     const res = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/market/summary`,
     );
-    if (res.status == 200) {
-      return res.data.data;
-    }
+
+    return res.data.data;
   } catch (error) {
     console.log("error occured");
     return error;
@@ -17,11 +16,35 @@ export async function getMarketSummary() {
 export async function getTopMovers() {
   try {
     const res = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/market/top-movers`,
+      `${import.meta.env.VITE_BASE_URL}/market/movers`,
     );
-    if (res.status == 200) {
-      return res.data.data;
-    }
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
+
+export async function getIndexData() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/indices`,
+    );
+
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
+
+export async function getTopIndices() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/indices/top`,
+    );
+
+    return res.data.data;
   } catch (error) {
     console.log("error occured");
     return error;

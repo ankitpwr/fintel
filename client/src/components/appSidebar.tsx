@@ -15,7 +15,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-[#1e1d1b] border-r border-[#2b2a29]"
+      className="bg-[#1e1d1c] border-r border-[#2b2a29]"
     >
       <SidebarHeader>
         {" "}
