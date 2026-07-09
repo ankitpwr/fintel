@@ -5,7 +5,6 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 export async function quantitativeSubagent(queries: string[]) {
   try {
-    console.log(`---------------///------queries `, JSON.stringify(queries));
     const model = new ChatGoogleGenerativeAI({
       model: "gemini-3.1-flash-lite",
       maxRetries: 2,

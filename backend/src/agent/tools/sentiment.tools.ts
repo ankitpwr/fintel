@@ -2,7 +2,6 @@ import "dotenv/config";
 import { yahooFinance } from "./financial.tool";
 import { TavilySearch } from "@langchain/tavily";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { nseClient } from "./financial.tool";
 import { ChatGroq } from "@langchain/groq";
 import { z } from "zod";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
@@ -14,6 +13,7 @@ import {
   earningCallSummarySystemPrompt,
 } from "../prompts/prompt";
 import axios from "axios";
+import { nseClient } from "../../lib/nseClient";
 
 export async function fetchcorporateAction(symbol: string, startDate?: string) {
   try {

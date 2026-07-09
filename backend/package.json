@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun ./src/api/index.ts"
+    "dev": "bun ./src/api/index.ts",
+    "agent": "bun ./src/agent/agent.ts",
+    "worker": "bun ./src/queue/worker.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -21,6 +23,7 @@
     "@langchain/google-genai": "^2.1.30",
     "@langchain/groq": "^1.2.0",
     "@langchain/langgraph": "^1.3.0",
+    "@langchain/mistralai": "^1.2.0",
     "@langchain/openai": "^1.5.3",
     "@langchain/tavily": "^1.2.0",
     "@langchain/textsplitters": "^1.0.1",
@@ -43,7 +46,6 @@
     "duck-duck-scrape": "^2.2.7",
     "express": "^5.2.1",
     "google-auth-library": "^10.7.0",
-    "i": "^0.3.7",
     "install": "^0.13.0",
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",

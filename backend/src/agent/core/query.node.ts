@@ -4,7 +4,6 @@ import { symbolTool } from "../tools/tools.registry";
 import { queryAnalyzerSystemPrompt } from "../prompts/prompt";
 import type { AppStateType } from "../agent";
 import { z } from "zod";
-import { ChatOpenAI } from "@langchain/openai";
 
 const Answer = z.object({
   relevent: z
@@ -33,13 +32,19 @@ const Answer = z.object({
 
 export async function queryAnalyzerSubagent(state: AppStateType) {
   try {
-    const model = new ChatOpenAI({
-      model: "nvidia/llama-3.3-nemotron-super-49b-v1",
-      apiKey: process.env.NVIDIA_TOKEN,
+    // const model = new ChatOpenAI({
+    //   model: "nvidia/llama-3.3-nemotron-super-49b-v1",
+    //   apiKey: process.env.NVIDIA_TOKEN,
+    //   temperature: 0,
+    //   configuration: {
+    //     baseURL: "https://integrate.api.nvidia.com/v1",
+    //   },
+    // });
+    const model = new ChatGroq({
+      model: "llama-3.3-70b-versatile",
+      maxRetries: 2,
       temperature: 0,
-      configuration: {
-        baseURL: "https://integrate.api.nvidia.com/v1",
-      },
+      apiKey: process.env.GROQ_API_KEY,
     });
 
     const subagent = createAgent({
@@ -73,9 +78,3 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
     return { querySubagent: "subagent failed" };
   }
 }
-
-// querySubagent(
-//   "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
-// );
-
-// querySubagent("Compare the market cap of TCS and Infosys");

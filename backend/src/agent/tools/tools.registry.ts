@@ -144,7 +144,7 @@ export const balanceSheetTool = tool(
   {
     name: "fetch_balance_sheet",
     description:
-      "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
+      "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       period1: z
@@ -180,7 +180,7 @@ export const cashFlowStatementTool = tool(
   {
     name: "fetch_cash_flow_statement",
     description:
-      "Get the cash flow financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
+      "Get the cash flow financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       period1: z
@@ -216,7 +216,7 @@ export const incomeStatementTool = tool(
   {
     name: "fetch_income_statement",
     description:
-      "Get the income financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing.",
+      "Get the income financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       period1: z
@@ -442,7 +442,7 @@ export const sentimentSubagentTool = tool(
   {
     name: "sentiment_subagent_tool",
     description:
-      "Use this subagent as tool to get the sentiment of stock, company or market",
+      "Use this subagent as tool to get the sentiment and latest news on stock, company or market(e.g. NIFTY & SUNSEX) ",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
         example: - 'Tata motors', 'Reliance', 'NIFTY50'`),

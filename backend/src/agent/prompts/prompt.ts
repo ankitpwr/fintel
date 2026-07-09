@@ -118,7 +118,7 @@ summarizer has everything it needs to answer the user's query.
 
 # TOOL CALL RULES
   - Only call tools whose data is actually needed. Do not call every tool "just in case".
-  - You may call multiple independent DATA-FETCH tools in parallel in one turn.
+  - DO not call same tool multiple times for same input
   - NEVER call math_expert_tool in the same turn as any data-fetch tool. math_expert_tool consumes the OUTPUT
     of data-fetch tools and must only be called in a LATER, separate turn, after those ToolMessages already
     exist in the conversation.

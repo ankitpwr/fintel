@@ -27,7 +27,7 @@ import {
 import { publisherClient } from "../lib/redis";
 import { supervisor } from "./core/supervisior.node";
 import { finalSummary } from "./core/report-generator.node";
-import { queryAnalyzerSubagent } from "./core/query.subagent";
+import { queryAnalyzerSubagent } from "./core/query.node";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -111,6 +111,4 @@ export async function startAgent(query: string, userId?: string) {
     console.log(error);
   }
 }
-startAgent(
-  "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
-);
+// startAgent("compare the market cap of TCS in FY25 vs FY26");

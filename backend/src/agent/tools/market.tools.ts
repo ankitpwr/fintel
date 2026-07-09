@@ -1,4 +1,5 @@
-import { nseClient, yahooFinance } from "./financial.tool";
+import { nseClient } from "../../lib/nseClient";
+import { yahooFinance } from "./financial.tool";
 
 export async function fetchMarketOverview() {
   const indices = [

@@ -2,20 +2,25 @@ import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
 import { llmWithToolsSystemPrompt } from "../prompts/prompt";
 import { AIMessage, HumanMessage } from "langchain";
+import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatGroq } from "@langchain/groq";
 
 export async function supervisor(state: AppStateType) {
   try {
-    const model = new ChatOpenAI({
-      model: "qwen/qwen3.5-397b-a17b",
-      apiKey: process.env.NVIDIA_TOKEN,
+    const model = new ChatMistralAI({
+      model: "mistral-large-2512",
+      apiKey: process.env.MISTRAL_TOKEN,
       temperature: 0,
-      configuration: {
-        baseURL: "https://integrate.api.nvidia.com/v1",
-      },
     });
 
+    // const model = new ChatGroq({
+    //   model: "llama-3.3-70b-versatile",
+    //   maxRetries: 2,
+    //   temperature: 0,
+    //   apiKey: process.env.GROQ_API_KEY,
+    // });
+
     const modelWithTools = model.bindTools(tools);
-    console.log("state is --> ", JSON.stringify(state));
     const messages = [
       llmWithToolsSystemPrompt,
       new HumanMessage(`${JSON.stringify(state)}`),
