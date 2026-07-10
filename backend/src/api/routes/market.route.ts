@@ -1,8 +1,17 @@
 import { Router } from "express";
-import { marketSummary, topMovers } from "../controllers/market.controller";
+import {
+  index,
+  marketSummary,
+  topIndices,
+  topMovers,
+  topTickers,
+} from "../controllers/market.controller";
 
 export const marketRouter = Router();
 
 marketRouter.get("/summary", marketSummary);
 
-marketRouter.get("/top-movers", topMovers);
+marketRouter.get("/movers", topMovers);
+marketRouter.get("/indices", index);
+marketRouter.get("/indices/top", topIndices);
+marketRouter.get("/ticks/top", topTickers);
