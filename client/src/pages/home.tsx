@@ -2,6 +2,7 @@ import MarketIndex from "@/components/marketIndex";
 import MarketSummary from "@/components/marketSummary";
 import Topindices from "@/components/topindices";
 import { TableDemo } from "@/components/topMover";
+import { TreemapChart } from "@/components/treeHeatmap";
 import { useTopMovers } from "@/hooks/useMarket";
 import { ClockAfternoonIcon } from "@phosphor-icons/react";
 
@@ -55,6 +56,9 @@ export default function Home() {
 
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
         <MarketIndex />
+      </section>
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
+        <TreemapChart />
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in font-geistmono fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-8">

@@ -3,6 +3,7 @@ import {
   getMarketSummary,
   getTopIndices,
   getTopMovers,
+  getTopTicks,
 } from "@/api/market";
 import { useQuery } from "@tanstack/react-query";
 
@@ -26,7 +27,7 @@ export function useIndex() {
   return useQuery({
     queryKey: ["market", "indices"],
     queryFn: getIndexData,
-    staleTime: 1000 * 2,
+    staleTime: 1000 * 10,
   });
 }
 export function useTopIndices() {
@@ -34,5 +35,12 @@ export function useTopIndices() {
     queryKey: ["market", "indices", "top"],
     queryFn: getTopIndices,
     staleTime: 1000 * 60 * 60,
+  });
+}
+
+export function useTopTicks() {
+  return useQuery({
+    queryKey: ["market", "ticks", "top"],
+    queryFn: getTopTicks,
   });
 }

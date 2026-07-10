@@ -47,7 +47,7 @@ export function TableDemo({ data }: { data: TopMover[] }) {
                 </TableCell>
                 <TableCell
                   className={`text-right font-medium py-3 pr-5 tabular-nums ${
-                    isPositive ? "text-[#31f6b8]" : "text-rose-400"
+                    isPositive ? "text-emerald-400" : "text-rose-400"
                   }`}
                 >
                   {isPositive ? "+" : ""}

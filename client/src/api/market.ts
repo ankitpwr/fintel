@@ -50,3 +50,15 @@ export async function getTopIndices() {
     return error;
   }
 }
+
+export async function getTopTicks() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/ticks/top`,
+    );
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
