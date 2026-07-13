@@ -25,6 +25,8 @@ const marketSummaryWorker = new Worker(
         generatedAt: new Date(),
         summary: response,
       }),
+      "EX",
+      3600,
     );
 
     return JSON.stringify({

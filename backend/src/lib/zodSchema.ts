@@ -11,3 +11,7 @@ export const loginSchema = z.object({
 export const reportSchemaBody = z.object({
   userQuery: z.string({ message: "Invalid query" }),
 });
+
+export const standOutTickerSchema = z.object({
+  symbol: z.string({ message: "Ticker symbol is no present" }),
+});

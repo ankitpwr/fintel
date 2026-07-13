@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
-import { loginSchema, signupSchema } from "../../lib/zod-schema";
+import { loginSchema, signupSchema } from "../../lib/zodSchema";
 import { client } from "../../lib/google-client";
 import { prisma } from "../../lib/prisma";
 

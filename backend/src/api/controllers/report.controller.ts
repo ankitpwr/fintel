@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { CustomRequest } from "../../middleware/auth.middleware";
-import { reportSchemaBody } from "../../lib/zod-schema";
+import { reportSchemaBody } from "../../lib/zodSchema";
 import { queryQueue } from "../../queue/queue";
 import crypto from "crypto";
 import { subscriber } from "../../lib/redis";
