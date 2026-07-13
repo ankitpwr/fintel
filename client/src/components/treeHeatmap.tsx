@@ -93,16 +93,7 @@ export function TreemapChart() {
   }
 
   return (
-    <Card className="w-full bg-[#1e1d1c] border-[#2b2a29] pb-0 text-white shadow-xl overflow-hidden rounded-xl">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold tracking-tight">
-          Market Cap Heatmap
-        </CardTitle>
-        <CardDescription className="text-[#a3a3a3]">
-          Top 50 Companies by Capitalization
-        </CardDescription>
-      </CardHeader>
-
+    <Card className="w-full p-0 overflow-hidden ">
       <CardContent className="p-0">
         <ChartContainer config={{}} className="h-[440px] w-full">
           <ResponsiveContainer width="100%" height="100%">

@@ -9,13 +9,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CurrencyInrIcon } from "@phosphor-icons/react";
+import { ChatIcon, CurrencyInrIcon, FileTextIcon } from "@phosphor-icons/react";
 
 export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-[#1e1d1c] border-r border-[#2b2a29]"
+      className="bg-[#1e1d1c] border-r border-[#2b2a29] "
     >
       <SidebarHeader>
         {" "}
@@ -34,9 +34,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="text-[16px]">
                   <CurrencyInrIcon size={26} />
-                  <span>Market Overview</span>
+                  <span>Market overview</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -45,9 +45,22 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <CurrencyInrIcon size={26} />
-                  <span>Market Overview</span>
+                <SidebarMenuButton className="text-[16px]">
+                  <ChatIcon size={26} />
+
+                  <span>New chat</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton className="text-[16px]">
+                  <FileTextIcon size={26} />
+
+                  <span>Detailed report</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

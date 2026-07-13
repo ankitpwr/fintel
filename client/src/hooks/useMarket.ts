@@ -1,6 +1,9 @@
 import {
+  getCurrency,
   getIndexData,
   getMarketSummary,
+  getNews,
+  getStandoutTicks,
   getTopIndices,
   getTopMovers,
   getTopTicks,
@@ -42,5 +45,31 @@ export function useTopTicks() {
   return useQuery({
     queryKey: ["market", "ticks", "top"],
     queryFn: getTopTicks,
+    staleTime: 1000 * 60 * 60,
+  });
+}
+
+export function useCurrency() {
+  return useQuery({
+    queryKey: ["market", "currency"],
+    queryFn: getCurrency,
+    staleTime: 1000 * 60 * 60 * 4,
+  });
+}
+
+export function useLatestNews() {
+  return useQuery({
+    queryKey: ["market", "news"],
+    queryFn: getNews,
+    staleTime: 1000 * 60 * 60 * 4,
+  });
+}
+
+export function useStandoutTicks(symbols: string) {
+  return useQuery({
+    queryKey: ["market", "ticks", "standout", symbols],
+    queryFn: () => getStandoutTicks(symbols),
+
+    enabled: symbols != null && symbols != "",
   });
 }

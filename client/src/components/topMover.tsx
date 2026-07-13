@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import type { TopMover } from "@/types/types";
 
-export function TableDemo({ data }: { data: TopMover[] }) {
+export function TopMoverTable({ data }: { data: TopMover[] }) {
   return (
     <div className="bg-[#1e1d1c] border border-[#2b2a29] rounded-xl overflow-hidden shadow-md">
       <Table>

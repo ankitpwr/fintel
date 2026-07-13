@@ -1,10 +1,11 @@
-import MarketIndex from "@/components/marketIndex";
 import MarketSummary from "@/components/marketSummary";
 import Topindices from "@/components/topindices";
-import { TableDemo } from "@/components/topMover";
 import { TreemapChart } from "@/components/treeHeatmap";
+import CurrencyTable from "@/components/currencyTable";
+import NewsGrid from "@/components/newsGrid";
 import { useTopMovers } from "@/hooks/useMarket";
-import { ClockAfternoonIcon } from "@phosphor-icons/react";
+import { TopMoverTable } from "@/components/topMover";
+import { StandoutTick } from "@/components/standout";
 
 export default function Home() {
   const { data, isLoading, isError } = useTopMovers();
@@ -19,59 +20,64 @@ export default function Home() {
 
   if (isError) {
     return (
-      <div className="flex h-full items-center justify-center text-red-400">
+      <div className="flex h-full items-center justify-center text-rose-400">
         Failed to load market data.
       </div>
     );
   }
 
+  const symbol = data.topGainers[0].tickerSymbol;
+
   return (
-    <div className="w-full flex flex-col text-white px-20 py-8 gap-12 max-w-7xl mx-auto">
-      {/* Header Section */}
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl md:text-4xl font-geistpixel font-bold ">
-          Market Overview
-        </h1>
-        <div className="flex items-center gap-2 text-sm text-[#a3a3a3]">
-          <ClockAfternoonIcon className="w-4 h-4" />
-          <span>
-            {new Date().toLocaleDateString("en-IN", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </span>
-          <span>•</span>
-          <span>Last updated: {new Date().toLocaleTimeString("en-IN")}</span>
-        </div>
-      </header>
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+    <div className="w-full flex flex-col text-white px-6 md:px-24 py-8 gap-18 max-w-[1600px] mx-auto">
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
+        <h2 className="font-geistmono text-gray-200">Top Assets</h2>
+
         <Topindices />
       </section>
 
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
         <MarketSummary />
       </section>
 
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
-        <MarketIndex />
-      </section>
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
-        <TreemapChart />
-      </section>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+        <div className="xl:col-span-8 flex flex-col gap-18">
+          {/* <MarketIndex /> */}
+          <div className="flex flex-col gap-1">
+            {" "}
+            <h2 className="font-geistmono text-gray-200">Top 50 Heatmap</h2>
+            <TreemapChart />
+          </div>
+          <div className="flex flex-col gap-1">
+            {" "}
+            <h2 className="font-geistmono text-gray-200">Standouts</h2>
+            <StandoutTick symbol={symbol} />
+          </div>
+        </div>
 
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in font-geistmono fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-8">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-emerald-400">
-            Top Gainers
-          </h2>
-          <TableDemo data={data["topGainers"]} />
+        <div className="xl:col-span-4 flex flex-col gap-8">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-geistmono text-emerald-400">Top Gainers</h2>
+            <TopMoverTable data={data["topGainers"]} />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <h2 className="font-geistmono  text-rose-400">Top Losers</h2>
+            <TopMoverTable data={data["topLosers"]} />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <h2 className="font-geistmono text-blue-400">
+              Currency Spot Rates
+            </h2>
+            <CurrencyTable />
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-rose-400">Top Losers</h2>
-          <TableDemo data={data["topLosers"]} />
-        </div>
+      </div>
+
+      <section className="w-full flex flex-col gap-4 border-t border-[#2b2a29] pt-8 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-12">
+        <h2 className="font-geistmono text-lg text-gray-200">Top stories</h2>
+        <NewsGrid />
       </section>
     </div>
   );

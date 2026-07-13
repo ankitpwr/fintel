@@ -62,3 +62,37 @@ export async function getTopTicks() {
     return error;
   }
 }
+
+export async function getCurrency() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/currency`,
+    );
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
+
+export async function getNews() {
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/market/news`);
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
+
+export async function getStandoutTicks(symbol: string) {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/ticks/standout/${symbol}`,
+    );
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}
