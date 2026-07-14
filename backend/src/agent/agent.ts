@@ -16,13 +16,13 @@ import {
   peersInfoTool,
   shareholdingInfoTool,
   stockInfoTool,
-  marketOverviewTool,
   priceHistoryTool,
   newsTool,
   corporateActionTool,
   topMoversTool,
   quantitativeSubagentTool,
   sentimentSubagentTool,
+  topIndexPerformanceTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
 import { supervisor } from "./core/supervisior.node";
@@ -32,14 +32,11 @@ import { queryAnalyzerSubagent } from "./core/query.node";
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
   relevent: Annotation<boolean>,
+  queryType: Annotation<"brief" | "detailed">,
   userId: Annotation<string>,
   companyName: Annotation<string[]>,
   symbol: Annotation<string[]>,
-  messages: Annotation<
-    (AIMessage | HumanMessage | SystemMessage | ToolMessage)[]
-  >({
-    reducer: (current, update) => current.concat(update),
-  }),
+  messages: Annotation<Record<string, string>>(),
   finalResponse: Annotation<string>,
 });
 export type AppStateType = typeof AppState.State;
@@ -53,9 +50,8 @@ export const tools = [
   cashFlowStatementTool,
   incomeStatementTool,
   priceHistoryTool,
-  marketOverviewTool,
+  topIndexPerformanceTool,
   topMoversTool,
-  newsTool,
   corporateActionTool,
   quantitativeSubagentTool,
   sentimentSubagentTool,
@@ -67,28 +63,12 @@ const tracer = new LangChainTracer();
 graph
   .addNode("analyze_query", queryAnalyzerSubagent)
   .addNode("supervisor", supervisor)
-  .addNode("tools", toolNode)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
-  .addConditionalEdges("analyze_query", (state: AppStateType) => {
-    if (!state.relevent) {
-      return END;
-    }
-    return "supervisor";
-  })
-  .addConditionalEdges("supervisor", (state: AppStateType) => {
-    const messages = state.messages as any;
-    console.log(" message ", messages);
-
-    const lastMessage = messages[messages.length - 1] as AIMessage;
-    if (lastMessage.tool_calls && lastMessage.tool_calls.length > 0) {
-      console.log("tools to call");
-      return "tools";
-    }
-    console.log("no tools to call");
-    return "final_summary";
-  })
-  .addEdge("tools", "supervisor")
+  .addConditionalEdges("analyze_query", (state: AppStateType) =>
+    state.relevent ? "supervisor" : END,
+  )
+  .addEdge("supervisor", "final_summary")
   .addEdge("final_summary", END);
 
 export async function startAgent(query: string, userId?: string) {
@@ -99,6 +79,7 @@ export async function startAgent(query: string, userId?: string) {
       {
         userQuery: query,
         userId: userId || "",
+        queryType: "brief",
       },
       { callbacks: [tracer] },
     );
@@ -111,4 +92,4 @@ export async function startAgent(query: string, userId?: string) {
     console.log(error);
   }
 }
-// startAgent("compare the market cap of TCS in FY25 vs FY26");
+startAgent("what was ROIC of TCI in FY25");

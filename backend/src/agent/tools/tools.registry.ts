@@ -19,7 +19,7 @@ import {
   fetchLatestNews,
   fetchNews,
 } from "./sentiment.tools";
-import { fetchMarketOverview, fetchTopMovers } from "./market.tools";
+import { fetchTopIndexPerformance, fetchTopMovers } from "./market.tools";
 import { quantitativeSubagent } from "../subagents/quantitative.node";
 import { sentimentSubagent } from "../subagents/sentiment.subagent";
 
@@ -255,20 +255,23 @@ export const priceHistoryTool = tool(
   },
 );
 
-export const marketOverviewTool = tool(
+export const topIndexPerformanceTool = tool(
   async () => {
     try {
-      const data = await fetchMarketOverview();
+      const data = await fetchTopIndexPerformance();
       return JSON.stringify(data);
     } catch (error) {
-      console.log("error in income statement tool ", error);
+      console.log("error in top index performance tool ", error);
       return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   },
   {
-    name: "fetch_market_overview",
+    name: "top_indices_performance",
     description:
-      "Get overall Indian market performance, index movement, NIFTY, Sensex, Bank Nifty, market sentiment, market overview or today's market condition.",
+      "Returns TODAY's performance for ALL major Indian indices such as NIFTY 50, SENSEX and other sectoral indices",
+    schema: z
+      .object({})
+      .describe("This tool takes no parameters. call with an empty object."),
   },
 );
 
@@ -283,8 +286,12 @@ export const topMoversTool = tool(
     }
   },
   {
-    name: "fetch_top_gainers",
-    description: "Get today's top gaining and lossing stocks in market",
+    name: "fetch_top_movers",
+    description:
+      "Returns TODAY's top gaining and top losing stocks across the market",
+    schema: z
+      .object({})
+      .describe("This tool takes no parameters call with an empty object."),
   },
 );
 
@@ -301,7 +308,7 @@ export const newsTool = tool(
   {
     name: "fetch_latest_news",
     description:
-      "Get the latest news articles about a stock, company, or market event",
+      "Get the latest news articles about a stock, company, market or financial event",
     schema: z.object({
       searchQuery: z
         .string()
@@ -375,12 +382,14 @@ export const newsAggregatorTool = tool(
   {
     name: "new_aggregator_tool",
     description:
-      "Use this tools to fetch latest news about stock, company or market",
+      "Use this tools to fetch latest news about stock, company, market performance",
     schema: z.object({
       keyword: z.string()
         .describe(`keyword for which tool need to serach news for.
           example 1:- "Reliance"
-          example 2:- "Tata steel"`),
+          example 2:- "Tata steel",
+          example 3: - "Nifty 50",
+          example 4: - "National stock Exchange India"`),
     }),
   },
 );
@@ -397,7 +406,7 @@ export const symbolTool = tool(
   },
   {
     name: "symbol_extractor_tool",
-    description: "Use this tools to fetch possible symbol for a company",
+    description: "Return the possible ticker symbol for a company",
     schema: z.object({
       company: z.string().describe(`name of the company
           example - "Reliance Industries", "Tata steel", "HDFC", "Infosys"`),
@@ -442,10 +451,10 @@ export const sentimentSubagentTool = tool(
   {
     name: "sentiment_subagent_tool",
     description:
-      "Use this subagent as tool to get the sentiment and latest news on stock, company or market(e.g. NIFTY & SUNSEX) ",
+      "Use this subagent as tool to get the sentiment and latest news summary on stock, company or market performace",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
-        example: - 'Tata motors', 'Reliance', 'NIFTY50'`),
+        example: - 'Tata motors', 'Reliance', 'NIFTY50','National stock Exchange India'`),
     }),
   },
 );

@@ -1,7 +1,7 @@
 import { nseClient } from "../../lib/nseClient";
 import { yahooFinance } from "./financial.tool";
 
-export async function fetchMarketOverview() {
+export async function fetchTopIndexPerformance() {
   const indices = [
     "^NSEI", // Nifty 50
     "^BSESN", // Sensex
@@ -39,7 +39,7 @@ export async function fetchMarketOverview() {
     }));
     return data;
   } catch (error) {
-    console.log("error in fetch_market_overview");
+    console.log("error in fetch_Top_Index_Performance");
     console.log(error);
     return "Tool Failed";
   }
@@ -78,8 +78,6 @@ export async function fetchTopMovers() {
       corporateActionExDate: stock.caExDt,
     }));
 
-    console.log(data1);
-    console.log(data2);
     return { topGainers: data1, topLosers: data2 };
   } catch (error) {
     console.log("error in top_gainer_tool");

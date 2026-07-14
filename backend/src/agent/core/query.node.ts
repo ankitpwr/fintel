@@ -51,12 +51,10 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
       model,
       tools: [symbolTool],
       responseFormat: Answer,
+      systemPrompt: queryAnalyzerSystemPrompt.content as string,
     });
 
-    const messages = [
-      queryAnalyzerSystemPrompt,
-      new HumanMessage(`user query: - ${state.userQuery}\\n`),
-    ];
+    const messages = [new HumanMessage(`user query: - ${state.userQuery}\\n`)];
 
     const response = await subagent.invoke({ messages: messages });
 
