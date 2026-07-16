@@ -6,6 +6,7 @@ import NewsGrid from "@/components/newsGrid";
 import { useTopMovers } from "@/hooks/useMarket";
 import { TopMoverTable } from "@/components/topMover";
 import { StandoutTick } from "@/components/standout";
+import ChatInput from "@/components/chatInput";
 
 export default function Home() {
   const { data, isLoading, isError } = useTopMovers();
@@ -29,20 +30,17 @@ export default function Home() {
   const symbol = data.topGainers[0].tickerSymbol;
 
   return (
-    <div className="w-full flex flex-col text-white px-6 md:px-24 py-8 gap-18 max-w-[1600px] mx-auto">
+    <div className="w-full flex flex-col text-white px-6 md:px-24 py-8 pb-50 gap-18 max-w-[1600px] mx-auto">
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
         <h2 className="font-geistmono text-gray-200">Top Assets</h2>
 
         <Topindices />
       </section>
-
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
         <MarketSummary />
       </section>
-
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
         <div className="xl:col-span-8 flex flex-col gap-18">
-          {/* <MarketIndex /> */}
           <div className="flex flex-col gap-1">
             {" "}
             <h2 className="font-geistmono text-gray-200">Top 50 Heatmap</h2>
@@ -74,11 +72,11 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       <section className="w-full flex flex-col gap-4 border-t border-[#2b2a29] pt-8 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-12">
         <h2 className="font-geistmono text-lg text-gray-200">Top stories</h2>
         <NewsGrid />
       </section>
+      <ChatInput isFixed={true} />{" "}
     </div>
   );
 }

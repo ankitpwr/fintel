@@ -93,7 +93,7 @@ export function TreemapChart() {
   }
 
   return (
-    <Card className="w-full p-0 overflow-hidden ">
+    <Card className="w-full p-0 overflow-hidden  ">
       <CardContent className="p-0">
         <ChartContainer config={{}} className="h-[440px] w-full">
           <ResponsiveContainer width="100%" height="100%">
