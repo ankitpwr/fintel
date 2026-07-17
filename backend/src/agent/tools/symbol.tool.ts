@@ -6,7 +6,7 @@ export async function getSymbol(company: string) {
       `NextApi/globalSearch/equity?symbol=` + encodeURIComponent(company);
     const { data } = await nseClient.get(url);
 
-    console.log("get symol tool response ", data["data"]);
+    console.log("inside getSymbol tool ", data["data"]);
     return data["data"];
   } catch (error) {
     return { getSymbol: "Failed to respond" };

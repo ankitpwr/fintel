@@ -5,6 +5,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 export async function quantitativeSubagent(queries: string[]) {
   try {
+    console.log("input for quantitative subagent  ", JSON.stringify(queries));
     const model = new ChatGoogleGenerativeAI({
       model: "gemini-3.1-flash-lite",
       maxRetries: 2,
@@ -21,7 +22,10 @@ export async function quantitativeSubagent(queries: string[]) {
         `Calculate the following metrics ${JSON.stringify(queries)}\\n`,
       ),
     ];
-    const response = await subagent.invoke({ messages: messages });
+    const response = await subagent.invoke(
+      { messages: messages },
+      { recursionLimit: 10 },
+    );
     console.log("response by calculator tool ", response.messages.at(-1)?.text);
     return response.messages.at(-1)?.text;
   } catch (error) {

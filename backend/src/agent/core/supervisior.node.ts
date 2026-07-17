@@ -2,15 +2,16 @@ import { createAgent, AIMessage, HumanMessage, ToolMessage } from "langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
 import { llmWithToolsSystemPrompt } from "../prompts/prompt";
+import { ChatMistralAI } from "@langchain/mistralai";
 
 export async function supervisor(state: AppStateType) {
   try {
-    const model = new ChatOpenAI({
-      model: "minimaxai/minimax-m2.7",
-      apiKey: process.env.NVIDIA_TOKEN,
+    const model = new ChatMistralAI({
+      model: "mistral-medium-latest",
+      apiKey: process.env.MISTRAL_TOKEN,
       temperature: 0.1,
-      configuration: { baseURL: "https://integrate.api.nvidia.com/v1" },
     });
+
     const agent = createAgent({
       model: model,
       tools: tools,
@@ -31,21 +32,12 @@ export async function supervisor(state: AppStateType) {
         .join("\n"),
     );
 
-    // Always carry forward the real history — never reset it.
     const result = await agent.invoke(
       { messages: [taskContext] },
       { recursionLimit: 10 },
     );
 
-    const toolResults: Record<string, string> = {};
-    for (const m of result.messages) {
-      if (m._getType() === "tool") {
-        toolResults[(m as ToolMessage).name ?? m.tool_call_id] =
-          m.content as string;
-      }
-    }
-
-    return { messages: toolResults };
+    return { messages: result.messages };
   } catch (error) {
     console.log("error in llm_with_tools ", error);
     return { messages: [new AIMessage("I encountered an error")] };

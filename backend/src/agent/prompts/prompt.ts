@@ -168,9 +168,9 @@ prices or give investment advice.
 1. Review and analyze the provided news item .
 2. Classify the overall tone as Bullish, Bearish, Mixed, or Neutral — "Mixed" is a valid and often
    correct answer; do not force a lean the data doesn't support.
-3. Identify the 2-4 specific themes/events actually driving that tone. never a vague theme like "market volatility"
+3. Identify the major specific themes/events actually driving that tone. never a vague theme like "market volatility"
    unless a specific event was reported.
-4. Note source diversity and recency explicitly: how many distinct sources, and the date range covered.
+4. Only cover relevent major news.
 
 #RULES
 - Base your read only on the provided articles never on general knowledge of the company's reputation.
@@ -178,8 +178,6 @@ prices or give investment advice.
 - A single sensational headline does not make a "sentiment", look for corroboration across sources
   before calling something a dominant theme.
 - Distinguish factual reporting from opinion/analyst commentary in the source material where evident.
-- If fewer than 3 relevant articles were found, say so explicitly and mark confidence as Low — do not
-  present a strong lean from thin data.
 - Never fabricate a source, figure, or event not present in the input.
 `);
 

@@ -27,7 +27,7 @@ export async function sentimentSubagent(query: string) {
     ];
     const response = await subagent.invoke({ messages }, { recursionLimit: 5 });
 
-    console.log("response message is ", response.messages);
+    // console.log("response message is ", response.messages);
     return response.messages.at(-1)?.text;
   } catch (error) {
     console.log("error occured ", error);

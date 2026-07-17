@@ -4,22 +4,7 @@ import {
   finalSummaryBriefPrompt,
   finalSummaryDetailedPrompt,
 } from "../prompts/prompt";
-import { AIMessage, HumanMessage } from "langchain";
-
-const LEAK_PATTERNS: RegExp[] = [
-  /^(based on|according to|from) the (data|information|context|articles|news)( provided| available)?[,:]\s*/i,
-  /^(i found|the data shows|the data indicates|it appears) that\s*/i,
-  /^as of [^,]+,\s*/i,
-];
-
-function stripLeakage(text: string): string {
-  let cleaned = text.trim();
-  for (const pattern of LEAK_PATTERNS) {
-    cleaned = cleaned.replace(pattern, "");
-  }
-  // Re-capitalize the first letter if the strip left a lowercase start.
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-}
+import { AIMessage, HumanMessage, ToolMessage } from "langchain";
 
 export async function finalSummary(state: AppStateType) {
   try {
@@ -35,24 +20,39 @@ export async function finalSummary(state: AppStateType) {
     const systemPrompt = isDetailed
       ? finalSummaryDetailedPrompt
       : finalSummaryBriefPrompt;
+    const toolResults: Record<string, string> = {};
+    for (const m of state.messages) {
+      if (m._getType() === "tool") {
+        toolResults[(m as ToolMessage).name ?? m.tool_call_id] =
+          m.content as string;
+      }
+    }
+
+    console.log(
+      "tool response in finalSummary node  ",
+      JSON.stringify(toolResults),
+    );
 
     const response = await model.invoke([
       systemPrompt,
       new HumanMessage(`
-      Fetched Data Context:\n${JSON.stringify(state.messages)}
+      Fetched Data Context:\n${JSON.stringify(toolResults)}
       \n\nUser Query: ${state.userQuery}
       Company: ${state.companyName}
   `),
     ]);
 
-    const rawText =
-      typeof response.content === "string"
-        ? response.content
-        : JSON.stringify(response.content);
+    const contentItem = response.content?.[1];
+    let finalText = "";
+    if (typeof contentItem === "string") {
+      finalText = contentItem;
+    } else if (contentItem && typeof contentItem === "object") {
+      finalText = (contentItem as any).text ?? JSON.stringify(contentItem);
+    }
 
     return { finalResponse: response.content };
   } catch (error) {
-    console.log("erro in final-summary");
+    console.log("error in final-summary");
     console.log(error);
     return {
       messages: [new AIMessage("I encountered an error fetching that data.")],

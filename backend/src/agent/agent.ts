@@ -1,13 +1,6 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 
-import {
-  HumanMessage,
-  SystemMessage,
-  ToolMessage,
-  type AIMessage,
-} from "langchain";
 import {
   balanceSheetTool,
   cashFlowStatementTool,
@@ -28,6 +21,13 @@ import { publisherClient } from "../lib/redis";
 import { supervisor } from "./core/supervisior.node";
 import { finalSummary } from "./core/report-generator.node";
 import { queryAnalyzerSubagent } from "./core/query.node";
+import type {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+  ToolMessage,
+} from "langchain";
+import { start } from "node:repl";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -36,7 +36,11 @@ export const AppState = Annotation.Root({
   userId: Annotation<string>,
   companyName: Annotation<string[]>,
   symbol: Annotation<string[]>,
-  messages: Annotation<Record<string, string>>(),
+  messages: Annotation<
+    (AIMessage | HumanMessage | SystemMessage | ToolMessage)[]
+  >({
+    reducer: (current, update) => current.concat(update),
+  }),
   finalResponse: Annotation<string>,
 });
 export type AppStateType = typeof AppState.State;
@@ -57,7 +61,6 @@ export const tools = [
   sentimentSubagentTool,
 ];
 const graph = new StateGraph(AppState);
-const toolNode = new ToolNode(tools);
 const tracer = new LangChainTracer();
 
 graph
@@ -71,25 +74,66 @@ graph
   .addEdge("supervisor", "final_summary")
   .addEdge("final_summary", END);
 
-export async function startAgent(query: string, userId?: string) {
+export async function startAgent(
+  query: string,
+  userId?: string,
+  queryType: "brief" | "detailed" = "brief",
+) {
   try {
-    console.log("query is ", query);
+    // console.log("query is ", query);
     const workflow = graph.compile();
-    const result = await workflow.invoke(
-      {
-        userQuery: query,
-        userId: userId || "",
-        queryType: "brief",
-      },
-      { callbacks: [tracer] },
-    );
-    console.log(result);
-    // await publisherClient.publish("agent-updates", JSON.stringify(result));
+    // const result = await workflow.invoke(
+    //   {
+    //     userQuery: query,
+    //     userId: userId || "",
+    //     queryType,
+    //   },
+    //   { callbacks: [tracer] },
+    // );
+    // console.log(result);
+    // await publisherClient.publish(
+    //   "agent-updates",
+    //   JSON.stringify({
+    //     userQuery: result.userQuery,
+    //     userId: result.userId,
+    //     finalResponse: result.finalResponse,
+    //   }),
+    // );
 
-    return result.finalResponse;
+    // return result.finalResponse;
+
+    for await (const [mode, payload] of await workflow.stream(
+      { userQuery: query, userId: userId || "", queryType },
+      { streamMode: ["messages", "custom"] },
+    )) {
+      if (mode == "custom") {
+        await publisherClient.publish(
+          `agent-updates`,
+          JSON.stringify({
+            userId: userId,
+            type: "step",
+            message: payload.status,
+          }),
+        );
+      } else if (mode == "messages") {
+        const [messageChunk, metadata] = payload as [any, any];
+        if (metadata.langgraph_node !== "final_summary") continue;
+        const token = messageChunk.content;
+        if (!token) continue;
+        await publisherClient.publish(
+          `agent-updates`,
+          JSON.stringify({ userId: userId, type: "token", message: token }),
+        );
+      }
+    }
   } catch (error) {
     console.log("error in init");
     console.log(error);
   }
 }
-startAgent("what was ROIC of TCI in FY25");
+
+// startAgent(
+//   "analyze the HDFC bank fundamental, and sentiment and is it right time to invest on it?",
+//   "werwere2232",
+//   "detailed",
+// );

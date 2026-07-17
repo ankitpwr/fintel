@@ -23,7 +23,7 @@ export async function fetchcorporateAction(symbol: string, startDate?: string) {
       events: "div|split|earn",
     });
 
-    console.log(response.events);
+    console.log("in corporate action tool ", response.events);
     return response.events;
   } catch (error) {
     console.log("error in fech_price_history");

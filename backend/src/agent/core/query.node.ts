@@ -32,14 +32,6 @@ const Answer = z.object({
 
 export async function queryAnalyzerSubagent(state: AppStateType) {
   try {
-    // const model = new ChatOpenAI({
-    //   model: "nvidia/llama-3.3-nemotron-super-49b-v1",
-    //   apiKey: process.env.NVIDIA_TOKEN,
-    //   temperature: 0,
-    //   configuration: {
-    //     baseURL: "https://integrate.api.nvidia.com/v1",
-    //   },
-    // });
     const model = new ChatGroq({
       model: "llama-3.3-70b-versatile",
       maxRetries: 2,
@@ -58,7 +50,10 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
 
     const response = await subagent.invoke({ messages: messages });
 
-    console.log(response.structuredResponse);
+    console.log(
+      "query analyzer subagent rresponse ",
+      response.structuredResponse,
+    );
 
     if (response.structuredResponse.relevent) {
       return {

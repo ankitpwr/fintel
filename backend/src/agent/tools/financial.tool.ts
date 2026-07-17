@@ -131,7 +131,7 @@ export async function fetchBalanceSheet(
       module: "balance-sheet",
     });
     const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
-    console.log(dataWithSymbol);
+    // console.log(dataWithSymbol);
     return dataWithSymbol;
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
@@ -195,7 +195,7 @@ export async function fetchPriceHistory(symbol: string, startDate?: string) {
       period1: start,
       interval: "1mo",
     });
-    console.log(response.quotes);
+    // console.log(response.quotes);
     return response.quotes;
   } catch (error) {
     console.log("error in fech_price_history");

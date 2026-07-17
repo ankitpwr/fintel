@@ -22,10 +22,14 @@ import {
 import { fetchTopIndexPerformance, fetchTopMovers } from "./market.tools";
 import { quantitativeSubagent } from "../subagents/quantitative.node";
 import { sentimentSubagent } from "../subagents/sentiment.subagent";
+import { type LangGraphRunnableConfig } from "@langchain/langgraph";
 
 export const stockInfoTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({ symbol }: { symbol: string }, config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Analyzing key ratios and intraday metrics for ${symbol}...`,
+      });
       const data = await fetchStockInfo(symbol);
       return JSON.stringify(data?.stockInfo);
     } catch (error) {
@@ -44,8 +48,11 @@ export const stockInfoTool = tool(
 );
 
 export const peersInfoTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({ symbol }: { symbol: string }, config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Identifying industry peers and competitors for ${symbol}...`,
+      });
       const data = await fetchPeersInfo(symbol);
       return JSON.stringify(data?.peerInfo);
     } catch (error) {
@@ -64,8 +71,11 @@ export const peersInfoTool = tool(
 );
 
 export const shareholdingInfoTool = tool(
-  async ({ symbol }: { symbol: string }) => {
+  async ({ symbol }: { symbol: string }, config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Analyzing promoter and institutional ownership for ${symbol}...`,
+      });
       const data = await fetchShareHoldingInfo(symbol);
       return JSON.stringify(data?.shareHoldingInfo);
     } catch (error) {
@@ -84,16 +94,22 @@ export const shareholdingInfoTool = tool(
 );
 
 export const earningCallPdfSummaryTool = tool(
-  async ({
-    symbol,
-    comapanyName,
-    industry,
-  }: {
-    symbol: string;
-    comapanyName: string;
-    industry: string;
-  }) => {
+  async (
+    {
+      symbol,
+      comapanyName,
+      industry,
+    }: {
+      symbol: string;
+      comapanyName: string;
+      industry: string;
+    },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Reading and summarizing the latest earnings call transcript for ${symbol}...`,
+      });
       const response = await fetchEarningCallPDF(symbol);
       if (response?.earningCallTranscriptURL && comapanyName && industry) {
         const data = await earningCallPDFSummarizer({
@@ -124,16 +140,22 @@ export const earningCallPdfSummaryTool = tool(
 );
 
 export const balanceSheetTool = tool(
-  async ({
-    symbol,
-    period1,
-    period2,
-  }: {
-    symbol: string;
-    period1?: string;
-    period2?: string;
-  }) => {
+  async (
+    {
+      symbol,
+      period1,
+      period2,
+    }: {
+      symbol: string;
+      period1?: string;
+      period2?: string;
+    },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Retrieving balance sheet statements for ${symbol}...`,
+      });
       const data = await fetchBalanceSheet(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
@@ -160,16 +182,22 @@ export const balanceSheetTool = tool(
 );
 
 export const cashFlowStatementTool = tool(
-  async ({
-    symbol,
-    period1,
-    period2,
-  }: {
-    symbol: string;
-    period1?: string;
-    period2?: string;
-  }) => {
+  async (
+    {
+      symbol,
+      period1,
+      period2,
+    }: {
+      symbol: string;
+      period1?: string;
+      period2?: string;
+    },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Analyzing cash flow statements for ${symbol}...`,
+      });
       const data = await fetchCashFlow(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
@@ -196,16 +224,22 @@ export const cashFlowStatementTool = tool(
 );
 
 export const incomeStatementTool = tool(
-  async ({
-    symbol,
-    period1,
-    period2,
-  }: {
-    symbol: string;
-    period1?: string;
-    period2?: string;
-  }) => {
+  async (
+    {
+      symbol,
+      period1,
+      period2,
+    }: {
+      symbol: string;
+      period1?: string;
+      period2?: string;
+    },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Retrieving Income statements for ${symbol}...`,
+      });
       const data = await fetchIncomeStatement(symbol, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
@@ -232,8 +266,20 @@ export const incomeStatementTool = tool(
 );
 
 export const priceHistoryTool = tool(
-  async ({ symbol, startDate }: { symbol: string; startDate: string }) => {
+  async (
+    {
+      symbol,
+      startDate,
+    }: {
+      symbol: string;
+      startDate: string;
+    },
+    config,
+  ) => {
     try {
+      // config.writer?.({
+      //   status: `Fetching price trends and historical market data for ${symbol}...`,
+      // });
       const data = await fetchPriceHistory(symbol, startDate);
       return JSON.stringify(data);
     } catch (error) {
@@ -256,8 +302,11 @@ export const priceHistoryTool = tool(
 );
 
 export const topIndexPerformanceTool = tool(
-  async () => {
+  async (config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Analyzing current market sentiment across NIFTY 50, SENSEX, and sectoral indices...`,
+      });
       const data = await fetchTopIndexPerformance();
       return JSON.stringify(data);
     } catch (error) {
@@ -276,8 +325,11 @@ export const topIndexPerformanceTool = tool(
 );
 
 export const topMoversTool = tool(
-  async () => {
+  async (config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Scanning the market for today's top gainers and losers...`,
+      });
       const data = await fetchTopMovers();
       return JSON.stringify(data);
     } catch (error) {
@@ -288,7 +340,7 @@ export const topMoversTool = tool(
   {
     name: "fetch_top_movers",
     description:
-      "Returns TODAY's top gaining and top losing stocks across the market",
+      "Use this tool to get top gaining and top losing stocks across the market",
     schema: z
       .object({})
       .describe("This tool takes no parameters call with an empty object."),
@@ -342,8 +394,14 @@ export const corporateActionTool = tool(
 );
 
 export const calculatorTool = tool(
-  async ({ expression }: { expression: string }) => {
+  async (
+    { expression }: { expression: string },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Calculating...`,
+      });
       const data = await calculator(expression);
       return JSON.stringify(data);
     } catch (error) {
@@ -370,8 +428,11 @@ export const calculatorTool = tool(
 );
 
 export const newsAggregatorTool = tool(
-  async ({ keyword }: { keyword: string }) => {
+  async ({ keyword }: { keyword: string }, config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Searching for latest market news related to "${keyword}"...`,
+      });
       const data = await fetchNews(keyword);
       return JSON.stringify(data);
     } catch (error) {
@@ -395,9 +456,12 @@ export const newsAggregatorTool = tool(
 );
 
 export const symbolTool = tool(
-  async ({ compnay }: { compnay: string }) => {
+  async ({ company }: { company: string }, config: LangGraphRunnableConfig) => {
     try {
-      const data = await fetchNews(compnay);
+      config.writer?.({
+        status: `Looking for ticker symbol for ${company}...`,
+      });
+      const data = await fetchNews(company);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in symbol tool ", error);
@@ -415,8 +479,14 @@ export const symbolTool = tool(
 );
 
 export const quantitativeSubagentTool = tool(
-  async ({ queries }: { queries: string[] }) => {
+  async (
+    { queries }: { queries: string[] },
+    config: LangGraphRunnableConfig,
+  ) => {
     try {
+      config.writer?.({
+        status: `Calculating financial metrics...`,
+      });
       const data = await quantitativeSubagent(queries);
       return JSON.stringify(data);
     } catch (error) {
@@ -439,8 +509,11 @@ export const quantitativeSubagentTool = tool(
 );
 
 export const sentimentSubagentTool = tool(
-  async ({ query }: { query: string }) => {
+  async ({ query }: { query: string }, config: LangGraphRunnableConfig) => {
     try {
+      config.writer?.({
+        status: `Analyzing recent news flow and overall sentiment for ${query}...`,
+      });
       const data = await sentimentSubagent(query);
       return JSON.stringify(data);
     } catch (error) {
@@ -451,10 +524,10 @@ export const sentimentSubagentTool = tool(
   {
     name: "sentiment_subagent_tool",
     description:
-      "Use this subagent as tool to get the sentiment and latest news summary on stock, company or market performace",
+      "Use this subagent as tool to get the sentiment and latest news summary on stock, company or market overviews and performace.",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
-        example: - 'Tata motors', 'Reliance', 'NIFTY50','National stock Exchange India'`),
+        example: - 'Tata motors', 'Reliance', 'NIFTY50','National stock Exchange India', `),
     }),
   },
 );
