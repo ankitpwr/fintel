@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
 import { startAgent } from "../agent/agent";
 import { redisClient } from "../lib/redis";
-
+import { marketSummaryQueue } from "./queue";
 const queryWorker = new Worker(
   "user-query-queue",
   async (job) => {
@@ -26,7 +26,7 @@ const marketSummaryWorker = new Worker(
         summary: response,
       }),
       "EX",
-      3600,
+      6 * 60 * 60 * 1000,
     );
 
     return JSON.stringify({
@@ -37,10 +37,31 @@ const marketSummaryWorker = new Worker(
   { connection: redisClient as any },
 );
 
-// Query Worker Event Listeners
+export async function initMarketSummaryScheduler() {
+  await marketSummaryQueue.upsertJobScheduler(
+    "market-summary",
+    { every: 5 * 60 * 60 * 1000 },
+    {
+      data: {
+        userQuery:
+          "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
+      },
+      opts: { attempts: 3, backoff: { type: "exponential", delay: 1000 } },
+    },
+  );
+}
+initMarketSummaryScheduler().then(() => console.log("scheduler initialized"));
+
 queryWorker.on("completed", (job) => {
   console.log(`${job.id} has completed!`);
 });
 queryWorker.on("failed", (job, err) => {
   console.log(`${err.message}`);
+});
+
+marketSummaryWorker.on("completed", (job) => {
+  console.log("job completed!");
+});
+marketSummaryWorker.on("failed", (job, err) => {
+  console.log("job failed!");
 });

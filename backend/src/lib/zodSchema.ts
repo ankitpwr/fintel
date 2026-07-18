@@ -10,6 +10,7 @@ export const loginSchema = z.object({
 
 export const reportSchemaBody = z.object({
   userQuery: z.string({ message: "Invalid query" }),
+  queryType: z.enum(["brief", "detailed"]),
 });
 
 export const standOutTickerSchema = z.object({

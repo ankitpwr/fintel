@@ -22,6 +22,7 @@ export const generateReport = async (req: Request, res: Response) => {
       {
         userQuery: parsedBody.data.userQuery,
         userId: userId,
+        queryType: parsedBody.data.queryType,
       },
       {
         jobId: `report-${userId}-${uuid}`,
@@ -50,7 +51,11 @@ subscriber.subscribe("agent-updates", (err) => {
 subscriber.on("message", (channel, message) => {
   if (channel == "agent-updates") {
     const parsedMessage = JSON.parse(message);
-    sendUpdateToClient(parsedMessage.userId, parsedMessage.finalResponse);
+    sendUpdateToClient(
+      parsedMessage.userId,
+      parsedMessage.type,
+      parsedMessage.message,
+    );
   }
 });
 
@@ -79,13 +84,19 @@ export const streamResponse = async (req: Request, res: Response) => {
   }
 };
 
-async function sendUpdateToClient(userId: string, text: string) {
+async function sendUpdateToClient(
+  userId: string,
+  type: string,
+  message: string,
+) {
   try {
     if (
       connectedClients.has(userId) &&
       connectedClients.get(userId) != undefined
     ) {
-      connectedClients.get(userId)?.write(`data: ${JSON.stringify(text)}\n\n`);
+      connectedClients
+        .get(userId)
+        ?.write(`data: ${JSON.stringify({ userId, type, message })}\n\n`);
     }
   } catch (error) {
     console.log(error);

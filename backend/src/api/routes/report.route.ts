@@ -8,4 +8,4 @@ import {
 export const reportRouter = Router();
 
 reportRouter.post("/generate", generateReport);
-reportRouter.post("/stream-update", streamResponse);
+reportRouter.get("/stream-update", streamResponse);

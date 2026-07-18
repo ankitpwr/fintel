@@ -80,28 +80,9 @@ export async function startAgent(
   queryType: "brief" | "detailed" = "brief",
 ) {
   try {
-    // console.log("query is ", query);
+    console.log("query is ", query);
     const workflow = graph.compile();
-    // const result = await workflow.invoke(
-    //   {
-    //     userQuery: query,
-    //     userId: userId || "",
-    //     queryType,
-    //   },
-    //   { callbacks: [tracer] },
-    // );
-    // console.log(result);
-    // await publisherClient.publish(
-    //   "agent-updates",
-    //   JSON.stringify({
-    //     userQuery: result.userQuery,
-    //     userId: result.userId,
-    //     finalResponse: result.finalResponse,
-    //   }),
-    // );
-
-    // return result.finalResponse;
-
+    let finalText = "";
     for await (const [mode, payload] of await workflow.stream(
       { userQuery: query, userId: userId || "", queryType },
       { streamMode: ["messages", "custom"] },
@@ -120,12 +101,23 @@ export async function startAgent(
         if (metadata.langgraph_node !== "final_summary") continue;
         const token = messageChunk.content;
         if (!token) continue;
+        finalText += token;
         await publisherClient.publish(
           `agent-updates`,
           JSON.stringify({ userId: userId, type: "token", message: token }),
         );
       }
     }
+
+    await publisherClient.publish(
+      `agent-updates`,
+      JSON.stringify({
+        userId: userId,
+        type: "done",
+        message: finalText,
+      }),
+    );
+    return finalText;
   } catch (error) {
     console.log("error in init");
     console.log(error);

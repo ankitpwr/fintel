@@ -9,39 +9,14 @@ import { standOutTickerSchema } from "../../lib/zodSchema";
 
 export const marketSummary = async (req: Request, res: Response) => {
   try {
-    //check in redis
     const cachedSummary = await redisClient.get("market-summary");
     if (cachedSummary && JSON.parse(cachedSummary).summary) {
-      return res.status(200).json({
-        data: JSON.parse(cachedSummary),
-      });
+      return res.status(200).json({ data: JSON.parse(cachedSummary) });
     }
-
-    //put in queue
-    await marketSummaryQueue.upsertJobScheduler(
-      "market-summary",
-      {
-        every: 5 * 60 * 60 * 1000,
-        immediately: true,
-      },
-      {
-        data: {
-          userQuery:
-            "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
-        },
-        opts: { attempts: 3, backoff: { type: "exponential", delay: 1000 } },
-      },
-    );
-
-    return res.status(200).json({
-      data: "working on it try again later",
-    });
+    return res.status(200).json({ data: "working on it try again later" });
   } catch (error) {
-    console.log("error in market summary");
-    console.log(error);
-    return res.status(500).json({
-      error: "Internal server error",
-    });
+    console.log("error in market summary", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -287,7 +262,7 @@ export const standoutTickers = async (req: Request, res: Response) => {
     const [price, metric] = await Promise.all([
       yahooFinance.chart(`${parsedData.data.symbol}.NS`, {
         period1: "2026-07-10",
-        interval: "1m",
+        interval: "2m",
       }),
       yahooFinance.quoteSummary(`${parsedData.data.symbol}.NS`, {
         modules: ["summaryDetail", "summaryProfile"],
