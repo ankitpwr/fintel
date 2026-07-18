@@ -3,19 +3,27 @@ import { useNavigate, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import useChatStore from "@/store/useChatStore";
+import RotatingText from "./RotatingText";
 
 interface ChatInputProps {
-  onSendMessage?: (message: string, mode: "chat" | "detailed") => void;
+  onSendMessage?: (message: string, mode: "brief" | "detailed") => void;
   isFixed?: boolean;
 }
 
-export default function ChatInput({ isFixed = true }: ChatInputProps) {
+export default function ChatInput({
+  isFixed = true,
+  onSendMessage,
+}: ChatInputProps) {
+  const suggestions = [
+    "What is ROCE of HDFC",
+    "What is market cap of MRF",
+    "what were key takeways from TCS earning call",
+  ];
   const { userQuery, chatMode, setUserQuery, setChatMode } = useChatStore();
+  const [currentSuggestion, setCurrentSuggestion] = useState(suggestions[0]);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const suggestions = ["what is ROCE of HDFC", "what is market cap of MRF"];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +32,7 @@ export default function ChatInput({ isFixed = true }: ChatInputProps) {
     if (location.pathname === "/") {
       navigate("/chat");
     } else {
-      //send request
+      onSendMessage?.(userQuery, chatMode);
     }
   };
 
@@ -38,7 +46,7 @@ export default function ChatInput({ isFixed = true }: ChatInputProps) {
 
   return (
     <div className={containerClasses}>
-      <div className="flex flex-col items-center w-full drop-shadow-2xl font-inter">
+      <div className="flex flex-col items-center w-full drop-shadow-2xl font-googleSans tracking-wide">
         <form
           onSubmit={handleSubmit}
           className="w-full bg-[#141414] border-2 border-[#2b2a29] rounded-3xl p-3 pt-2 pb-2 flex flex-col gap-2 relative z-0 transition-all duration-300 focus-within:border-[#2b2a29]"
@@ -62,26 +70,33 @@ export default function ChatInput({ isFixed = true }: ChatInputProps) {
             </button>
           </div>
 
-          <div className="flex pt-2">
-            {" "}
-            <div className="flex items-center gap-2.5 ">
-              {suggestions.map((item, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => handleSuggestionClick(item)}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left truncate max-w-full"
-                >
-                  {item}
-                </button>
-              ))}
+          <div className="flex items-center justify-between pt-2 gap-4">
+            <div className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer">
+              <RotatingText
+                texts={suggestions}
+                mainClassName="whitespace-nowrap"
+                staggerFrom="center"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "-120%" }}
+                staggerDuration={0.025}
+                onClick={() => handleSuggestionClick(currentSuggestion)}
+                splitLevelClassName="overflow-hidden"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                rotationInterval={4000}
+                splitBy="lines"
+                onNext={(index) => setCurrentSuggestion(suggestions[index])}
+                auto
+                loop
+              />
             </div>
-            <div className="relative flex justify-end w-full z-10 select-none ">
-              <div className="bg-[#141414]  border-2 border-[#2b2a29] rounded-xl  flex items-center gap-1 relative z-30">
+
+            <div className="relative flex justify-end z-10 select-none shrink-0">
+              <div className="bg-[#141414] border-2 border-[#2b2a29] p-1 rounded-xl flex items-center gap-1 relative z-30">
                 <button
                   type="button"
                   onClick={() => setChatMode("brief")}
-                  className={`relative px-4 py-1.5 rounded text-xs font-medium transition-colors duration-200 z-10 ${
+                  className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 ${
                     chatMode === "brief"
                       ? "text-white"
                       : "text-gray-400 hover:text-gray-200"
@@ -104,7 +119,7 @@ export default function ChatInput({ isFixed = true }: ChatInputProps) {
                 <button
                   type="button"
                   onClick={() => setChatMode("detailed")}
-                  className={`relative px-4 py-1.5 rounded text-xs font-medium transition-colors duration-200 z-10 ${
+                  className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 ${
                     chatMode === "detailed"
                       ? "text-white"
                       : "text-gray-400 hover:text-gray-200"

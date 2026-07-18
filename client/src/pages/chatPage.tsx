@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import ChatInput from "../components/chatInput";
 import useChatStore from "@/store/useChatStore";
 import axios from "axios";
-import StreamingBubble from "@/components/streamBubble";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
 
 type Message = {
   id: string;
@@ -14,6 +20,9 @@ type Message = {
 export default function ChatPage() {
   const userQuery = useChatStore((s) => s.userQuery);
   const chatMode = useChatStore((s) => s.chatMode);
+  const isStreaming = useChatStore((s) => s.isStreaming);
+  const agentResponse = useChatStore((s) => s.agentResponse);
+  const agentUpdate = useChatStore((s) => s.agentUpdates);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const hasSentInitialQuery = useRef(false);
@@ -33,16 +42,17 @@ export default function ChatPage() {
         useChatStore.getState().setAgentResponse(message as string);
       } else if (type === "done") {
         const text = useChatStore.getState().agentResponse ?? "";
+
         setMessages((prev) => [
           ...prev,
           { id: crypto.randomUUID(), role: "agent", content: text },
         ]);
-        // useChatStore.getState().finishStream();
+
+        useChatStore.getState().finishStream();
       }
     };
 
     sse.onerror = () => console.log("SSE connection error");
-
     return () => sse.close();
   }, []);
 
@@ -52,7 +62,7 @@ export default function ChatPage() {
       handleNewMessage();
       window.history.replaceState({}, document.title);
     }
-  }, [userQuery]);
+  }, []);
 
   const handleNewMessage = async () => {
     const { userQuery, chatMode, resetStream } = useChatStore.getState();
@@ -62,7 +72,7 @@ export default function ChatPage() {
       ...prev,
       { id: crypto.randomUUID(), role: "user", content: userQuery },
     ]);
-    resetStream(); // clears agentResponse/agentUpdates, sets isStreaming = true
+    resetStream();
 
     try {
       await axios.post(`${import.meta.env.VITE_BASE_URL}/report/generate`, {
@@ -75,37 +85,73 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0a0a0a] text-gray-200 font-sans">
-      <div className="flex-1 overflow-y-auto pt-10 pb-32 px-4 md:px-0">
-        <div className="max-w-3xl mx-auto flex flex-col gap-8">
-          <AnimatePresence>
-            {messages.map((msg) => (
-              <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col w-full"
-              >
-                {msg.role === "user" ? (
-                  <div className="self-end max-w-[80%] bg-[#2b2a29] text-gray-100 px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm font-medium">
-                    {msg.content}
-                  </div>
-                ) : (
-                  <div className="flex gap-4 self-start  mt-2">
-                    <div className="prose prose-invert max-w-none text-lg text-gray-300 leading-relaxed">
-                      {msg.content}
+    <div className="flex flex-col h-screen bg-[#0a0a0a] text-gray-100 font-googleSans tracking-normal antialiased">
+      <MessageScrollerProvider autoScroll scrollPreviousItemPeek={64}>
+        <MessageScroller className="flex-1 w-full pt-10 pb-32">
+          <MessageScrollerViewport>
+            <MessageScrollerContent className="max-w-3xl mx-auto px-4 md:px-0 flex flex-col gap-6">
+              {messages.map((msg) => (
+                <MessageScrollerItem
+                  key={msg.id}
+                  messageId={msg.id}
+                  scrollAnchor={msg.role === "user"}
+                >
+                  <MessageBubble role={msg.role} content={msg.content} />
+                </MessageScrollerItem>
+              ))}
+
+              {isStreaming && (
+                <MessageScrollerItem messageId="active-stream">
+                  <div className="flex gap-4 self-start mt-2">
+                    <div className="prose prose-invert max-w-none text-[16px] leading-[1.8] text-gray-100">
+                      {agentResponse ? (
+                        <>
+                          {agentResponse}
+                          <span className="inline-block w-2 h-4 ml-1 bg-gray-400 animate-pulse align-middle rounded-sm" />
+                        </>
+                      ) : (
+                        <span className=" font-medium shimmer">
+                          {agentUpdate ?? "Analyzing financial data..."}
+                        </span>
+                      )}
                     </div>
                   </div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          <StreamingBubble />
+                </MessageScrollerItem>
+              )}
+            </MessageScrollerContent>
+          </MessageScrollerViewport>
+          <MessageScrollerButton />
+        </MessageScroller>
+      </MessageScrollerProvider>
+
+      <div className="w-full bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pt-10 pb-8 fixed bottom-0 z-10">
+        <ChatInput onSendMessage={handleNewMessage} isFixed={false} />
+      </div>
+    </div>
+  );
+}
+
+function MessageBubble({
+  role,
+  content,
+}: {
+  role: "user" | "agent";
+  content: string;
+}) {
+  if (role === "user") {
+    return (
+      <div className="flex w-full justify-end">
+        <div className="max-w-[80%] bg-[#262626] text-white px-5 py-3 rounded-3xl rounded-tr-sm shadow-sm text-[17px] leading-relaxed font-medium">
+          {content}
         </div>
       </div>
+    );
+  }
 
-      <div className="w-full bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pt-10 pb-8 fixed bottom-0">
-        <ChatInput onSendMessage={handleNewMessage} isFixed={false} />
+  return (
+    <div className="flex gap-4 self-start mt-2">
+      <div className="prose prose-invert max-w-none text-[17px] leading-[1.8] text-white">
+        {content}
       </div>
     </div>
   );

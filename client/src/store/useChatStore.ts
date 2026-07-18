@@ -14,6 +14,7 @@ interface ChatAction {
   setAgentResponse: (response: string) => void;
   setAgentUpdate: (update: string) => void;
   resetStream: () => void;
+  finishStream: () => void;
 }
 
 type ChatStoreType = ChatState & ChatAction;
