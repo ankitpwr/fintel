@@ -23,6 +23,7 @@ import { fetchTopIndexPerformance, fetchTopMovers } from "./market.tools";
 import { quantitativeSubagent } from "../subagents/quantitative.node";
 import { sentimentSubagent } from "../subagents/sentiment.subagent";
 import { type LangGraphRunnableConfig } from "@langchain/langgraph";
+import { getSymbol } from "./symbol.tool";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }, config: LangGraphRunnableConfig) => {
@@ -143,10 +144,12 @@ export const balanceSheetTool = tool(
   async (
     {
       symbol,
+      companyName,
       period1,
       period2,
     }: {
       symbol: string;
+      companyName: string;
       period1?: string;
       period2?: string;
     },
@@ -156,7 +159,12 @@ export const balanceSheetTool = tool(
       config.writer?.({
         status: `Retrieving balance sheet statements for ${symbol}...`,
       });
-      const data = await fetchBalanceSheet(symbol, period1, period2);
+      const data = await fetchBalanceSheet(
+        symbol,
+        companyName,
+        period1,
+        period2,
+      );
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in balance sheet tool ", error);
@@ -169,6 +177,9 @@ export const balanceSheetTool = tool(
       "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      companyName: z
+        .string()
+        .describe("Name of the compnay, e.g. Reliance Industries"),
       period1: z
         .string()
         .optional()
@@ -185,10 +196,12 @@ export const cashFlowStatementTool = tool(
   async (
     {
       symbol,
+      companyName,
       period1,
       period2,
     }: {
       symbol: string;
+      companyName: string;
       period1?: string;
       period2?: string;
     },
@@ -198,7 +211,7 @@ export const cashFlowStatementTool = tool(
       config.writer?.({
         status: `Analyzing cash flow statements for ${symbol}...`,
       });
-      const data = await fetchCashFlow(symbol, period1, period2);
+      const data = await fetchCashFlow(symbol, companyName, period1, period2);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in cash flow tool ", error);
@@ -211,6 +224,9 @@ export const cashFlowStatementTool = tool(
       "Get the cash flow financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      companyName: z
+        .string()
+        .describe("Name of the compnay, e.g. Reliance Industries"),
       period1: z
         .string()
         .optional()
@@ -227,10 +243,12 @@ export const incomeStatementTool = tool(
   async (
     {
       symbol,
+      companyName,
       period1,
       period2,
     }: {
       symbol: string;
+      companyName: string;
       period1?: string;
       period2?: string;
     },
@@ -240,7 +258,12 @@ export const incomeStatementTool = tool(
       config.writer?.({
         status: `Retrieving Income statements for ${symbol}...`,
       });
-      const data = await fetchIncomeStatement(symbol, period1, period2);
+      const data = await fetchIncomeStatement(
+        symbol,
+        companyName,
+        period1,
+        period2,
+      );
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in income statement tool ", error);
@@ -253,6 +276,9 @@ export const incomeStatementTool = tool(
       "Get the income financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      companyName: z
+        .string()
+        .describe("Name of the compnay, e.g. Reliance Industries"),
       period1: z
         .string()
         .optional()
@@ -461,7 +487,7 @@ export const symbolTool = tool(
       config.writer?.({
         status: `Looking for ticker symbol for ${company}...`,
       });
-      const data = await fetchNews(company);
+      const data = await getSymbol(company);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in symbol tool ", error);
@@ -497,17 +523,19 @@ export const quantitativeSubagentTool = tool(
   {
     name: "quantitative_subagent_tool",
     description:
-      "Use this subagent as tool to calculate and find the missing financial metric by providing raw data for it.",
+      "Use this tool to find the missing financial metric by providing raw data for it.",
     schema: z.object({
       queries: z
         .array(
           z
             .string()
-            .describe("a single fianancial missing metric with raw input data"),
+            .describe(
+              "a single fianancial missing metric with raw input data to calculate that metric. eg. ' find ROCE for MRF using EBIT: 35813100000, Total Assets: 319535100000, Current Liabilities: 90062700000'",
+            ),
         )
         .max(3)
         .describe(
-          `Array containing atmost 3 missing financial metric with input raw data values for finding that metric.`,
+          `Array containing atmost 3 missing financial metric with raw data values for calculating that metric. no formula required for that missing metric only the raw input values.`,
         ),
     }),
   },
@@ -529,10 +557,10 @@ export const sentimentSubagentTool = tool(
   {
     name: "sentiment_subagent_tool",
     description:
-      "Use this subagent as tool to get the sentiment and latest news summary on stock, company or market overviews and performace.",
+      "Use this tool to get the sentiment and latest news summary on stock, company or market overviews and performace.",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
-        example: - 'Tata motors', 'Reliance', 'NIFTY50','National stock Exchange India', `),
+        example: - 'sentiment around Tata motors', 'todays news summary around NIFTY50','National stock Exchange India', `),
     }),
   },
 );

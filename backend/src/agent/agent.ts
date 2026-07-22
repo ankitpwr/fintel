@@ -1,5 +1,5 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
+// import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 
 import {
   balanceSheetTool,
@@ -10,7 +10,6 @@ import {
   shareholdingInfoTool,
   stockInfoTool,
   priceHistoryTool,
-  newsTool,
   corporateActionTool,
   topMoversTool,
   quantitativeSubagentTool,
@@ -27,7 +26,6 @@ import type {
   SystemMessage,
   ToolMessage,
 } from "langchain";
-import { start } from "node:repl";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -61,7 +59,7 @@ export const tools = [
   sentimentSubagentTool,
 ];
 const graph = new StateGraph(AppState);
-const tracer = new LangChainTracer();
+// const tracer = new LangChainTracer();
 
 graph
   .addNode("analyze_query", queryAnalyzerSubagent)
@@ -125,9 +123,3 @@ export async function startAgent(
     console.log(error);
   }
 }
-
-// startAgent(
-//   "analyze the HDFC bank fundamental, and sentiment and is it right time to invest on it?",
-//   "werwere2232",
-//   "detailed",
-// );

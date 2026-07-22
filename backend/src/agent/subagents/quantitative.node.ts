@@ -3,14 +3,15 @@ import { mathsExpertPrompt } from "../prompts/prompt";
 import { createAgent, HumanMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-3.1-flash-lite",
+  maxRetries: 2,
+  apiKey: process.env.GOOGLE_API_KEY,
+});
+
 export async function quantitativeSubagent(queries: string[]) {
   try {
     console.log("input for quantitative subagent  ", JSON.stringify(queries));
-    const model = new ChatGoogleGenerativeAI({
-      model: "gemini-3.1-flash-lite",
-      maxRetries: 2,
-      apiKey: process.env.GOOGLE_API_KEY,
-    });
 
     const subagent = createAgent({
       model,

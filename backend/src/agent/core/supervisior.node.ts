@@ -4,32 +4,40 @@ import { tools, type AppStateType } from "../agent";
 import { llmWithToolsSystemPrompt } from "../prompts/prompt";
 import { ChatMistralAI } from "@langchain/mistralai";
 
+const model = new ChatMistralAI({
+  model: "mistral-medium-latest",
+  apiKey: process.env.MISTRAL_TOKEN,
+  temperature: 0.1,
+});
+
 export async function supervisor(state: AppStateType) {
   try {
-    const model = new ChatMistralAI({
-      model: "mistral-medium-latest",
-      apiKey: process.env.MISTRAL_TOKEN,
-      temperature: 0.2,
-    });
+    console.log("in supervisor state is  ", state);
 
     const agent = createAgent({
       model: model,
       tools: tools,
       systemPrompt: llmWithToolsSystemPrompt.content as string,
     });
+    const symbolMap =
+      state.companyName?.map((name, i) => ({
+        company: name,
+        symbol: state.symbol?.[i],
+      })) ?? [];
+
     const taskContext = new HumanMessage(
       [
         `User query: ${state.userQuery}`,
         `Query type: ${state.queryType}`,
-        state.companyName?.length
-          ? `Company name(s): ${state.companyName.join(", ")}`
-          : null,
-        state.symbol?.length
-          ? `Resolved symbol(s): ${state.symbol.join(", ")}`
+        symbolMap.length
+          ? `Resolved company-to-symbol mapping (AUTHORITATIVE — use these exact symbol values, do not substitute your own knowledge of ticker symbols):\n` +
+            symbolMap
+              .map((m) => `- "${m.company}" → symbol: "${m.symbol}"`)
+              .join("\n")
           : null,
       ]
         .filter(Boolean)
-        .join("\n"),
+        .join("\n\n"),
     );
 
     const result = await agent.invoke(

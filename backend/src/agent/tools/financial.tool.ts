@@ -2,7 +2,6 @@ import "dotenv/config";
 import YahooFinance from "yahoo-finance2";
 import type { ShareHoldingInfo } from "../../types/agent.types";
 import { nseClient } from "../../lib/nseClient";
-import da from "zod/v4/locales/da.cjs";
 
 export const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
@@ -10,6 +9,8 @@ export const yahooFinance = new YahooFinance({
 
 export async function fetchStockInfo(symbol: string) {
   try {
+    console.log("input symbol to fetch stock tool ", symbol);
+
     const data = await yahooFinance.quoteSummary(`${symbol}.NS`, {
       modules: [
         "assetProfile",
@@ -121,19 +122,34 @@ export async function fetchShareHoldingInfo(symbol: string) {
 
 export async function fetchBalanceSheet(
   symbol: string,
+  companyName: string,
   period1?: string,
   period2?: string,
 ) {
   try {
+    console.log(
+      "input symbol to balanceSheet tool ",
+      symbol,
+      " ",
+      period1,
+      " ",
+      period2,
+    );
+
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
+    console.log("start and end is  ", start, " ", end);
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
       period1: start,
       period2: end,
       type: "annual",
       module: "balance-sheet",
     });
-    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    const dataWithSymbol = result.map((item) => ({
+      ...item,
+      symbol,
+      companyName,
+    }));
     console.log(`balance sheet data for ${symbol}  `, dataWithSymbol);
     return dataWithSymbol;
   } catch (error) {
@@ -147,10 +163,19 @@ export async function fetchBalanceSheet(
 
 export async function fetchCashFlow(
   symbol: string,
+  companyName: string,
   period1?: string,
   period2?: string,
 ) {
   try {
+    console.log(
+      "input symbol to cash flow tool ",
+      symbol,
+      " ",
+      period1,
+      " ",
+      period2,
+    );
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
@@ -159,7 +184,11 @@ export async function fetchCashFlow(
       type: "annual",
       module: "cash-flow",
     });
-    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    const dataWithSymbol = result.map((item) => ({
+      ...item,
+      symbol,
+      companyName,
+    }));
     console.log(`cash flow data for ${symbol}  `, dataWithSymbol);
     return dataWithSymbol;
   } catch (error) {
@@ -171,10 +200,19 @@ export async function fetchCashFlow(
 
 export async function fetchIncomeStatement(
   symbol: string,
+  companyName: string,
   period1?: string,
   period2?: string,
 ) {
   try {
+    console.log(
+      "input symbol income statement tool ",
+      symbol,
+      " ",
+      period1,
+      " ",
+      period2,
+    );
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
@@ -183,7 +221,11 @@ export async function fetchIncomeStatement(
       type: "annual",
       module: "financials",
     });
-    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    const dataWithSymbol = result.map((item) => ({
+      ...item,
+      symbol,
+      companyName,
+    }));
     console.log(`income statement data for ${symbol}  `, dataWithSymbol);
 
     return dataWithSymbol;

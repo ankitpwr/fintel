@@ -267,6 +267,7 @@ export async function earningCallPDFSummarizer(state: {
 
 export async function fetchNews(keyword: string) {
   try {
+    console.log("input to fetchNews tool  ", keyword);
     const response = await axios.get(
       `https://newsdata.io/api/1/market?apikey=pub_2136412a33cb4aac9cb6f127b80186f5&q=${keyword}&country=in&language=en`,
     );

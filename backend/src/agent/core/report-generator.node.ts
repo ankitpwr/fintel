@@ -5,18 +5,17 @@ import {
   finalSummaryDetailedPrompt,
 } from "../prompts/prompt";
 import { AIMessage, HumanMessage, ToolMessage } from "langchain";
-import { stat } from "fs";
+
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-3.5-flash-lite",
+  maxRetries: 2,
+  temperature: 0.1,
+  apiKey: process.env.GOOGLE_API_KEY,
+});
 
 export async function finalSummary(state: AppStateType) {
   try {
     const isDetailed = state.queryType === "detailed";
-
-    const model = new ChatGoogleGenerativeAI({
-      model: "gemini-3.1-flash-lite",
-      maxRetries: 2,
-      temperature: 0.2,
-      apiKey: process.env.GOOGLE_API_KEY,
-    });
 
     console.log(
       "State in finalSummary is ",
@@ -27,24 +26,27 @@ export async function finalSummary(state: AppStateType) {
       ? finalSummaryDetailedPrompt
       : finalSummaryBriefPrompt;
     const toolResults: Record<string, string> = {};
+    const toolres = [];
     for (const m of state.messages) {
       if (m._getType() === "tool") {
-        toolResults[(m as ToolMessage).name ?? m.tool_call_id] =
-          m.content as string;
+        toolres.push({
+          tool: (m as ToolMessage).name ?? "unknown Tool",
+          data: m.content as string,
+        });
       }
     }
 
     console.log(
       "tool response in finalSummary node  ",
-      JSON.stringify(toolResults),
+      JSON.stringify(toolres),
     );
 
     const response = await model.invoke([
       systemPrompt,
       new HumanMessage(`
-      Fetched Data Context:\n${JSON.stringify(toolResults)}\n\n
-      User Query: ${state.userQuery}
-      Company: ${state.companyName} \n\n
+      Fetched Data Context:\n${JSON.stringify(toolres)}\n
+      User Query: ${state.userQuery}\n
+      Company: ${state.companyName} \n
       query type: ${state.queryType}
   `),
     ]);
