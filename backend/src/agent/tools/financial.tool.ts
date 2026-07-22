@@ -2,6 +2,7 @@ import "dotenv/config";
 import YahooFinance from "yahoo-finance2";
 import type { ShareHoldingInfo } from "../../types/agent.types";
 import { nseClient } from "../../lib/nseClient";
+import da from "zod/v4/locales/da.cjs";
 
 export const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
@@ -22,38 +23,40 @@ export async function fetchStockInfo(symbol: string) {
       ],
     });
 
-    // console.log("extract-stock-info ", data);
+    const filteredData = {
+      companyName: data.price?.longName,
+      industry: data.assetProfile?.industry,
+
+      lastTradedPrice: data.price?.regularMarketPrice,
+      openPrice: data.price?.regularMarketOpen,
+      closePrice: data.price?.regularMarketPreviousClose,
+      priceChange: data.price?.regularMarketChange,
+      intradayHigh: data.price?.regularMarketDayHigh,
+      intradayLow: data.price?.regularMarketDayLow,
+      fiftyTwoWeekHigh: data.summaryDetail?.fiftyTwoWeekHigh,
+      fiftyTwoWeekLow: data.summaryDetail?.fiftyTwoWeekLow,
+
+      peRatio: data.summaryDetail?.trailingPE,
+      pegRatio: data.defaultKeyStatistics?.pegRatio,
+      payoutRatio: data.summaryDetail?.payoutRatio,
+      quickRatio: data.financialData?.quickRatio,
+      currentRatio: data.financialData?.currentRatio,
+
+      eps: data.defaultKeyStatistics?.trailingEps,
+      beta: data.summaryDetail?.beta,
+      bookValue: data.defaultKeyStatistics?.bookValue,
+      priceToBook: data.defaultKeyStatistics?.priceToBook,
+
+      marketCap: data.summaryDetail?.marketCap,
+      dividendRate: data.summaryDetail?.dividendRate,
+      returnOnAsset: data.financialData?.returnOnAssets,
+      returnOnEquity: data.financialData?.returnOnEquity,
+    };
+
+    console.log("extract-stock-info ", filteredData);
 
     return {
-      stockInfo: {
-        companyName: data.price?.longName,
-        industry: data.assetProfile?.industry,
-
-        lastTradedPrice: data.price?.regularMarketPrice,
-        openPrice: data.price?.regularMarketOpen,
-        closePrice: data.price?.regularMarketPreviousClose,
-        priceChange: data.price?.regularMarketChange,
-        intradayHigh: data.price?.regularMarketDayHigh,
-        intradayLow: data.price?.regularMarketDayLow,
-        fiftyTwoWeekHigh: data.summaryDetail?.fiftyTwoWeekHigh,
-        fiftyTwoWeekLow: data.summaryDetail?.fiftyTwoWeekLow,
-
-        peRatio: data.summaryDetail?.trailingPE,
-        pegRatio: data.defaultKeyStatistics?.pegRatio,
-        payoutRatio: data.summaryDetail?.payoutRatio,
-        quickRatio: data.financialData?.quickRatio,
-        currentRatio: data.financialData?.currentRatio,
-
-        eps: data.defaultKeyStatistics?.trailingEps,
-        beta: data.summaryDetail?.beta,
-        bookValue: data.defaultKeyStatistics?.bookValue,
-        priceToBook: data.defaultKeyStatistics?.priceToBook,
-
-        marketCap: data.summaryDetail?.marketCap,
-        dividendRate: data.summaryDetail?.dividendRate,
-        returnOnAsset: data.financialData?.returnOnAssets,
-        returnOnEquity: data.financialData?.returnOnEquity,
-      },
+      stockInfo: filteredData,
     };
   } catch (error) {
     console.log("error in extract-stock-info");
@@ -68,7 +71,7 @@ export async function fetchPeersInfo(symbol: string) {
       `/NextApi/apiClient/GetQuoteApi?functionName=getPeerComparisonData&symbol=${symbol}&type=S&quarter=2025-12&param=industry&index=`,
     );
 
-    // console.log("extract-peers-info ", data);
+    console.log("extract-peers-info  for symbol ", data);
     return {
       peerInfo: data.map((peer: any) => ({
         symbol: peer.symbol,
@@ -131,7 +134,7 @@ export async function fetchBalanceSheet(
       module: "balance-sheet",
     });
     const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
-    // console.log(dataWithSymbol);
+    console.log(`balance sheet data for ${symbol}  `, dataWithSymbol);
     return dataWithSymbol;
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
@@ -156,8 +159,9 @@ export async function fetchCashFlow(
       type: "annual",
       module: "cash-flow",
     });
-    const dateWithSymbol = result.map((item) => ({ ...item, symbol }));
-    return dateWithSymbol;
+    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    console.log(`cash flow data for ${symbol}  `, dataWithSymbol);
+    return dataWithSymbol;
   } catch (error) {
     console.error("Error cash flow tool:", error);
     console.log(error);
@@ -179,8 +183,10 @@ export async function fetchIncomeStatement(
       type: "annual",
       module: "financials",
     });
-    const dateWithSymbol = result.map((item) => ({ ...item, symbol }));
-    return dateWithSymbol;
+    const dataWithSymbol = result.map((item) => ({ ...item, symbol }));
+    console.log(`income statement data for ${symbol}  `, dataWithSymbol);
+
+    return dataWithSymbol;
   } catch (error) {
     console.error("Error income statement:", error);
     console.log(error);
@@ -195,7 +201,7 @@ export async function fetchPriceHistory(symbol: string, startDate?: string) {
       period1: start,
       interval: "1mo",
     });
-    // console.log(response.quotes);
+    console.log(`price history data for ${symbol}  `, response.quotes);
     return response.quotes;
   } catch (error) {
     console.log("error in fech_price_history");

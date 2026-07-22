@@ -15,6 +15,8 @@ export const generateReport = async (req: Request, res: Response) => {
         error: parsedBody.error.issues[0]?.message,
       });
     }
+
+    console.log("query type is ", parsedBody.data.queryType);
     const uuid = crypto.randomUUID();
     // custom jobids
     await queryQueue.add(

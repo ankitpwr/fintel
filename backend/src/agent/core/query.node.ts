@@ -50,11 +50,6 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
 
     const response = await subagent.invoke({ messages: messages });
 
-    console.log(
-      "query analyzer subagent rresponse ",
-      response.structuredResponse,
-    );
-
     if (response.structuredResponse.relevent) {
       return {
         symbol: response.structuredResponse.symbol,

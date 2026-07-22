@@ -76,8 +76,8 @@ graph
 
 export async function startAgent(
   query: string,
+  queryType: "brief" | "detailed",
   userId?: string,
-  queryType: "brief" | "detailed" = "brief",
 ) {
   try {
     console.log("query is ", query);
@@ -117,6 +117,8 @@ export async function startAgent(
         message: finalText,
       }),
     );
+
+    console.log("final response is ------> ", finalText);
     return finalText;
   } catch (error) {
     console.log("error in init");

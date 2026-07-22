@@ -9,7 +9,7 @@ export async function supervisor(state: AppStateType) {
     const model = new ChatMistralAI({
       model: "mistral-medium-latest",
       apiKey: process.env.MISTRAL_TOKEN,
-      temperature: 0.1,
+      temperature: 0.2,
     });
 
     const agent = createAgent({
@@ -34,7 +34,7 @@ export async function supervisor(state: AppStateType) {
 
     const result = await agent.invoke(
       { messages: [taskContext] },
-      { recursionLimit: 10 },
+      { recursionLimit: 15 },
     );
 
     return { messages: result.messages };

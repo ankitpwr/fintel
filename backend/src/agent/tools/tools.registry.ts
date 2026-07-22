@@ -497,12 +497,17 @@ export const quantitativeSubagentTool = tool(
   {
     name: "quantitative_subagent_tool",
     description:
-      "Use this subagent as tool to calculate and find the missing financial metric.",
+      "Use this subagent as tool to calculate and find the missing financial metric by providing raw data for it.",
     schema: z.object({
       queries: z
-        .array(z.string())
+        .array(
+          z
+            .string()
+            .describe("a single fianancial missing metric with raw input data"),
+        )
+        .max(3)
         .describe(
-          `Array containing one of more missing financial metric with input raw data values for finding that metric. no mathamatics formula for metric is required`,
+          `Array containing atmost 3 missing financial metric with input raw data values for finding that metric.`,
         ),
     }),
   },

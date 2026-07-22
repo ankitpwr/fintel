@@ -29,7 +29,7 @@ export async function quantitativeSubagent(queries: string[]) {
     console.log("response by calculator tool ", response.messages.at(-1)?.text);
     return response.messages.at(-1)?.text;
   } catch (error) {
-    console.log("error in calculator tool ", error);
+    console.log("error in quantitative tool ", error);
     return { quantitativeSubagent: { error: "quantitative Subagent failed" } };
   }
 }

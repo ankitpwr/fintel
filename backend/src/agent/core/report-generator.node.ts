@@ -5,6 +5,7 @@ import {
   finalSummaryDetailedPrompt,
 } from "../prompts/prompt";
 import { AIMessage, HumanMessage, ToolMessage } from "langchain";
+import { stat } from "fs";
 
 export async function finalSummary(state: AppStateType) {
   try {
@@ -16,6 +17,11 @@ export async function finalSummary(state: AppStateType) {
       temperature: 0.2,
       apiKey: process.env.GOOGLE_API_KEY,
     });
+
+    console.log(
+      "State in finalSummary is ",
+      `userquery: ${state.userQuery} \n query Type: ${state.queryType}`,
+    );
 
     const systemPrompt = isDetailed
       ? finalSummaryDetailedPrompt
@@ -36,9 +42,10 @@ export async function finalSummary(state: AppStateType) {
     const response = await model.invoke([
       systemPrompt,
       new HumanMessage(`
-      Fetched Data Context:\n${JSON.stringify(toolResults)}
-      \n\nUser Query: ${state.userQuery}
-      Company: ${state.companyName}
+      Fetched Data Context:\n${JSON.stringify(toolResults)}\n\n
+      User Query: ${state.userQuery}
+      Company: ${state.companyName} \n\n
+      query type: ${state.queryType}
   `),
     ]);
 

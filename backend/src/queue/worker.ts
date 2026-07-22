@@ -8,7 +8,11 @@ const queryWorker = new Worker(
     console.log(
       `Worker picked up Job ${job.id} of type ${job.name} with job data as ${job.data}`,
     );
-    await startAgent(job.data["userQuery"], job.data["userId"]);
+    await startAgent(
+      job.data["userQuery"],
+      job.data["queryType"],
+      job.data["userId"],
+    );
   },
   { connection: redisClient as any, concurrency: 2 },
 );
@@ -16,7 +20,10 @@ const queryWorker = new Worker(
 const marketSummaryWorker = new Worker(
   "market-summary-queue",
   async (job) => {
-    const response = await startAgent(job.data["userQuery"]);
+    const response = await startAgent(
+      job.data["userQuery"],
+      job.data["queryType"],
+    );
 
     //store in redis
     await redisClient.set(
@@ -45,6 +52,7 @@ export async function initMarketSummaryScheduler() {
       data: {
         userQuery:
           "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
+        queryType: "brief",
       },
       opts: { attempts: 3, backoff: { type: "exponential", delay: 1000 } },
     },
