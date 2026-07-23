@@ -47,7 +47,7 @@ export const TreemapNode = (props: any) => {
         fill={bgColor}
         stroke="#171615"
         strokeWidth={1.5}
-        className="transition-all duration-300 hover:opacity-80 cursor-pointer"
+        className="transition-all duration-300 hover:opacity-80 cursor-pointer "
       />
 
       {showSymbol && (

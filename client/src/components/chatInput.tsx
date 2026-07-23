@@ -14,13 +14,25 @@ export default function ChatInput({
   isFixed = true,
   onSendMessage,
 }: ChatInputProps) {
-  const suggestions = [
-    "What is ROCE of HDFC",
+  const briefModeSuggestions = [
+    "What is ROE of HDFC",
     "What is market cap of MRF",
+    "Compare debt levels of Tata Motors and M&M",
     "what were key takeways from TCS earning call",
   ];
+
+  const deepResearchModeSuggestions = [
+    "Summarize earning call of Bharti Airtel ",
+    "Compare Divis Labs, and Torrent Pharma in detail",
+    "Perfrom technical and fundamental analysis of Jio Financial Service",
+  ];
+
   const { userQuery, chatMode, setUserQuery, setChatMode } = useChatStore();
-  const [currentSuggestion, setCurrentSuggestion] = useState(suggestions[0]);
+  const [currentSuggestion, setCurrentSuggestion] = useState(
+    chatMode == "brief"
+      ? briefModeSuggestions[0]
+      : deepResearchModeSuggestions[0],
+  );
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,8 +53,8 @@ export default function ChatInput({
   };
 
   const containerClasses = isFixed
-    ? "fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-50"
-    : "w-full max-w-4xl mx-auto";
+    ? "fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-50 "
+    : "w-full max-w-4xl mx-auto ";
 
   return (
     <div className={containerClasses}>
@@ -73,7 +85,11 @@ export default function ChatInput({
           <div className="flex items-center justify-between pt-2 gap-4">
             <div className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer">
               <RotatingText
-                texts={suggestions}
+                texts={
+                  chatMode == "brief"
+                    ? briefModeSuggestions
+                    : deepResearchModeSuggestions
+                }
                 mainClassName="whitespace-nowrap"
                 staggerFrom="center"
                 initial={{ y: "100%" }}
@@ -85,7 +101,13 @@ export default function ChatInput({
                 transition={{ type: "spring", damping: 30, stiffness: 400 }}
                 rotationInterval={4000}
                 splitBy="lines"
-                onNext={(index) => setCurrentSuggestion(suggestions[index])}
+                onNext={(index) =>
+                  setCurrentSuggestion(
+                    chatMode == "brief"
+                      ? briefModeSuggestions[index]
+                      : deepResearchModeSuggestions[index],
+                  )
+                }
                 auto
                 loop
               />

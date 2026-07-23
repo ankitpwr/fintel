@@ -20,9 +20,9 @@ export function TopMoverTable({ data }: { data: TopMover[] }) {
             <TableHead className="text-[#a3a3a3] font-medium text-xs uppercase tracking-wider py-3 text-right">
               Current
             </TableHead>
-            <TableHead className="text-[#a3a3a3] font-medium text-xs uppercase tracking-wider py-3 text-right hidden sm:table-cell">
+            {/* <TableHead className="text-[#a3a3a3] font-medium text-xs uppercase tracking-wider py-3 text-right hidden sm:table-cell">
               Opening
-            </TableHead>
+            </TableHead> */}
             <TableHead className="text-[#a3a3a3] font-medium text-xs uppercase tracking-wider py-3 text-right pr-5">
               % Chg
             </TableHead>
@@ -42,9 +42,9 @@ export function TopMoverTable({ data }: { data: TopMover[] }) {
                 <TableCell className="text-right text-gray-100 py-3 tabular-nums">
                   {element.currentPrice.toFixed(2)}
                 </TableCell>
-                <TableCell className="text-right text-[#a3a3a3] py-3 tabular-nums hidden sm:table-cell">
+                {/* <TableCell className="text-right text-[#a3a3a3] py-3 tabular-nums hidden sm:table-cell">
                   {element.openingPrice.toFixed(2)}
-                </TableCell>
+                </TableCell> */}
                 <TableCell
                   className={`text-right font-medium py-3 pr-5 tabular-nums ${
                     isPositive ? "text-emerald-400" : "text-rose-400"

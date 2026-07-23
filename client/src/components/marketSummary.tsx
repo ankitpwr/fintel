@@ -12,11 +12,11 @@ export default function MarketSummary() {
   }
   return (
     <div className=" bg-[#1e1d1c] border border-[#2b2a29] flex flex-col gap-4 p-8 rounded-xl">
-      <h1 className="text-2xl font-geistmono tracking-wide">
+      <h1 className="text-2xl font-googleSans tracking-wide">
         Today's market summary
       </h1>
       <p>{data.generatedAt}</p>
-      <p className="font-inter text-sm">{data.summary}</p>
+      <p className="font-googleSans text-sm">{data.summary}</p>
     </div>
   );
 }

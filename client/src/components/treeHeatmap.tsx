@@ -33,12 +33,14 @@ const CustomTooltip = ({ active, payload }: any) => {
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <span className="text-xs text-[#a3a3a3] uppercase tracking-wider font-semibold line-clamp-1">
+          <span className="text-xs font-googleSans text-[#a3a3a3] uppercase tracking-wider font-semibold line-clamp-1">
             {data.name}
           </span>
 
           <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-[#a3a3a3]">Price</span>
+            <span className="text-xs font-googleSans text-[#a3a3a3]">
+              Price
+            </span>
             <span className="text-sm font-medium text-white tabular-nums">
               ₹{" "}
               {data.price?.toLocaleString("en-IN", {
@@ -48,7 +50,9 @@ const CustomTooltip = ({ active, payload }: any) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-xs text-[#a3a3a3]">Market Cap</span>
+            <span className="text-xs font-googleSans text-[#a3a3a3]">
+              Market Cap
+            </span>
             <span className="text-sm font-medium text-white tabular-nums">
               ₹{" "}
               {marketCapInCrores.toLocaleString("en-IN", {
@@ -59,8 +63,10 @@ const CustomTooltip = ({ active, payload }: any) => {
           </div>
 
           {data.analystRating && (
-            <div className="flex justify-between items-center pt-1 border-t border-[#2b2a29]/50">
-              <span className="text-xs text-[#a3a3a3]">Analyst Rating</span>
+            <div className="flex justify-between items-center pt-1 border-t border-[#2b2a29]/50 gap-1">
+              <span className="text-xs text-[#a3a3a3] font-googleSans">
+                Analyst Rating
+              </span>
               <span className="text-xs font-medium bg-[#262524] px-2 py-1 rounded text-gray-200">
                 {data.analystRating}
               </span>
@@ -93,9 +99,9 @@ export function TreemapChart() {
   }
 
   return (
-    <Card className="w-full p-0 overflow-hidden  ">
+    <Card className="w-full overflow-hidden p-0">
       <CardContent className="p-0">
-        <ChartContainer config={{}} className="h-[440px] w-full">
+        <ChartContainer config={{}} className="md:h-[480px] h-[440px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <Treemap
               data={data || []}

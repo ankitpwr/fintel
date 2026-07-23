@@ -43,29 +43,37 @@ export default function Home() {
         <div className="xl:col-span-8 flex flex-col gap-18">
           <div className="flex flex-col gap-1">
             {" "}
-            <h2 className="font-geistmono text-gray-200">Top 50 Heatmap</h2>
+            <h2 className="font-googleSans font-medium  text-gray-200">
+              Top 50 Heatmap
+            </h2>
             <TreemapChart />
           </div>
           <div className="flex flex-col gap-1">
             {" "}
-            <h2 className="font-geistmono text-gray-200">Standouts</h2>
+            <h2 className="font-googleSans font-medium  text-gray-200">
+              Standouts
+            </h2>
             <StandoutTick symbol={symbol} />
           </div>
         </div>
 
         <div className="xl:col-span-4 flex flex-col gap-8">
           <div className="flex flex-col gap-1">
-            <h2 className="font-geistmono text-emerald-400">Top Gainers</h2>
+            <h2 className="font-googleSans font-medium  text-emerald-400">
+              Top Gainers
+            </h2>
             <TopMoverTable data={data["topGainers"]} />
           </div>
 
           <div className="flex flex-col gap-1">
-            <h2 className="font-geistmono  text-rose-400">Top Losers</h2>
+            <h2 className="font-googleSans font-medium   text-rose-400">
+              Top Losers
+            </h2>
             <TopMoverTable data={data["topLosers"]} />
           </div>
 
           <div className="flex flex-col gap-1">
-            <h2 className="font-geistmono text-blue-400">
+            <h2 className="font-googleSans font-medium  text-blue-400">
               Currency Spot Rates
             </h2>
             <CurrencyTable />
@@ -73,7 +81,9 @@ export default function Home() {
         </div>
       </div>
       <section className="w-full flex flex-col gap-4 border-t border-[#2b2a29] pt-8 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-12">
-        <h2 className="font-geistmono text-lg text-gray-200">Top stories</h2>
+        <h2 className="font-googleSans font-medium text-xl text-gray-200">
+          Top stories
+        </h2>
         <NewsGrid />
       </section>
       <ChatInput isFixed={true} />{" "}

@@ -89,7 +89,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
     ? ((latestPrice - openPrice) / openPrice) * 100
     : 0;
   const isPositive = netChangePercent >= 0;
-  const trendColor = isPositive ? "#31f6b8" : "#f87171";
+  const trendColor = isPositive ? "#00d492" : "#f87171";
 
   const marketCapInCrores = data.marketCap / 10000000;
 
@@ -110,10 +110,10 @@ export function StandoutTick({ symbol }: { symbol: string }) {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex flex-col gap-0.5">
-              <h1 className="text-[16px] font-semibold text-white leading-tight font-geistmono">
+              <h1 className="text-[18px] font-semibold text-white leading-tight font-googleSans">
                 {data.name}
               </h1>
-              <h2 className="text-[10px]  text-zinc-300">{symbol}.NS</h2>
+              <h2 className="text-[12px]  text-zinc-300">{symbol}.NS</h2>
             </div>
           </div>
 
@@ -124,7 +124,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
             <div
               className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium tabular-nums border ${
                 isPositive
-                  ? "bg-[#31f6b8]/10 text-[#31f6b8] border-[#31f6b8]/20"
+                  ? "bg-[#31f6b8]/10 text-[#00d492] border-[#31f6b8]/20"
                   : "bg-rose-500/10 text-rose-400 border-rose-500/20"
               }`}
             >
@@ -211,7 +211,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
                   />
                   <Tooltip
                     content={<ChartCustomTooltip openPrice={openPrice} />}
-                    cursor={{ stroke: "#3a3937", strokeWidth: 1 }}
+                    cursor={{ stroke: "#00d492", strokeWidth: 1 }}
                   />
                   <Area
                     type="monotone"
@@ -234,7 +234,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
 
           <div className="lg:col-span-3 text-xs border-t lg:border-t-0 lg:border-l border-[#2b2a29] pt-4 lg:pt-0 lg:pl-6 flex flex-col gap-3.5">
             <div className="flex justify-between items-center ">
-              <span className="text-[#8a8987]">Market Cap</span>
+              <span className="text-[#8a8987] font-googleSans">Market Cap</span>
               <span className="font-medium text-white tabular-nums">
                 ₹
                 {marketCapInCrores.toLocaleString("en-IN", {
@@ -245,21 +245,25 @@ export function StandoutTick({ symbol }: { symbol: string }) {
             </div>
 
             <div className="flex justify-between items-center ">
-              <span className="text-[#8a8987]">P/E Ratio</span>
+              <span className="text-[#8a8987] font-googleSans">P/E Ratio</span>
               <span className="font-medium text-white tabular-nums">
                 {data.pe?.toFixed(2) ?? "--"}
               </span>
             </div>
 
             <div className="flex justify-between items-cente">
-              <span className="text-[#8a8987] font-normal">Session High</span>
+              <span className="text-[#8a8987] font-normal font-googleSans">
+                Session High
+              </span>
               <span className="font-medium text-emerald-400 tabular-nums">
                 ₹{data.high?.toLocaleString("en-IN")}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-[#8a8987] ">Session Low</span>
+              <span className="text-[#8a8987] font-googleSans">
+                Session Low
+              </span>
               <span className="font-medium text-rose-400 tabular-nums">
                 ₹{data.low?.toLocaleString("en-IN")}
               </span>

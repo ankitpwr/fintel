@@ -45,7 +45,7 @@ export default function NewsGrid() {
           key={index}
           className="group bg-[#1e1d1c] border border-[#2b2a29] rounded-xl overflow-hidden p-4 pb-2 flex gap-4 transition-all duration-300 hover:border-[#3e3c3a] hover:bg-[#232221] shadow-sm"
         >
-          <div className="flex-1 flex flex-col font-inter justify-between min-w-0">
+          <div className="flex-1 flex flex-col font-googleSans justify-between min-w-0">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {item.sourceIcon && (
