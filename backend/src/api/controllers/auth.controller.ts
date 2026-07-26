@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { loginSchema, signupSchema } from "../../lib/zodSchema";
 import { client } from "../../lib/google-client";
 import { prisma } from "../../lib/prisma";
+import type { CustomRequest } from "../../middleware/auth.middleware";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -77,6 +78,11 @@ export const signup = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: "Signup successful",
+      data: {
+        username: user.name,
+        email: user.email,
+        profilepic: user.picture,
+      },
     });
   } catch (error) {
     console.log("singup endpoint error", error);
@@ -120,7 +126,7 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({
       where: { email: email },
-      select: { id: true },
+      select: { id: true, name: true, email: true, picture: true },
     });
 
     if (!user) {
@@ -145,6 +151,39 @@ export const login = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: "Login successful",
+      data: {
+        username: user.name,
+        email: user.email,
+        profilepic: user.picture,
+      },
+    });
+  } catch (error) {
+    console.log("login endpoint error", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+};
+
+export const userDetails = async (req: Request, res: Response) => {
+  try {
+    const { id, email } = req as CustomRequest;
+
+    const user = await prisma.user.findFirst({
+      where: { id: id },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        error: "user is not present",
+      });
+    }
+    return res.status(200).json({
+      data: {
+        username: user.name,
+        email: user.email,
+        profilepic: user.picture,
+      },
     });
   } catch (error) {
     console.log("login endpoint error", error);

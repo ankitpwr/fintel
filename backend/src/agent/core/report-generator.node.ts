@@ -3,6 +3,7 @@ import type { AppStateType } from "../agent";
 import {
   finalSummaryBriefPrompt,
   finalSummaryDetailedPrompt,
+  finalSummaryMarketOverviewPrompt,
 } from "../prompts/prompt";
 import { AIMessage, HumanMessage, ToolMessage } from "langchain";
 
@@ -24,8 +25,10 @@ export async function finalSummary(state: AppStateType) {
 
     const systemPrompt = isDetailed
       ? finalSummaryDetailedPrompt
-      : finalSummaryBriefPrompt;
-    const toolResults: Record<string, string> = {};
+      : state.queryType == "brief"
+        ? finalSummaryBriefPrompt
+        : finalSummaryMarketOverviewPrompt;
+
     const toolres = [];
     for (const m of state.messages) {
       if (m._getType() === "tool") {

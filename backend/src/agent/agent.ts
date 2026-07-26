@@ -30,7 +30,7 @@ import type {
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
   relevent: Annotation<boolean>,
-  queryType: Annotation<"brief" | "detailed">,
+  queryType: Annotation<"brief" | "detailed" | "market summary">,
   userId: Annotation<string>,
   companyName: Annotation<string[]>,
   symbol: Annotation<string[]>,
@@ -74,7 +74,7 @@ graph
 
 export async function startAgent(
   query: string,
-  queryType: "brief" | "detailed",
+  queryType: "brief" | "detailed" | "market summary",
   userId?: string,
 ) {
   try {

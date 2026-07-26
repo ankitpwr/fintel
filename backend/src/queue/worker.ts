@@ -52,7 +52,7 @@ export async function initMarketSummaryScheduler() {
       data: {
         userQuery:
           "Summarize today's Indian stock market: NIFTY, Sensex, Bank Nifty movement, overall sentiment.",
-        queryType: "brief",
+        queryType: "market summary",
       },
       opts: { attempts: 3, backoff: { type: "exponential", delay: 1000 } },
     },
