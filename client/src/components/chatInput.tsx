@@ -10,23 +10,23 @@ interface ChatInputProps {
   isFixed?: boolean;
 }
 
+const briefModeSuggestions = [
+  "What is ROE of HDFC",
+  "What is market cap of MRF",
+  "Compare debt levels of Tata Motors and M&M",
+  "what were key takeways from TCS earning call",
+];
+
+const deepResearchModeSuggestions = [
+  "Summarize earning call of Bharti Airtel ",
+  "Compare Divis Labs, and Torrent Pharma in detail",
+  "Perfrom technical and fundamental analysis of Jio Financial Service",
+];
+
 export default function ChatInput({
   isFixed = true,
   onSendMessage,
 }: ChatInputProps) {
-  const briefModeSuggestions = [
-    "What is ROE of HDFC",
-    "What is market cap of MRF",
-    "Compare debt levels of Tata Motors and M&M",
-    "what were key takeways from TCS earning call",
-  ];
-
-  const deepResearchModeSuggestions = [
-    "Summarize earning call of Bharti Airtel ",
-    "Compare Divis Labs, and Torrent Pharma in detail",
-    "Perfrom technical and fundamental analysis of Jio Financial Service",
-  ];
-
   const { userQuery, chatMode, setUserQuery, setChatMode } = useChatStore();
   const [currentSuggestion, setCurrentSuggestion] = useState(
     chatMode == "brief"

@@ -7,14 +7,15 @@ import { useTopMovers } from "@/hooks/useMarket";
 import { TopMoverTable } from "@/components/topMover";
 import { StandoutTick } from "@/components/standout";
 import ChatInput from "@/components/chatInput";
+import { ThinkingOrb } from "thinking-orbs";
 
 export default function Home() {
   const { data, isLoading, isError } = useTopMovers();
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center text-white">
-        Loading market data...
+      <div className="flex w-full h-full items-center justify-center ">
+        <ThinkingOrb state="shaping" size={64} />
       </div>
     );
   }
@@ -25,6 +26,10 @@ export default function Home() {
         Failed to load market data.
       </div>
     );
+  }
+
+  if (isLoading) {
+    return <div></div>;
   }
 
   const symbol = data.topGainers[0].tickerSymbol;

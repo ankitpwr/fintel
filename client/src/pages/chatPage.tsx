@@ -20,8 +20,6 @@ type Message = {
   content: string;
 };
 
-// Shared typography classes so streamed and finalized responses render identically,
-// tinted to match the app's mint accent instead of Typography's generic defaults.
 const MARKDOWN_CLASSES =
   "prose prose-invert max-w-none text-[16px] leading-[1.8] " +
   "prose-headings:font-semibold prose-headings:text-white " +
