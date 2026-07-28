@@ -43,6 +43,7 @@ export default function ChatPage() {
   useEffect(() => {
     const sse = new EventSource(
       `${import.meta.env.VITE_BASE_URL}/report/stream-update`,
+      { withCredentials: true },
     );
 
     sse.onmessage = (event) => {
@@ -88,10 +89,14 @@ export default function ChatPage() {
     resetStream();
 
     try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/report/generate`, {
-        userQuery,
-        queryType: chatMode,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/report/generate`,
+        {
+          userQuery,
+          queryType: chatMode,
+        },
+        { withCredentials: true },
+      );
     } catch (error) {
       console.log("error occured ", error);
     }
