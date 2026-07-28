@@ -7,5 +7,5 @@ import {
 
 export const reportRouter = Router();
 
-reportRouter.post("/generate", generateReport);
-reportRouter.get("/stream-update", streamResponse);
+reportRouter.post("/generate", authMiddleware, generateReport);
+reportRouter.get("/stream-update", authMiddleware, streamResponse);

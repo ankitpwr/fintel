@@ -70,11 +70,13 @@ export const signup = async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
       path: "/",
       maxAge: 1000 * 60 * 60 * 480,
     });
+
+    console.log("token is  ", token);
 
     return res.status(200).json({
       message: "Signup successful",
@@ -143,11 +145,13 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
       path: "/",
       maxAge: 1000 * 60 * 60 * 480,
     });
+
+    console.log("token in login is  ", token);
 
     return res.status(200).json({
       message: "Login successful",

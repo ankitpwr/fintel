@@ -4,11 +4,11 @@ import { reportSchemaBody } from "../../lib/zodSchema";
 import { queryQueue } from "../../queue/queue";
 import crypto from "crypto";
 import { subscriber } from "../../lib/redis";
-const userId = crypto.randomUUID();
 
 export const generateReport = async (req: Request, res: Response) => {
   try {
     const parsedBody = reportSchemaBody.safeParse(req.body);
+    const { id } = req as CustomRequest;
     if (!parsedBody.success) {
       return res.json(400).json({
         message: "Validation failed",
@@ -16,18 +16,17 @@ export const generateReport = async (req: Request, res: Response) => {
       });
     }
 
-    console.log("query type is ", parsedBody.data.queryType);
-    const uuid = crypto.randomUUID();
+    console.log("query type is ", parsedBody.data.queryType, " id is ", id);
     // custom jobids
     await queryQueue.add(
       "user-queury",
       {
         userQuery: parsedBody.data.userQuery,
-        userId: userId,
+        userId: id,
         queryType: parsedBody.data.queryType,
       },
       {
-        jobId: `report-${userId}-${uuid}`,
+        jobId: `report-${id}-${crypto.randomUUID()}`,
         attempts: 3,
         backoff: { type: "exponential", delay: 1000 },
       },
@@ -63,17 +62,18 @@ subscriber.on("message", (channel, message) => {
 
 export const streamResponse = async (req: Request, res: Response) => {
   try {
-    connectedClients.set(userId, res);
+    const { id } = req as CustomRequest;
+    connectedClients.set(id, res);
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
-    res.flushHeaders(); //send header to client
+    res.flushHeaders();
     const heartbeat = setInterval(
       () => res.write("data: heartbeat\n\n"),
       25000,
     );
     res.on("close", () => {
-      connectedClients.delete(userId);
+      connectedClients.delete(id);
       clearInterval(heartbeat);
     });
   } catch (error) {
