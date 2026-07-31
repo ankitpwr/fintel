@@ -2,17 +2,27 @@ import { Worker } from "bullmq";
 import { startAgent } from "../agent/agent";
 import { redisClient } from "../lib/redis";
 import { marketSummaryQueue } from "./queue";
+import { prisma } from "../lib/prisma";
 const queryWorker = new Worker(
   "user-query-queue",
   async (job) => {
     console.log(
       `Worker picked up Job ${job.id} of type ${job.name} with job data as ${job.data}`,
     );
-    await startAgent(
+    const response = await startAgent(
       job.data["userQuery"],
       job.data["queryType"],
       job.data["userId"],
     );
+
+    await prisma.report.create({
+      data: {
+        userQuery: response!.userQuery,
+        finalResponse: response!.finalResponse,
+        toolInvoked: response!.toolsUsed,
+        userId: response!.userId,
+      },
+    });
   },
   { connection: redisClient as any, concurrency: 2 },
 );
@@ -20,10 +30,11 @@ const queryWorker = new Worker(
 const marketSummaryWorker = new Worker(
   "market-summary-queue",
   async (job) => {
-    const response = await startAgent(
+    const result = await startAgent(
       job.data["userQuery"],
       job.data["queryType"],
     );
+    const response = result?.finalResponse;
 
     //store in redis
     await redisClient.set(
@@ -33,7 +44,7 @@ const marketSummaryWorker = new Worker(
         summary: response,
       }),
       "EX",
-      6 * 60 * 60 * 1000,
+      6 * 60 * 60,
     );
 
     return JSON.stringify({

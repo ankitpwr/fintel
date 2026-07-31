@@ -39,6 +39,11 @@ export const AppState = Annotation.Root({
   >({
     reducer: (current, update) => current.concat(update),
   }),
+  toolsUsed: Annotation<string[]>,
+  totalTokenUsed: Annotation<number>({
+    reducer: (current, update) => (current ?? 0) + (update ?? 0),
+    default: () => 0,
+  }),
   finalResponse: Annotation<string>,
 });
 export type AppStateType = typeof AppState.State;
@@ -75,26 +80,27 @@ graph
 export async function startAgent(
   query: string,
   queryType: "brief" | "detailed" | "market summary",
-  userId?: string,
+  userId: string = "admin",
 ) {
   try {
-    console.log("query is ", query);
     const workflow = graph.compile();
     let finalText = "";
+    let lastState: AppStateType | undefined;
+
     for await (const [mode, payload] of await workflow.stream(
       { userQuery: query, userId: userId || "", queryType },
-      { streamMode: ["messages", "custom"] },
+      { streamMode: ["messages", "custom", "values"] },
     )) {
-      if (mode == "custom") {
+      if (mode === "custom") {
         await publisherClient.publish(
           `agent-updates`,
           JSON.stringify({
-            userId: userId,
+            userId,
             type: "step",
-            message: payload.status,
+            message: (payload as any).status,
           }),
         );
-      } else if (mode == "messages") {
+      } else if (mode === "messages") {
         const [messageChunk, metadata] = payload as [any, any];
         if (metadata.langgraph_node !== "final_summary") continue;
         const token = messageChunk.content;
@@ -102,24 +108,28 @@ export async function startAgent(
         finalText += token;
         await publisherClient.publish(
           `agent-updates`,
-          JSON.stringify({ userId: userId, type: "token", message: token }),
+          JSON.stringify({ userId, type: "token", message: token }),
         );
+      } else if (mode === "values") {
+        lastState = payload as AppStateType;
       }
     }
 
     await publisherClient.publish(
       `agent-updates`,
-      JSON.stringify({
-        userId: userId,
-        type: "done",
-        message: finalText,
-      }),
+      JSON.stringify({ userId, type: "done", message: finalText }),
     );
 
-    console.log("final response is ------> ", finalText);
-    return finalText;
+    return {
+      userQuery: query,
+      userId,
+      queryType,
+      finalResponse: lastState?.finalResponse || finalText || "",
+      toolsUsed: lastState?.toolsUsed ?? [],
+    };
   } catch (error) {
     console.log("error in init");
     console.log(error);
+    return undefined;
   }
 }

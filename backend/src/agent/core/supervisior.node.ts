@@ -42,7 +42,7 @@ export async function supervisor(state: AppStateType) {
 
     const result = await agent.invoke(
       { messages: [taskContext] },
-      { recursionLimit: 15 },
+      { recursionLimit: 20 },
     );
 
     return { messages: result.messages };

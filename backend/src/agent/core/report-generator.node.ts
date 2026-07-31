@@ -17,12 +17,6 @@ const model = new ChatGoogleGenerativeAI({
 export async function finalSummary(state: AppStateType) {
   try {
     const isDetailed = state.queryType === "detailed";
-
-    console.log(
-      "State in finalSummary is ",
-      `userquery: ${state.userQuery} \n query Type: ${state.queryType}`,
-    );
-
     const systemPrompt = isDetailed
       ? finalSummaryDetailedPrompt
       : state.queryType == "brief"
@@ -38,13 +32,9 @@ export async function finalSummary(state: AppStateType) {
         });
       }
     }
+    const toolsUsed = toolres.map((val) => val.tool);
 
-    console.log(
-      "tool response in finalSummary node  ",
-      JSON.stringify(toolres),
-    );
-
-    const response = await model.invoke([
+    const stream = await model.stream([
       systemPrompt,
       new HumanMessage(`
       Fetched Data Context:\n${JSON.stringify(toolres)}\n
@@ -54,20 +44,27 @@ export async function finalSummary(state: AppStateType) {
   `),
     ]);
 
-    const contentItem = response.content?.[1];
     let finalText = "";
-    if (typeof contentItem === "string") {
-      finalText = contentItem;
-    } else if (contentItem && typeof contentItem === "object") {
-      finalText = (contentItem as any).text ?? JSON.stringify(contentItem);
+    for await (const chunk of stream) {
+      const piece =
+        typeof chunk.content === "string"
+          ? chunk.content
+          : Array.isArray(chunk.content)
+            ? chunk.content.map((c: any) => c.text ?? "").join("")
+            : "";
+      finalText += piece;
     }
 
-    return { finalResponse: response.content };
+    return {
+      finalResponse: finalText,
+      toolsUsed,
+    };
   } catch (error) {
     console.log("error in final-summary");
     console.log(error);
     return {
       messages: [new AIMessage("I encountered an error fetching that data.")],
+      finalResponse: "I encountered an error fetching that data.",
     };
   }
 }
