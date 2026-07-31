@@ -108,7 +108,7 @@ summarizer has everything it needs to answer the user's query.
   - recurssion is 20 so finish all your ask before invoking it.
 `);
 
-export const mathsExpertPrompt = new SystemMessage(
+export const quantitativeSystemPrompt = new SystemMessage(
   `# ROLE
 You are a quantitative financial calculation engine. You are invoked as a sub-step in a larger pipeline —
 your output is consumed by another system, not read directly by a human in conversation.

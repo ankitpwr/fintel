@@ -57,12 +57,16 @@ export async function fetchStockInfo(symbol: string) {
     console.log("extract-stock-info ", filteredData);
 
     return {
+      success: true,
       stockInfo: filteredData,
     };
   } catch (error) {
     console.log("error in extract-stock-info");
     console.log(error);
-    return { stockInfo: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Stock info tool failed",
+    };
   }
 }
 
@@ -74,6 +78,7 @@ export async function fetchPeersInfo(symbol: string) {
 
     console.log("extract-peers-info  for symbol ", data);
     return {
+      success: true,
       peerInfo: data.map((peer: any) => ({
         symbol: peer.symbol,
         price: peer.ltp,
@@ -89,7 +94,10 @@ export async function fetchPeersInfo(symbol: string) {
   } catch (error) {
     console.log("error in extract-peers-info");
     console.log(error);
-    return { peerInfo: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Peers tool failed",
+    };
   }
 }
 
@@ -112,11 +120,15 @@ export async function fetchShareHoldingInfo(symbol: string) {
       });
     });
 
-    return { shareHoldingInfo: shareHoldingPattern };
+    return { success: true, shareHoldingInfo: shareHoldingPattern };
   } catch (error) {
     console.log("error in extract-share-holding-info");
     console.log(error);
-    return { shareHoldingInfo: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Shareholding tool failed",
+    };
   }
 }
 
@@ -151,12 +163,14 @@ export async function fetchBalanceSheet(
       companyName,
     }));
     console.log(`balance sheet data for ${symbol}  `, dataWithSymbol);
-    return dataWithSymbol;
+    return { success: true, balanceSheetData: dataWithSymbol };
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
     console.log(error);
     return {
-      balanceSheet: { error: "Tool Failed" },
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Balance sheet tool failed",
     };
   }
 }
@@ -190,11 +204,14 @@ export async function fetchCashFlow(
       companyName,
     }));
     console.log(`cash flow data for ${symbol}  `, dataWithSymbol);
-    return dataWithSymbol;
+    return { success: true, cashFlowData: dataWithSymbol };
   } catch (error) {
     console.error("Error cash flow tool:", error);
     console.log(error);
-    return { cashFlowStatement: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Cash flow tool failed",
+    };
   }
 }
 
@@ -228,11 +245,15 @@ export async function fetchIncomeStatement(
     }));
     console.log(`income statement data for ${symbol}  `, dataWithSymbol);
 
-    return dataWithSymbol;
+    return { success: false, incomeStatementData: dataWithSymbol };
   } catch (error) {
     console.error("Error income statement:", error);
     console.log(error);
-    return { incomeStatement: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Income statement tool failed",
+    };
   }
 }
 
@@ -244,10 +265,14 @@ export async function fetchPriceHistory(symbol: string, startDate?: string) {
       interval: "1mo",
     });
     console.log(`price history data for ${symbol}  `, response.quotes);
-    return response.quotes;
+    return { success: true, priceHistoryData: response.quotes };
   } catch (error) {
     console.log("error in fech_price_history");
     console.log(error);
-    return "Tool Failed";
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Price history tool failed",
+    };
   }
 }

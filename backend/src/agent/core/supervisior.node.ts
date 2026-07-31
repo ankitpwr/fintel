@@ -8,6 +8,7 @@ const model = new ChatMistralAI({
   model: "mistral-medium-latest",
   apiKey: process.env.MISTRAL_TOKEN,
   temperature: 0.1,
+  tags: ["nostream"],
 });
 
 export async function supervisor(state: AppStateType) {

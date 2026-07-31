@@ -1,4 +1,3 @@
-import { ChatGroq } from "@langchain/groq";
 import { createAgent, HumanMessage } from "langchain";
 import { newsAggregatorTool } from "../tools/tools.registry";
 import { sentimentExpertPrompt } from "../prompts/prompt";
@@ -33,9 +32,12 @@ export async function sentimentSubagent(query: string) {
     );
 
     // console.log("response message is ", response.messages);
-    return response.messages.at(-1)?.text;
+    return { success: false, summary: response.messages.at(-1)?.text };
   } catch (error) {
     console.log("error occured in sentimental subagent", error);
-    return { sentimentSubagentResponse: "subagent failed" };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Sentimental tool failed",
+    };
   }
 }

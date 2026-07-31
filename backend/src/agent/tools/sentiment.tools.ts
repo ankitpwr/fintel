@@ -282,9 +282,12 @@ export async function fetchNews(keyword: string) {
     if (data.length > 0) {
       return { availableNews: data };
     }
-    return { availableNews: "no available news" };
+    return { success: true, availableNews: "no available news" };
   } catch (error) {
     console.log("error in fetch news ", error);
-    return { fetchNews: { error: "Tool Failed" } };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "fetch news tool failed",
+    };
   }
 }

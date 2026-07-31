@@ -1,7 +1,7 @@
 import { calculatorTool } from "../tools/tools.registry";
-import { mathsExpertPrompt } from "../prompts/prompt";
 import { createAgent, HumanMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { quantitativeSystemPrompt } from "../prompts/prompt";
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-3.1-flash-lite",
@@ -18,7 +18,7 @@ export async function quantitativeSubagent(queries: string[]) {
       tools: [calculatorTool],
     });
     const messages = [
-      mathsExpertPrompt,
+      quantitativeSystemPrompt,
       new HumanMessage(
         `Calculate the following metrics ${JSON.stringify(queries)}\\n`,
       ),
@@ -28,9 +28,13 @@ export async function quantitativeSubagent(queries: string[]) {
       { recursionLimit: 10 },
     );
     console.log("response by calculator tool ", response.messages.at(-1)?.text);
-    return response.messages.at(-1)?.text;
+    return { success: true, data: response.messages.at(-1)?.text };
   } catch (error) {
     console.log("error in quantitative tool ", error);
-    return { quantitativeSubagent: { error: "quantitative Subagent failed" } };
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "quantitative tool failed",
+    };
   }
 }

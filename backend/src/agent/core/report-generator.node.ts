@@ -34,6 +34,8 @@ export async function finalSummary(state: AppStateType) {
     }
     const toolsUsed = toolres.map((val) => val.tool);
 
+    console.log("tools used are\n   ", JSON.stringify(toolsUsed));
+
     const stream = await model.stream([
       systemPrompt,
       new HumanMessage(`

@@ -18,8 +18,11 @@ export async function getSymbol(company: string) {
     const filtered = eqOnly.length > 0 ? eqOnly : results;
 
     console.log("filtered response from getSymbol tool", filtered);
-    return filtered;
+    return { success: true, possibleSymbols: filtered };
   } catch (error) {
-    return { getSymbol: "Failed to respond" };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "symbol tool failed",
+    };
   }
 }

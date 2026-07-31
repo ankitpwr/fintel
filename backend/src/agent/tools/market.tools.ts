@@ -37,11 +37,14 @@ export async function fetchTopIndexPerformance() {
 
       fiftyTwoWeekLow: r.fiftyTwoWeekLow,
     }));
-    return data;
+    return { sucess: true, topIndexData: data };
   } catch (error) {
     console.log("error in fetch_Top_Index_Performance");
     console.log(error);
-    return "Tool Failed";
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Top Index tool failed",
+    };
   }
 }
 
@@ -78,10 +81,13 @@ export async function fetchTopMovers() {
       corporateActionExDate: stock.caExDt,
     }));
 
-    return { topGainers: data1, topLosers: data2 };
+    return { success: true, topGainers: data1, topLosers: data2 };
   } catch (error) {
     console.log("error in top_gainer_tool");
     console.log(error);
-    return "Tool Failed";
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Top mover tool failed",
+    };
   }
 }
