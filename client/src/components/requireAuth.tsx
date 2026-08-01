@@ -5,12 +5,19 @@ import { toast } from "./ui/toast";
 import { ThinkingOrb } from "thinking-orbs";
 
 export default function RequireAuth() {
-  const { isAuthenticated, isLoading } = useUserStore();
-  const { userDetails } = useUserStore();
+  const { isAuthenticated, hasCheckedAuth } = useUserStore();
 
-  if (!isAuthenticated && !isLoading) {
+  if (!hasCheckedAuth) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <ThinkingOrb state="shaping" size={64} />
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
     toast.add({ type: "error", description: "please signin first" });
     return <Navigate to="/" />;
   }
-  if (isAuthenticated) return <Outlet />;
+
+  return <Outlet />;
 }

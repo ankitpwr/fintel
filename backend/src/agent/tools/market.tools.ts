@@ -9,6 +9,8 @@ export async function fetchTopIndexPerformance() {
     "^CNXIT", // Nifty IT
     "^CNXAUTO", // Auto
     "^CNXPHARMA", // Pharma
+    "^CRSMID", // Nifty Midcap 100
+    "^CNXSC", // Nifty Smallcap 100
   ];
   try {
     const result = await Promise.all(

@@ -3,8 +3,16 @@ import Home from "./pages/home";
 import Layout from "./components/layout";
 import ChatPage from "./pages/chatPage";
 import RequireAuth from "./components/requireAuth";
+import useUserStore from "./store/useUserStore";
+import { useEffect } from "react";
 
 function App() {
+  const { userDetails } = useUserStore();
+
+  useEffect(() => {
+    userDetails();
+  }, []);
+
   return (
     <>
       <BrowserRouter>

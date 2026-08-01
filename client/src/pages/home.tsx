@@ -10,19 +10,10 @@ import ChatInput from "@/components/chatInput";
 import { ThinkingOrb } from "thinking-orbs";
 import { GoogleAuthWrapper } from "@/components/googleAuth";
 import useUserStore from "@/store/useUserStore";
-import { useEffect } from "react";
 
 export default function Home() {
   const { data, isLoading, isError } = useTopMovers();
-  const { username, email, userDetails } = useUserStore();
-
-  useEffect(() => {
-    const auth = async () => {
-      userDetails();
-    };
-    auth();
-  }, []);
-
+  const { username, email, isAuthenticated, logout } = useUserStore();
   if (isLoading) {
     return (
       <div className="flex w-full h-full items-center justify-center ">
@@ -39,10 +30,6 @@ export default function Home() {
     );
   }
 
-  if (isLoading) {
-    return <div></div>;
-  }
-
   console.log("data is ", username, " email 2 is ", email);
 
   const symbol = data.topGainers[0].tickerSymbol;
@@ -52,8 +39,23 @@ export default function Home() {
       <div className=" flex justify-between pb-2 border border-zinc-900">
         <h1 className="font-geistpixel font-semibol tracking-wide text-3xl">
           Market Overview
-        </h1>
-        <GoogleAuthWrapper />
+        </h1>{" "}
+        {isAuthenticated ? (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-300">{username}</span>
+            <button
+              onClick={() => {
+                logout();
+              }}
+              className="text-sm text-gray-400 hover:text-white underline"
+            >
+              {" "}
+              Logout
+            </button>
+          </div>
+        ) : (
+          <GoogleAuthWrapper />
+        )}
       </div>
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
         <h2 className="font-geistmono text-gray-200">Top Assets</h2>

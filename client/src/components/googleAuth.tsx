@@ -47,7 +47,7 @@ export function GoogleLogin() {
         Signup
       </Button>
       <Button
-        className="bg-[#b7c4ff] text-base text-black hover:bg-[#a6b5f5] px-4 rounded"
+        className="bg-emerald-400 text-base text-black hover:bg-emerald-500 px-4 rounded"
         onClick={() => signinInit()}
         variant={"default"}
       >

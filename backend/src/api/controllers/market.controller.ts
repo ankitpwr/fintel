@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { marketSummaryQueue } from "../../queue/queue";
 import { redisClient } from "../../lib/redis";
 import { nseClient } from "../../lib/nseClient";
 import { yahooFinance } from "../../agent/tools/financial.tool";
