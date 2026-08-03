@@ -282,13 +282,9 @@ export const commodity = async (req: Request, res: Response) => {
   try {
     const response = await mcxClient.get("/GetTickerData?culture=en");
     const parsedData = JSON.parse(response.data.Data).Data;
-
     const commodityData = parsedData.filter((obj: any) =>
       ["SILVER", "GOLD", "CRUDEOIL", "NATURALGAS"].includes(obj.Symbol),
     );
-
-    console.log("commodity  ", commodityData);
-
     return res.status(200).json({
       data: commodityData,
     });
