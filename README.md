@@ -6,6 +6,10 @@ Unlike single shot LLM wrappers around a search API, this project is built as a 
 
 ---
 
+## System Architecture
+
+![System Architecture](./assets/architecture.png)
+
 ## Why this project is different
 
 - **Supervisor + subagent architecture, not a single mega-prompt.** A lightweight relevance-check gates every query before any tool call is made. A supervisor agent orchestrates tool use and delegates specialized reasoning quantitative metric derivation and news/sentiment synthesis to dedicated subagents.
@@ -15,10 +19,6 @@ Unlike single shot LLM wrappers around a search API, this project is built as a 
 - **Scheduled autonomous reporting.** A recurring job independently generates and caches a market-wide summary (NIFTY, Sensex, Bank Nifty) without any user request in the loop.
 
 ---
-
-## System Architecture
-
-![System Architecture](./assets/architecture.png)
 
 **Flow summary:**
 
