@@ -1,4 +1,4 @@
-import { nseClient } from "../../lib/nseClient";
+import { nseClient } from "../../lib/apiClient";
 
 export async function getSymbol(company: string) {
   try {

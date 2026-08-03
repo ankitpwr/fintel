@@ -1,11 +1,5 @@
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { useTopTicks } from "@/hooks/useMarket";
 import { TreemapNode } from "./treeMapNode";
@@ -15,7 +9,6 @@ const CustomTooltip = ({ active, payload }: any) => {
     const data = payload[0].payload;
     const isPositive = data.change >= 0;
 
-    // Convert to Crores (1 Crore = 10,000,000)
     const marketCapInCrores = data.marketcap / 10000000;
 
     return (
@@ -99,9 +92,12 @@ export function TreemapChart() {
   }
 
   return (
-    <Card className="w-full overflow-hidden p-0">
-      <CardContent className="p-0">
-        <ChartContainer config={{}} className="md:h-[480px] h-[440px] w-full">
+    <Card className="w-full overflow-hidden p-0 bg-[#1e1d1c] border-[#2b2a29]">
+      <CardContent className="p-0 bg-[#1e1d1c]">
+        <ChartContainer
+          config={{}}
+          className="md:h-[480px] h-[440px] w-full bg-[#1e1d1c]"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <Treemap
               data={data || []}

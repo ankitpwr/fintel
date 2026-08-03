@@ -96,3 +96,16 @@ export async function getStandoutTicks(symbol: string) {
     return error;
   }
 }
+
+export async function getCommodity() {
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/market/mcx-commodity`,
+    );
+
+    return res.data.data;
+  } catch (error) {
+    console.log("error occured");
+    return error;
+  }
+}

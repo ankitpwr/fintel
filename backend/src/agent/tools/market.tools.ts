@@ -1,4 +1,4 @@
-import { nseClient } from "../../lib/nseClient";
+import { nseClient } from "../../lib/apiClient";
 import { yahooFinance } from "./financial.tool";
 
 export async function fetchTopIndexPerformance() {

@@ -6,9 +6,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useCommodity } from "@/hooks/useMarket";
 import type { TopMover } from "@/types/types";
 
-export function TopMoverTable({ data }: { data: TopMover[] }) {
+export function CommodityTable() {
+  const { data, isLoading, isError } = useCommodity();
+
+  if (isLoading) {
+    return (
+      <div className="h-48 w-full animate-pulse bg-[#1e1d1c] rounded-xl border border-[#2b2a29]"></div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="h-48 w-full flex items-center justify-center bg-[#1e1d1c] rounded-xl border border-[#2b2a29] text-rose-400 text-sm">
+        Error loading currency data.
+      </div>
+    );
+  }
   return (
     <div className="bg-[#1e1d1c] border border-[#2b2a29] rounded-xl overflow-hidden shadow-md">
       <Table>
@@ -27,18 +43,18 @@ export function TopMoverTable({ data }: { data: TopMover[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((element) => {
+          {data.map((element: any) => {
             const isPositive = element.percentChange >= 0;
             return (
               <TableRow
-                key={element.tickerSymbol}
+                key={element.Symbol}
                 className="border-b border-[#2b2a29]/50 hover:bg-[#262524] transition-colors duration-200 cursor-default"
               >
                 <TableCell className="font-semibold text-gray-200 py-3 pl-5">
-                  {element.tickerSymbol}
+                  {element.Symbol}
                 </TableCell>
                 <TableCell className="text-right text-gray-100 py-3 tabular-nums">
-                  {element.currentPrice.toFixed(2)}
+                  {element.LTP.toFixed(2)}
                 </TableCell>
 
                 <TableCell
@@ -47,7 +63,7 @@ export function TopMoverTable({ data }: { data: TopMover[] }) {
                   }`}
                 >
                   {isPositive ? "+" : ""}
-                  {element.percentChange.toFixed(2)}%
+                  {element.PercentChange.toFixed(2)}%
                 </TableCell>
               </TableRow>
             );

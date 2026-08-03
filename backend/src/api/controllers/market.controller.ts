@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { redisClient } from "../../lib/redis";
-import { nseClient } from "../../lib/nseClient";
+import { mcxClient, nseClient } from "../../lib/apiClient";
 import { yahooFinance } from "../../agent/tools/financial.tool";
 import { indianTickers } from "../../lib/topTickers";
 import axios from "axios";
@@ -69,25 +69,6 @@ export const topMovers = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("error in market summary");
-    console.log(error);
-    return res.status(500).json({
-      error: "Internal server error",
-    });
-  }
-};
-
-//ignore
-export const index = async (req: Request, res: Response) => {
-  try {
-    const response = await nseClient(
-      "/NextApi/apiClient/indexTrackerApi?functionName=getIndexChart&&index=NIFTY%2050&flag=1D",
-    );
-
-    return res.status(200).json({
-      data: response.data.data,
-    });
-  } catch (error) {
-    console.log("error in index");
     console.log(error);
     return res.status(500).json({
       error: "Internal server error",
@@ -290,6 +271,29 @@ export const standoutTickers = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("error in standout ticks");
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+};
+
+export const commodity = async (req: Request, res: Response) => {
+  try {
+    const response = await mcxClient.get("/GetTickerData?culture=en");
+    const parsedData = JSON.parse(response.data.Data).Data;
+
+    const commodityData = parsedData.filter((obj: any) =>
+      ["SILVER", "GOLD", "CRUDEOIL", "NATURALGAS"].includes(obj.Symbol),
+    );
+
+    console.log("commodity  ", commodityData);
+
+    return res.status(200).json({
+      data: commodityData,
+    });
+  } catch (error) {
+    console.log("error in commodity");
     console.log(error);
     return res.status(500).json({
       error: "Internal server error",

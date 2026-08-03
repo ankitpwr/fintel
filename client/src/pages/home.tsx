@@ -8,12 +8,13 @@ import { TopMoverTable } from "@/components/topMover";
 import { StandoutTick } from "@/components/standout";
 import ChatInput from "@/components/chatInput";
 import { ThinkingOrb } from "thinking-orbs";
-import { GoogleAuthWrapper } from "@/components/googleAuth";
-import useUserStore from "@/store/useUserStore";
+
+import TopSection from "@/components/topSection";
+import { CommodityTable } from "@/components/commodity";
 
 export default function Home() {
   const { data, isLoading, isError } = useTopMovers();
-  const { username, email, isAuthenticated, logout } = useUserStore();
+
   if (isLoading) {
     return (
       <div className="flex w-full h-full items-center justify-center ">
@@ -30,35 +31,13 @@ export default function Home() {
     );
   }
 
-  console.log("data is ", username, " email 2 is ", email);
-
   const symbol = data.topGainers[0].tickerSymbol;
 
   return (
     <div className="w-full flex flex-col text-white px-6 md:px-24 py-8 pb-50 gap-18 max-w-[1600px] mx-auto">
-      <div className=" flex justify-between pb-2 border border-zinc-900">
-        <h1 className="font-geistpixel font-semibol tracking-wide text-3xl">
-          Market Overview
-        </h1>{" "}
-        {isAuthenticated ? (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-300">{username}</span>
-            <button
-              onClick={() => {
-                logout();
-              }}
-              className="text-sm text-gray-400 hover:text-white underline"
-            >
-              {" "}
-              Logout
-            </button>
-          </div>
-        ) : (
-          <GoogleAuthWrapper />
-        )}
-      </div>
+      <TopSection />
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
-        <h2 className="font-geistmono text-gray-200">Top Assets</h2>
+        <h2 className="font-googleSans text-gray-200">Top Assets</h2>
         <Topindices />
       </section>
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
@@ -98,10 +77,17 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <h2 className="font-googleSans font-medium  text-blue-400">
+            <h2 className="font-googleSans font-medium  text-gray-200">
               Currency Spot Rates
             </h2>
             <CurrencyTable />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <h2 className="font-googleSans font-medium  text-gray-200">
+              MCX Commodities{" "}
+            </h2>
+            <CommodityTable />
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@ import {
   earningCallSummarySystemPrompt,
 } from "../prompts/prompt";
 import axios from "axios";
-import { nseClient } from "../../lib/nseClient";
+import { nseClient } from "../../lib/apiClient";
 
 export async function fetchcorporateAction(symbol: string, startDate?: string) {
   try {

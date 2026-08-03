@@ -1,4 +1,5 @@
 import {
+  getCommodity,
   getCurrency,
   getIndexData,
   getMarketSummary,
@@ -69,7 +70,13 @@ export function useStandoutTicks(symbols: string) {
   return useQuery({
     queryKey: ["market", "ticks", "standout", symbols],
     queryFn: () => getStandoutTicks(symbols),
-
     enabled: symbols != null && symbols != "",
+  });
+}
+
+export function useCommodity() {
+  return useQuery({
+    queryKey: ["market", "commodity"],
+    queryFn: () => getCommodity(),
   });
 }

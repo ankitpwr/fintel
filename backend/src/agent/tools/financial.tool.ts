@@ -1,7 +1,7 @@
 import "dotenv/config";
 import YahooFinance from "yahoo-finance2";
 import type { ShareHoldingInfo } from "../../types/agent.types";
-import { nseClient } from "../../lib/nseClient";
+import { nseClient } from "../../lib/apiClient";
 
 export const yahooFinance = new YahooFinance({
   suppressNotices: ["yahooSurvey"],
