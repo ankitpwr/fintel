@@ -265,7 +265,7 @@ export const standoutTickers = async (req: Request, res: Response) => {
       }),
     };
 
-    await redisClient.set("standout-tickers", JSON.stringify(data), "EX", 30);
+    await redisClient.set("standout-tickers", JSON.stringify(data), "EX", 200);
     return res.status(200).json({
       data: data,
     });
@@ -285,6 +285,14 @@ export const commodity = async (req: Request, res: Response) => {
     const commodityData = parsedData.filter((obj: any) =>
       ["SILVER", "GOLD", "CRUDEOIL", "NATURALGAS"].includes(obj.Symbol),
     );
+
+    await redisClient.set(
+      "mcx-commodity",
+      JSON.stringify(commodityData),
+      "EX",
+      1800,
+    );
+
     return res.status(200).json({
       data: commodityData,
     });

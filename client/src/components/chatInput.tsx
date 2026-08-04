@@ -28,11 +28,9 @@ export default function ChatInput({
   onSendMessage,
 }: ChatInputProps) {
   const { userQuery, chatMode, setUserQuery, setChatMode } = useChatStore();
-  const [currentSuggestion, setCurrentSuggestion] = useState(
-    chatMode == "brief"
-      ? briefModeSuggestions[0]
-      : deepResearchModeSuggestions[0],
-  );
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const activeSuggestions =
+    chatMode === "brief" ? briefModeSuggestions : deepResearchModeSuggestions;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,35 +81,33 @@ export default function ChatInput({
           </div>
 
           <div className="flex items-center justify-between pt-2 gap-4">
-            <div className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer">
+            <button
+              type="button"
+              onClick={() =>
+                handleSuggestionClick(
+                  activeSuggestions[suggestionIndex] ?? activeSuggestions[0],
+                )
+              }
+              className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer"
+            >
               <RotatingText
-                texts={
-                  chatMode == "brief"
-                    ? briefModeSuggestions
-                    : deepResearchModeSuggestions
-                }
+                key={chatMode}
+                texts={activeSuggestions}
                 mainClassName="whitespace-nowrap"
                 staggerFrom="center"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "-120%" }}
                 staggerDuration={0.025}
-                onClick={() => handleSuggestionClick(currentSuggestion)}
                 splitLevelClassName="overflow-hidden"
                 transition={{ type: "spring", damping: 30, stiffness: 400 }}
                 rotationInterval={4000}
                 splitBy="lines"
-                onNext={(index) =>
-                  setCurrentSuggestion(
-                    chatMode == "brief"
-                      ? briefModeSuggestions[index]
-                      : deepResearchModeSuggestions[index],
-                  )
-                }
+                onNext={(index) => setSuggestionIndex(index)}
                 auto
                 loop
               />
-            </div>
+            </button>
 
             <div className="relative flex justify-end z-10 select-none shrink-0">
               <div className="bg-[#141414] border-2 border-[#2b2a29] p-1 rounded-xl flex items-center gap-1 relative z-30">

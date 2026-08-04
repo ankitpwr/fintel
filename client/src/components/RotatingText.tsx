@@ -87,7 +87,8 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
     };
 
     const elements = useMemo(() => {
-      const currentText: string = texts[currentTextIndex];
+      const safeIndex = Math.min(currentTextIndex, texts.length - 1);
+      const currentText: string = texts[safeIndex] ?? "";
       if (splitBy === "characters") {
         const words = currentText.split(" ");
         return words.map((word, i) => ({
@@ -193,6 +194,10 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
     );
 
     useEffect(() => {
+      setCurrentTextIndex(0);
+    }, [texts]);
+
+    useEffect(() => {
       if (!auto) return;
       const intervalId = setInterval(next, rotationInterval);
       return () => clearInterval(intervalId);
@@ -208,7 +213,9 @@ const RotatingText = forwardRef<RotatingTextRef, RotatingTextProps>(
         layout
         transition={transition}
       >
-        <span className="sr-only">{texts[currentTextIndex]}</span>
+        <span className="sr-only">
+          {texts[Math.min(currentTextIndex, texts.length - 1)]}
+        </span>
         <AnimatePresence
           mode={animatePresenceMode}
           initial={animatePresenceInitial}

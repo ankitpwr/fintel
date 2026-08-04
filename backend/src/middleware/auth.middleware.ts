@@ -26,8 +26,6 @@ export function authMiddleware(
       });
     }
 
-    console.log("in auth middleware token is  ", token);
-
     const decode = jwt.verify(token, process.env.JWT_SECRET!) as CustomPayload;
     if (!decode || !decode.email || !decode.id) {
       return res.status(401).json({
