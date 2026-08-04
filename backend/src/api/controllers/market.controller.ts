@@ -239,9 +239,10 @@ export const standoutTickers = async (req: Request, res: Response) => {
         error: parsedData.error.issues[0]?.message,
       });
     }
+    const date = new Date().toISOString().split("T")[0];
     const [price, metric] = await Promise.all([
       yahooFinance.chart(`${parsedData.data.symbol}.NS`, {
-        period1: "2026-07-10",
+        period1: date as string,
         interval: "2m",
       }),
       yahooFinance.quoteSummary(`${parsedData.data.symbol}.NS`, {
@@ -280,6 +281,13 @@ export const standoutTickers = async (req: Request, res: Response) => {
 
 export const commodity = async (req: Request, res: Response) => {
   try {
+    const cachedMCXCommodity = await redisClient.get("mcx-commodity");
+
+    if (cachedMCXCommodity) {
+      return res.status(200).json({
+        data: JSON.parse(cachedMCXCommodity),
+      });
+    }
     const response = await mcxClient.get("/GetTickerData?culture=en");
     const parsedData = JSON.parse(response.data.Data).Data;
     const commodityData = parsedData.filter((obj: any) =>
