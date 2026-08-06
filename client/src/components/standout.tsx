@@ -27,7 +27,6 @@ const formatRupee = (value: number, decimals: number = 2) =>
     maximumFractionDigits: decimals,
   });
 
-// Sleek custom tooltip for the standout stock chart
 const ChartCustomTooltip = ({ active, payload, openPrice }: any) => {
   if (!active || !payload?.length) return null;
 

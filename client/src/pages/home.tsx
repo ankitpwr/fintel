@@ -34,8 +34,8 @@ export default function Home() {
   const symbol = data.topGainers[0].tickerSymbol;
 
   return (
-    <div className="w-full flex flex-col text-white px-6 md:px-24 py-8 pb-50 gap-18 max-w-[1600px] mx-auto">
-      <TopSection />
+    <div className="w-full flex flex-col text-white px-6 md:px-24 py-4 pb-50 gap-18 max-w-[1600px] mx-auto">
+      <TopSection title="Market Overview" />
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
         <h2 className="font-googleSans text-gray-200">Top Assets</h2>
         <Topindices />

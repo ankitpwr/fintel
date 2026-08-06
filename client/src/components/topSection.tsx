@@ -8,15 +8,15 @@ import {
 import { SignOutIcon } from "@phosphor-icons/react";
 import { GoogleAuthWrapper } from "./googleAuth";
 
-export default function TopSection() {
+export default function TopSection({ title }: { title: string }) {
   const { username, email, profilepic, isAuthenticated, logout } =
     useUserStore();
 
   return (
-    <div className="flex items-center justify-between gap-4 pb-6 border-b border-[#2b2a29] animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex items-center justify-between gap-4 pb-3 border-b border-[#2b2a29] animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col gap-1">
         <h1 className="font-googleSans font-semibold tracking-wide text-2xl md:text-3xl text-white">
-          Market Overview
+          {title}
         </h1>
       </div>
 

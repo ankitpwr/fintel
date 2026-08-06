@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ChatInput from "../components/chatInput";
 import useChatStore from "@/store/useChatStore";
 import axios from "axios";
+import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -13,6 +14,7 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { ThinkingOrb } from "thinking-orbs";
+import TopSection from "@/components/topSection";
 
 type Message = {
   id: string;
@@ -73,7 +75,11 @@ export default function ChatPage() {
   useEffect(() => {
     if (userQuery && !hasSentInitialQuery.current) {
       hasSentInitialQuery.current = true;
-      handleNewMessage();
+      setMessages((prev) => [
+        ...prev,
+        { id: crypto.randomUUID(), role: "user", content: userQuery },
+      ]);
+      useChatStore.getState().resetStream();
       window.history.replaceState({}, document.title);
     }
   }, []);
@@ -103,11 +109,15 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0a0a0a] text-gray-100 font-googleSans tracking-normal antialiased ">
+    <div className="flex flex-col h-screen bg-[#171615] text-gray-100 font-googleSans tracking-normal antialiased gap-3 ">
+      <div className="w-full px-6 md:px-24 pt-6 md:pt-8 max-w-[1600px] mx-auto shrink-0 ">
+        <TopSection title="Chats" />
+      </div>
+
       <MessageScrollerProvider autoScroll scrollPreviousItemPeek={64}>
-        <MessageScroller className="flex-1 w-full pt-10 pb-32">
+        <MessageScroller className="flex-1 w-full  pb-44">
           <MessageScrollerViewport>
-            <MessageScrollerContent className="max-w-3xl mx-auto px-4 md:px-0 pb-20 flex flex-col gap-6">
+            <MessageScrollerContent className="max-w-3xl mx-auto px-4 md:px-0 pb-32 flex flex-col gap-8">
               {messages.map((msg) => (
                 <MessageScrollerItem
                   key={msg.id}
@@ -120,7 +130,12 @@ export default function ChatPage() {
 
               {isStreaming && (
                 <MessageScrollerItem messageId="active-stream">
-                  <div className="flex gap-4 self-start mt-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex gap-4 self-start mt-2"
+                  >
                     {agentResponse ? (
                       <div className={MARKDOWN_CLASSES}>
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -136,7 +151,7 @@ export default function ChatPage() {
                         </span>{" "}
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 </MessageScrollerItem>
               )}
             </MessageScrollerContent>
@@ -145,7 +160,7 @@ export default function ChatPage() {
         </MessageScroller>
       </MessageScrollerProvider>
 
-      <div className="w-full bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a] to-transparent pt-10 pb-8 fixed bottom-0 z-10 ">
+      <div className="w-full bg-gradient-to-t from-[#171615] via-[#171615] to-transparent pt-10 pb-8 fixed bottom-0 z-10 ">
         <ChatInput onSendMessage={handleNewMessage} isFixed={false} />
       </div>
     </div>
@@ -161,19 +176,29 @@ function MessageBubble({
 }) {
   if (role === "user") {
     return (
-      <div className="flex w-full justify-end">
-        <div className="max-w-[80%] bg-[#262626] text-white px-5 py-3 rounded-3xl rounded-tr-sm shadow-sm text-[17px] leading-relaxed font-medium">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex w-full justify-end"
+      >
+        <div className="max-w-[80%] bg-[#262524] border border-[#2b2a29] text-white px-5 py-3 rounded-3xl rounded-tr-sm shadow-sm text-[17px] leading-relaxed font-medium">
           {content}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex gap-4 self-start mt-2">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="flex gap-4 self-start mt-2"
+    >
       <div className={MARKDOWN_CLASSES}>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
       </div>
-    </div>
+    </motion.div>
   );
 }

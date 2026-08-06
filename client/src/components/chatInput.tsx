@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import useChatStore from "@/store/useChatStore";
 import RotatingText from "./RotatingText";
+import axios from "axios";
+import { toast } from "./ui/toast";
 
 interface ChatInputProps {
   onSendMessage?: (message: string, mode: "brief" | "detailed") => void;
@@ -31,16 +33,42 @@ export default function ChatInput({
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const activeSuggestions =
     chatMode === "brief" ? briefModeSuggestions : deepResearchModeSuggestions;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userQuery.trim()) return;
+    if (!userQuery.trim() || isSubmitting) return;
 
     if (location.pathname === "/") {
-      navigate("/chat");
+      setIsSubmitting(true);
+      try {
+        await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/report/generate`,
+          {
+            userQuery,
+            queryType: chatMode,
+          },
+          { withCredentials: true },
+        );
+
+        navigate("/chat");
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.add({
+            type: "success",
+            description: error.response?.data.error,
+          });
+        }
+        toast.add({
+          type: "success",
+          description: "Error occured",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       onSendMessage?.(userQuery, chatMode);
     }
