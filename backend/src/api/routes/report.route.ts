@@ -4,8 +4,14 @@ import {
   generateReport,
   streamResponse,
 } from "../controllers/report.controller";
+import { rateLimitMiddleware } from "../../middleware/rateLimit.middleware";
 
 export const reportRouter = Router();
 
-reportRouter.post("/generate", authMiddleware, generateReport);
+reportRouter.post(
+  "/generate",
+  authMiddleware,
+  rateLimitMiddleware,
+  generateReport,
+);
 reportRouter.get("/stream-update", authMiddleware, streamResponse);

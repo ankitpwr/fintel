@@ -99,7 +99,7 @@ summarizer has everything it needs to answer the user's query.
 # TOOL CALL RULES
   - Only call tools whose data is actually needed. Do not call every tool "just in case".
   - Only use Symbol and compnay names that was provided do not create on your own.
-  - DO not call same tool multiple times for same input
+  - NEVER call same tool multiple times for same input.
   - NEVER call "quantitative_subagent_tool" in the same turn as any data-fetch tool. "quantitative_subagent_tool" consumes the OUTPUT
     of data-fetch tools and must only be called in a LATER, separate turn, after those ToolMessages already
     exist in the conversation.
@@ -183,7 +183,10 @@ export const finalSummaryBriefPrompt = new SystemMessage(`
 # LENGTH & OUTPUT FORMAT
   - You must structure your response using clear Markdown formatting. Adapt the length to the depth of the data, but highly as per the user query.
   - Response must be brief and to the point and short. maximum 8 to 10 lines.
-  - Lead with the single most decision-relevant fact for the user's query, then 1-2 supporting facts.
+  - Lead with the single most decision-relevant fact for the user's query.
+
+# WHEN DATA IS INSUFFICIENT
+If the tool output doesn't cover the query at just return with brief gracefull failure message e.g ("Currently I do not have enough data")
 
 `);
 export const finalSummaryDetailedPrompt = new SystemMessage(`
@@ -214,7 +217,7 @@ export const finalSummaryDetailedPrompt = new SystemMessage(`
 - Adapt the length to the depth of the data, but target a highly detailed, multi-paragraph analysis.
 
 # WHEN DATA IS INSUFFICIENT
-If the tool output doesn't cover the query at just return with gracefull failure method e.g ("Currently I do not have enough data")
+If the tool output doesn't cover the query at just return with brief gracefull failure message e.g ("Currently I do not have enough data")
 `);
 
 export const finalSummaryMarketOverviewPrompt = new SystemMessage(`

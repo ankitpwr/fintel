@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
 import { loginSchema, signupSchema } from "../../lib/zodSchema";
-import { client } from "../../lib/google-client";
 import { prisma } from "../../lib/prisma";
 import type { CustomRequest } from "../../middleware/auth.middleware";
+import { googleClient } from "../../lib/apiClient";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -15,7 +15,7 @@ export const signup = async (req: Request, res: Response) => {
     }
 
     const code = parsedBody.data.authCode;
-    const { tokens } = await client.getToken(code);
+    const { tokens } = await googleClient.getToken(code);
 
     if (!tokens.id_token) {
       return res.status(400).json({
@@ -23,7 +23,7 @@ export const signup = async (req: Request, res: Response) => {
       });
     }
 
-    const ticket = await client.verifyIdToken({
+    const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
@@ -104,14 +104,14 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    const { tokens } = await client.getToken(parsedBody.data.authCode);
+    const { tokens } = await googleClient.getToken(parsedBody.data.authCode);
     if (!tokens.id_token) {
       return res.status(400).json({
         message: "Login failed",
         error: "Unable to login",
       });
     }
-    const ticket = await client.verifyIdToken({
+    const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });

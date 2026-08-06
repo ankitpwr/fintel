@@ -1,4 +1,6 @@
+import "dotenv/config";
 import axios from "axios";
+import { OAuth2Client } from "google-auth-library";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
@@ -21,3 +23,9 @@ export const mcxClient = axios.create({
     "X-Requested-With": "XMLHttpRequest",
   },
 });
+
+export const googleClient = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  "postmessage", //don't redirect to a URL
+);

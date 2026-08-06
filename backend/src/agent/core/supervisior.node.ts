@@ -3,12 +3,20 @@ import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
 import { llmWithToolsSystemPrompt } from "../prompts/prompt";
 import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
-const model = new ChatMistralAI({
-  model: "mistral-medium-latest",
-  apiKey: process.env.MISTRAL_TOKEN,
+// const model = new ChatMistralAI({
+//   model: "mistral-medium-2508",
+//   apiKey: process.env.MISTRAL_TOKEN,
+//   temperature: 0.1,
+//   tags: ["nostream"],
+// });
+
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-3.5-flash-lite", //gemini-3.5-flash-lite
+  maxRetries: 1,
   temperature: 0.1,
-  tags: ["nostream"],
+  apiKey: process.env.GOOGLE_API_KEY,
 });
 
 export async function supervisor(state: AppStateType) {

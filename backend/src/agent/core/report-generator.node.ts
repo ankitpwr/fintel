@@ -6,12 +6,19 @@ import {
   finalSummaryMarketOverviewPrompt,
 } from "../prompts/prompt";
 import { AIMessage, HumanMessage, ToolMessage } from "langchain";
+import { ChatMistralAI } from "@langchain/mistralai";
+//mistral-large-2512
+// const model = new ChatGoogleGenerativeAI({
+//   model: "gemini-3.1-flash-lite", //gemini-3.5-flash-lite
+//   maxRetries: 2,
+//   temperature: 0.1,
+//   apiKey: process.env.GOOGLE_API_KEY,
+// });
 
-const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.1-flash-lite", //gemini-3.5-flash-lite
-  maxRetries: 2,
+const model = new ChatMistralAI({
+  model: "mistral-large-2512",
+  apiKey: process.env.MISTRAL_TOKEN,
   temperature: 0.1,
-  apiKey: process.env.GOOGLE_API_KEY,
 });
 
 export async function finalSummary(state: AppStateType) {
