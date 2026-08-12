@@ -2,22 +2,17 @@ import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
 // import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 
 import {
-  balanceSheetTool,
-  cashFlowStatementTool,
   earningCallPdfSummaryTool,
-  incomeStatementTool,
   peersInfoTool,
   shareholdingInfoTool,
-  stockInfoTool,
-  priceHistoryTool,
-  corporateActionTool,
   topMoversTool,
-  quantitativeSubagentTool,
   sentimentSubagentTool,
   topIndexPerformanceTool,
+  fundamentalSubagentTool,
+  technicalSubagentTool,
 } from "./tools/tools.registry";
 import { publisherClient } from "../lib/redis";
-import { supervisor } from "./core/supervisior.node";
+import { orchestrator } from "./core/orchestrator.node";
 import { finalSummary } from "./core/report-generator.node";
 import { queryAnalyzerSubagent } from "./core/query.node";
 import type {
@@ -49,26 +44,22 @@ export const AppState = Annotation.Root({
 export type AppStateType = typeof AppState.State;
 
 export const tools = [
-  stockInfoTool,
+  fundamentalSubagentTool,
+  technicalSubagentTool,
   peersInfoTool,
   shareholdingInfoTool,
   earningCallPdfSummaryTool,
-  balanceSheetTool,
-  cashFlowStatementTool,
-  incomeStatementTool,
-  priceHistoryTool,
   topIndexPerformanceTool,
   topMoversTool,
-  corporateActionTool,
-  quantitativeSubagentTool,
   sentimentSubagentTool,
 ];
+
 const graph = new StateGraph(AppState);
 // const tracer = new LangChainTracer();
 
 graph
   .addNode("analyze_query", queryAnalyzerSubagent)
-  .addNode("supervisor", supervisor)
+  .addNode("supervisor", orchestrator)
   .addNode("final_summary", finalSummary)
   .addEdge(START, "analyze_query")
   .addConditionalEdges("analyze_query", (state: AppStateType) =>
@@ -133,3 +124,5 @@ export async function startAgent(
     return undefined;
   }
 }
+
+startAgent("Calculate the 30-day Simple Moving Averages for ICICI .", "brief");

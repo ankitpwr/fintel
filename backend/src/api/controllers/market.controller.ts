@@ -241,29 +241,36 @@ export const standoutTickers = async (req: Request, res: Response) => {
     }
     const date = new Date().toISOString().split("T")[0];
     const [price, metric] = await Promise.all([
-      yahooFinance.chart(`${parsedData.data.symbol}.NS`, {
-        period1: date as string,
-        interval: "2m",
-      }),
+      // yahooFinance.chart(`${parsedData.data.symbol}.NS`, {
+      //   period1: date as string,
+      //   interval: "2m",
+      // }),
+
+      nseClient.get(
+        `/NextApi/apiClient/GetQuoteApi?functionName=getSymbolChartData&symbol=${parsedData.data.symbol}EQN&days=1D`,
+      ),
+
       yahooFinance.quoteSummary(`${parsedData.data.symbol}.NS`, {
-        modules: ["summaryDetail", "summaryProfile"],
+        modules: ["summaryDetail", "price"],
       }),
     ]);
 
     const data = {
-      name: price.meta?.longName,
+      name: metric.price?.longName,
       marketCap: metric.summaryDetail?.marketCap,
       currentPrice: metric.price?.regularMarketPrice,
       pe: metric.summaryDetail?.trailingPE,
       high: metric.summaryDetail?.dayLow,
       low: metric.summaryDetail?.dayHigh,
       change: metric.price?.regularMarketChangePercent,
-      price: price.quotes.map((p) => {
-        return {
-          date: p.date,
-          price: p.close,
-        };
-      }),
+      price: price.data.grapthData
+        .filter((p: any) => p[2] == "NM")
+        .map((p: any) => {
+          return {
+            date: p[0],
+            price: p[1],
+          };
+        }),
     };
 
     await redisClient.set("standout-tickers", JSON.stringify(data), "EX", 200);

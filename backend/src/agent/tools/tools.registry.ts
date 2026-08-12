@@ -20,10 +20,11 @@ import {
   fetchNews,
 } from "./sentiment.tools";
 import { fetchTopIndexPerformance, fetchTopMovers } from "./market.tools";
-import { quantitativeSubagent } from "../subagents/quantitative.node";
 import { sentimentSubagent } from "../subagents/sentiment.subagent";
 import { type LangGraphRunnableConfig } from "@langchain/langgraph";
 import { getSymbol } from "./symbol.tool";
+import { fundamentalSubagent } from "../subagents/fundamental.subagent";
+import { technicalSubagent } from "../subagents/technical.subagent";
 
 export const stockInfoTool = tool(
   async ({ symbol }: { symbol: string }, config: LangGraphRunnableConfig) => {
@@ -174,7 +175,7 @@ export const balanceSheetTool = tool(
   {
     name: "fetch_balance_sheet",
     description:
-      "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates for that year else provide nothing. ensure that there must be altest 1 year gap between start and end dates",
+      "Get the balance sheet financial statement for a company stock symbol. If the user asks for a specific year, provide the start and end dates",
     schema: z.object({
       symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
       companyName: z
@@ -183,11 +184,11 @@ export const balanceSheetTool = tool(
       period1: z
         .string()
         .optional()
-        .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+        .describe("Start date in YYYY-MM-DD format (e.g.'2023-01-01')."),
       period2: z
         .string()
         .optional()
-        .describe("End date in YYYY-MM-DD format (e.g., '2026-04-01')"),
+        .describe("End date in YYYY-MM-DD format (e.g.'2026-01-01')"),
     }),
   },
 );
@@ -504,43 +505,6 @@ export const symbolTool = tool(
   },
 );
 
-export const quantitativeSubagentTool = tool(
-  async (
-    { queries }: { queries: string[] },
-    config: LangGraphRunnableConfig,
-  ) => {
-    try {
-      config.writer?.({
-        status: `Calculating financial metrics...`,
-      });
-      const data = await quantitativeSubagent(queries);
-      return JSON.stringify(data);
-    } catch (error) {
-      console.log("error in math expert tool ", error);
-      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
-    }
-  },
-  {
-    name: "quantitative_subagent_tool",
-    description:
-      "Use this tool to find the missing financial metric by providing raw data for it.",
-    schema: z.object({
-      queries: z
-        .array(
-          z
-            .string()
-            .describe(
-              "a single fianancial missing metric with raw input data to calculate that metric. eg. ' find ROCE for MRF using EBIT: 35813100000, Total Assets: 319535100000, Current Liabilities: 90062700000'",
-            ),
-        )
-        .max(3)
-        .describe(
-          `Array containing atmost 3 missing financial metric with raw data values for calculating that metric. no formula required for that missing metric only the raw input values.`,
-        ),
-    }),
-  },
-);
-
 export const sentimentSubagentTool = tool(
   async ({ query }: { query: string }, config: LangGraphRunnableConfig) => {
     try {
@@ -560,7 +524,77 @@ export const sentimentSubagentTool = tool(
       "Use this tool to get the sentiment and latest news summary on stock, company or market overviews and performace.",
     schema: z.object({
       query: z.string().describe(`company name, sector or stock name.
-        example: - 'sentiment around Tata motors', 'todays news summary around NIFTY50','National stock Exchange India', `),
+        example: - 'sentiment around Tata motors', 'todays news summary around NIFTY50','National stock Exchange India'`),
+    }),
+  },
+);
+
+export const fundamentalSubagentTool = tool(
+  async (
+    {
+      task,
+      symbol,
+      companyName,
+    }: { task: string; symbol: string; companyName: string },
+    config: LangGraphRunnableConfig,
+  ) => {
+    try {
+      config.writer?.({
+        status: `Performing fundamental analysis for ${companyName}...`,
+      });
+      const data = await fundamentalSubagent(task, symbol, companyName);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in fundamental subagent tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "fundamental_subagent_tool",
+    description:
+      "Use this tool to get the fundamental of a company e.g (balance sheet, income statement, cashflow statement, financial ratios)",
+    schema: z.object({
+      task: z.string().describe(`task to give fundamental subagent tool.
+        example: 'Give me the balance sheet and cashflow statement of TCS for FY24 and FY25'`),
+      symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      companyName: z
+        .string()
+        .describe("Name of the compnay, e.g. Reliance Industries"),
+    }),
+  },
+);
+
+export const technicalSubagentTool = tool(
+  async (
+    {
+      task,
+      symbol,
+      companyName,
+    }: { task: string; symbol: string; companyName: string },
+    config: LangGraphRunnableConfig,
+  ) => {
+    try {
+      config.writer?.({
+        status: `Performing technical analysis for  ${companyName}...`,
+      });
+      const data = await technicalSubagent(task, symbol, companyName);
+      return JSON.stringify(data);
+    } catch (error) {
+      console.log("error in technical subagent tool ", error);
+      return `Tool failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  },
+  {
+    name: "technical_subagent_tool",
+    description:
+      "Use this tool to get the technical analysis of a company e.g (price history, corporate actions, moving average etc)",
+    schema: z.object({
+      task: z.string().describe(`task to give technical subagent tool.
+        example: 'Calculate the 30-day Simple Moving Averages of Reliance Industries'`),
+      symbol: z.string().describe("The stock ticker symbol, e.g. RELIANCE"),
+      companyName: z
+        .string()
+        .describe("Name of the compnay, e.g. Reliance Industries"),
     }),
   },
 );

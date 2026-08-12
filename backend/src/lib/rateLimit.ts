@@ -18,24 +18,24 @@ export class RateLimit {
     const script = `
     local key= KEYS[1]
     local maxRequests= tonumber(ARGV[1])
-    local windowSize=  tonumber(ARGV=[2])
-    local startTime= tonumber(ARGV=[3])
+    local windowSize=  tonumber(ARGV[2])
+    local startTime= tonumber(ARGV[3])
     local currentTime= tonumber(ARGV[4])
 
     redis.call('ZREMRANGEBYSCORE', key, 0, startTime)
     local previousRequests= redis.call('ZCARD', key)
 
     local allowed=0;
-    local remainingRequest= 0;
+    local remainingRequests= 0;
 
     if previousRequests < maxRequests then
        allowed=1
        remainingRequests= maxRequests-previousRequests-1
-       redis.call('ZADD', key, currentTime, currentTime)
+       redis.call('ZADD', key, currentTime, currentTime .. '-' .. math.random())
        redis.call('PEXPIRE', key, windowSize)
     end
 
-    return {allowed, remainingRequest}
+    return {allowed, remainingRequests}
     `;
 
     const [allowed, remainingRequests] = (await redisClient.eval(

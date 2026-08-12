@@ -1,32 +1,32 @@
 import { createAgent, AIMessage, HumanMessage, ToolMessage } from "langchain";
 import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
-import { llmWithToolsSystemPrompt } from "../prompts/prompt";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { orchestratorSystemPrompt } from "../prompts/prompt";
 
-// const model = new ChatMistralAI({
-//   model: "mistral-medium-2508",
-//   apiKey: process.env.MISTRAL_TOKEN,
-//   temperature: 0.1,
-//   tags: ["nostream"],
-// });
-
-const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.5-flash-lite", //gemini-3.5-flash-lite
-  maxRetries: 1,
+const model = new ChatMistralAI({
+  model: "mistral-medium-2508",
+  apiKey: process.env.MISTRAL_TOKEN,
   temperature: 0.1,
-  apiKey: process.env.GOOGLE_API_KEY,
+  tags: ["nostream"],
 });
 
-export async function supervisor(state: AppStateType) {
+// const model = new ChatGoogleGenerativeAI({
+//   model: "gemini-3.5-flash-lite", //gemini-3.5-flash-lite
+//   maxRetries: 1,
+//   temperature: 0.1,
+//   apiKey: process.env.GOOGLE_API_KEY,
+// });
+
+export async function orchestrator(state: AppStateType) {
   try {
     console.log("in supervisor state is  ", state);
 
     const agent = createAgent({
       model: model,
       tools: tools,
-      systemPrompt: llmWithToolsSystemPrompt.content as string,
+      systemPrompt: orchestratorSystemPrompt.content as string,
     });
     const symbolMap =
       state.companyName?.map((name, i) => ({
