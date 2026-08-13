@@ -26,12 +26,9 @@ export async function sentimentSubagent(query: string) {
       sentimentExpertPrompt,
       new HumanMessage(`${JSON.stringify(query)}\\n`),
     ];
-    const response = await subagent.invoke(
-      { messages },
-      { recursionLimit: 10 },
-    );
+    const response = await subagent.invoke({ messages }, { recursionLimit: 5 });
 
-    // console.log("response message is ", response.messages);
+    console.log("response message is ", response.messages.at(-1)?.text);
     return { success: false, summary: response.messages.at(-1)?.text };
   } catch (error) {
     console.log("error occured in sentimental subagent", error);

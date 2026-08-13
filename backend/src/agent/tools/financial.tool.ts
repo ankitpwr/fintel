@@ -257,12 +257,16 @@ export async function fetchIncomeStatement(
   }
 }
 
-export async function fetchPriceHistory(symbol: string, startDate?: string) {
+export async function fetchPriceHistory(
+  symbol: string,
+  startDate?: string,
+  interval?: "2m" | "5m" | "15m" | "30m" | "1h" | "1d" | "1wk" | "1mo" | "3mo",
+) {
   try {
     const start = startDate || "2025-01-01";
     const response = await yahooFinance.chart(`${symbol}.NS`, {
       period1: start,
-      interval: "1mo",
+      interval: interval || "3mo",
     });
     console.log(`price history data for ${symbol}  `, response.quotes);
     return { success: true, priceHistoryData: response.quotes };

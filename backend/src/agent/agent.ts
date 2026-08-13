@@ -124,5 +124,3 @@ export async function startAgent(
     return undefined;
   }
 }
-
-startAgent("Calculate the 30-day Simple Moving Averages for ICICI .", "brief");

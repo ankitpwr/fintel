@@ -297,17 +297,28 @@ export const priceHistoryTool = tool(
     {
       symbol,
       startDate,
+      interval,
     }: {
       symbol: string;
-      startDate: string;
+      startDate?: string;
+      interval?:
+        | "2m"
+        | "5m"
+        | "15m"
+        | "30m"
+        | "1h"
+        | "1d"
+        | "1wk"
+        | "1mo"
+        | "3mo";
     },
-    config,
+    config: LangGraphRunnableConfig,
   ) => {
     try {
-      // config.writer?.({
-      //   status: `Fetching price trends and historical market data for ${symbol}...`,
-      // });
-      const data = await fetchPriceHistory(symbol, startDate);
+      config.writer?.({
+        status: `Fetching price trends and historical market data for ${symbol}...`,
+      });
+      const data = await fetchPriceHistory(symbol, startDate, interval);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in income statement tool ", error);
@@ -324,6 +335,12 @@ export const priceHistoryTool = tool(
         .string()
         .optional()
         .describe("Start date in YYYY-MM-DD format (e.g., '2025-01-01')."),
+      interval: z
+        .enum(["2m", "5m", "15m", "30m", "1h", "1d", "1wk", "1mo", "3mo"])
+        .optional()
+        .describe(
+          "the time interval betwwen each price tick. choose it wise do not just randomly choose small intervals",
+        ),
     }),
   },
 );
@@ -523,8 +540,10 @@ export const sentimentSubagentTool = tool(
     description:
       "Use this tool to get the sentiment and latest news summary on stock, company or market overviews and performace.",
     schema: z.object({
-      query: z.string().describe(`company name, sector or stock name.
-        example: - 'sentiment around Tata motors', 'todays news summary around NIFTY50','National stock Exchange India'`),
+      query: z.string().describe(`query for sentiment analysis agent.
+        example: - 'What is latest news around Tata motors', 'todays news summary around NIFTY50','National stock Exchange India'
+        example: - 'What is the sentiment around Indian stock market, NIFFTY'
+        `),
     }),
   },
 );

@@ -14,6 +14,7 @@ import {
 } from "../prompts/prompt";
 import axios from "axios";
 import { nseClient } from "../../lib/apiClient";
+import { publisherClient } from "../../lib/redis";
 
 export async function fetchcorporateAction(symbol: string, startDate?: string) {
   try {
@@ -36,8 +37,9 @@ export async function fetchLatestNews(searchQuery: string) {
   try {
     const tool = new TavilySearch({
       maxResults: 5,
-      topic: "news",
+      topic: "finance",
       includeImages: false,
+      timeRange: "day",
       searchDepth: "basic",
       tavilyApiKey: process.env.TAVILY_API_KEY,
     });
@@ -49,7 +51,12 @@ export async function fetchLatestNews(searchQuery: string) {
       type: "tool_call" as const,
     };
     const toolMsg = await tool.invoke(modelGeneratedToolCall);
-    console.log(toolMsg);
+    const parsedResult =
+      typeof toolMsg.content === "string"
+        ? JSON.parse(toolMsg.content)
+        : toolMsg.content;
+
+    console.log(JSON.stringify(parsedResult, null, 2));
     return toolMsg;
   } catch (error) {
     console.log("error in search tool");
@@ -268,8 +275,14 @@ export async function earningCallPDFSummarizer(state: {
 export async function fetchNews(keyword: string) {
   try {
     console.log("input to fetchNews tool  ", keyword);
+
+    const cachedNews = await publisherClient.get(`news:${keyword}`);
+    if (cachedNews) {
+      console.log("cached news is present ", keyword);
+      return { availableNews: JSON.parse(cachedNews) };
+    }
     const response = await axios.get(
-      `https://newsdata.io/api/1/market?apikey=pub_2136412a33cb4aac9cb6f127b80186f5&q=${keyword}&country=in&language=en`,
+      `https://newsdata.io/api/1/market?apikey=${process.env.NEWS_TOKEN}&q=${keyword}&country=in&language=en`,
     );
 
     const data = response.data.results.map((n: any) => ({
@@ -279,7 +292,15 @@ export async function fetchNews(keyword: string) {
       link: n.link,
       sourceName: n.source_name,
     }));
+
+    console.log(data);
     if (data.length > 0) {
+      await publisherClient.set(
+        `news:${keyword}`,
+        JSON.stringify(data),
+        "EX",
+        "7200",
+      );
       return { availableNews: data };
     }
     return { success: true, availableNews: "no available news" };
