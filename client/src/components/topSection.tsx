@@ -5,16 +5,27 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { SignOutIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, SignOutIcon } from "@phosphor-icons/react";
 import { GoogleAuthWrapper } from "./googleAuth";
+import { useNavigate } from "react-router";
 
 export default function TopSection({ title }: { title: string }) {
   const { username, email, profilepic, isAuthenticated, logout } =
     useUserStore();
 
+  const naviagte = useNavigate();
+
   return (
     <div className="flex items-center justify-between gap-4 pb-3 border-b border-[#2b2a29] animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col gap-1">
+      <div className="flex justify-center items-center gap-4">
+        {title == "Chats" && (
+          <ArrowLeftIcon
+            size={32}
+            onClick={() => naviagte("/")}
+            className="cursor-pointer"
+          />
+        )}
+
         <h1 className="font-googleSans font-semibold tracking-wide text-2xl md:text-3xl text-white">
           {title}
         </h1>

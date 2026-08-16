@@ -8,8 +8,8 @@ export async function getMarketSummary() {
 
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -20,8 +20,8 @@ export async function getTopMovers() {
     );
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -33,8 +33,8 @@ export async function getIndexData() {
 
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -46,8 +46,8 @@ export async function getTopIndices() {
 
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -58,8 +58,8 @@ export async function getTopTicks() {
     );
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -70,8 +70,8 @@ export async function getCurrency() {
     );
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -80,8 +80,8 @@ export async function getNews() {
     const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/market/news`);
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }
 
@@ -91,9 +91,10 @@ export async function getStandoutTicks(symbol: string) {
       `${import.meta.env.VITE_BASE_URL}/market/ticks/standout/${symbol}`,
     );
     return res.data.data;
-  } catch (error) {
+  } catch (err) {
     console.log("error occured");
-    return error;
+    console.error("error occured", err);
+    throw err;
   }
 }
 
@@ -105,7 +106,7 @@ export async function getCommodity() {
 
     return res.data.data;
   } catch (error) {
-    console.log("error occured");
-    return error;
+    console.error("error occured", error);
+    throw error;
   }
 }

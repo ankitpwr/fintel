@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useMarketSummary } from "@/hooks/useMarket";
 
-// Tuned for a hero, paragraph-heavy read: roomier type than a chat bubble,
-// with key figures (bold in the AI's markdown) picked out in the brand mint.
 const SUMMARY_MARKDOWN_CLASSES =
   "prose prose-invert max-w-none font-googleSans " +
   "prose-p:text-[14px] prose-p:leading-[1.8] prose-p:text-[#d4d3d1] prose-p:my-3 first:prose-p:mt-0 last:prose-p:mb-0 " +
@@ -113,19 +110,11 @@ export default function MarketSummary() {
         )}
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={data.generatedAt}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          className={SUMMARY_MARKDOWN_CLASSES}
-        >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {data.summary}
-          </ReactMarkdown>
-        </motion.div>
-      </AnimatePresence>
+      <div className={SUMMARY_MARKDOWN_CLASSES}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {data.summary}
+        </ReactMarkdown>
+      </div>
     </div>
   );
 }

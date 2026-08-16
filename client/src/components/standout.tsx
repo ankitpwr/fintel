@@ -1,4 +1,3 @@
-import React from "react";
 import {
   CartesianGrid,
   Area,
@@ -14,12 +13,14 @@ import { ChartContainer, type ChartConfig } from "@/components/ui/chart";
 import { useStandoutTicks } from "@/hooks/useMarket";
 import { TrendDownIcon, TrendUpIcon } from "@phosphor-icons/react";
 
-const formatTime = (value: string | number) =>
-  Intl.DateTimeFormat("en-IN", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
+const formatTime = (value: string | number) => {
+  const d = new Date(Number(value));
+  const hours = d.getUTCHours();
+  const minutes = d.getUTCMinutes();
+  const h12 = hours % 12 || 12;
+  const ampm = hours >= 12 ? "PM" : "AM";
+  return `${h12}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+};
 
 const formatRupee = (value: number, decimals: number = 2) =>
   value.toLocaleString("en-IN", {
