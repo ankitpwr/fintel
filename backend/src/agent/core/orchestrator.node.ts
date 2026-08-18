@@ -10,6 +10,7 @@ const model = new ChatMistralAI({
   apiKey: process.env.MISTRAL_TOKEN,
   temperature: 0.1,
   tags: ["nostream"],
+  maxRetries: 1,
 });
 
 // const model = new ChatGoogleGenerativeAI({
@@ -51,7 +52,7 @@ export async function orchestrator(state: AppStateType) {
 
     const result = await agent.invoke(
       { messages: [taskContext] },
-      { recursionLimit: 20 },
+      { recursionLimit: 15 },
     );
 
     return { messages: result.messages };

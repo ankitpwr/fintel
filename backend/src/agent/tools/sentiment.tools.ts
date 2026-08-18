@@ -299,7 +299,7 @@ export async function fetchNews(keyword: string) {
         `news:${keyword}`,
         JSON.stringify(data),
         "EX",
-        "7200",
+        3600 * 4,
       );
       return { availableNews: data };
     }
