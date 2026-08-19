@@ -79,7 +79,7 @@ export default function ChatInput({
   };
 
   const containerClasses = isFixed
-    ? "fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-50 will-change-transform"
+    ? "sticky bottom-6 w-full max-w-4xl mx-auto px-4 z-50 will-change-transform"
     : "w-full max-w-4xl mx-auto ";
 
   return (

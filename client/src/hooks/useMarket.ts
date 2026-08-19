@@ -78,5 +78,6 @@ export function useCommodity() {
   return useQuery({
     queryKey: ["market", "commodity"],
     queryFn: () => getCommodity(),
+    staleTime: 1000 * 60 * 60 * 4,
   });
 }

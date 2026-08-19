@@ -2,8 +2,8 @@ import { Outlet } from "react-router";
 
 export default function Layout() {
   return (
-    <div className="w-screen h-screen flex flex-col bg-[#171615] overflow-hidden text-white">
-      <main className="flex-1 min-w-0 overflow-y-auto">
+    <div className="w-screen h-screen bg-[#171615] text-white">
+      <main className="relative h-full overflow-y-auto overscroll-none [transform:translateZ(0)] [backface-visibility:hidden] will-change-scroll">
         <Outlet />
       </main>
     </div>

@@ -36,14 +36,14 @@ export default function Home() {
   return (
     <div className="w-full flex flex-col text-white px-6 md:px-24 py-4 pb-50 gap-18 max-w-[1600px] mx-auto">
       <TopSection title="Market Overview" />
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-8 ">
+      <section className=" pt-8 ">
         <h2 className="font-googleSans text-gray-200">Top Assets</h2>
         <Topindices />
       </section>
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
+      <section className="">
         <MarketSummary />
       </section>
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 ">
         <div className="xl:col-span-8 flex flex-col gap-18">
           <div className="flex flex-col gap-1">
             {" "}
@@ -91,7 +91,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <section className="w-full flex flex-col gap-4 border-t border-[#2b2a29] pt-8 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 pb-12">
+      <section className="w-full flex flex-col gap-4 border-t border-[#2b2a29] pt-8 mt-4  pb-12">
         <h2 className="font-googleSans font-medium text-xl text-gray-200">
           Top stories
         </h2>

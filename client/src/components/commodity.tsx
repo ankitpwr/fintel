@@ -11,6 +11,7 @@ import type { TopMover } from "@/types/types";
 
 export function CommodityTable() {
   const { data, isLoading, isError } = useCommodity();
+  console.log("rerender .....");
 
   if (isLoading) {
     return (
