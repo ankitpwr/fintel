@@ -6,6 +6,7 @@ import {
 import { createAgent, HumanMessage, ToolMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { technicalSubagentPrompt } from "../prompts/prompt";
+import { sumTokensFromMessages } from "../tokenUsage";
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-3.1-flash-lite",
@@ -39,6 +40,9 @@ export async function technicalSubagent(
       { recursionLimit: 8 },
     );
 
+    const tokenUsed = sumTokensFromMessages(response.messages);
+    console.log("token used in technical subagent are ", tokenUsed);
+
     const toolres = [];
     for (const m of response.messages) {
       if (m._getType() === "tool") {
@@ -49,7 +53,7 @@ export async function technicalSubagent(
       }
     }
 
-    return { success: true, data: toolres };
+    return { success: true, data: toolres, totalTokenUsed: tokenUsed };
   } catch (error) {
     console.log("error in technical Subagent tool ", error);
     return {

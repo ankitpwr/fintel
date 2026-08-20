@@ -116,6 +116,7 @@ export async function startAgent(
       userId,
       queryType,
       finalResponse: lastState?.finalResponse || finalText || "",
+      tokenUsed: lastState?.totalTokenUsed || 0,
       toolsUsed: lastState?.toolsUsed ?? [],
     };
   } catch (error) {
@@ -124,3 +125,10 @@ export async function startAgent(
     return undefined;
   }
 }
+
+const res = await startAgent(
+  "Across Aarti Industries and Navin Fluorine, which undertook the largest FY25 capex as percentage of operating cash flow at consolidated level, and give each proportion",
+  "brief",
+);
+
+console.log(`The agent response  \n`, JSON.stringify(res));

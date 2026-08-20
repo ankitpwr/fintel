@@ -5,7 +5,12 @@ import {
   finalSummaryDetailedPrompt,
   finalSummaryMarketOverviewPrompt,
 } from "../prompts/prompt";
-import { AIMessage, HumanMessage, ToolMessage } from "langchain";
+import {
+  AIMessage,
+  AIMessageChunk,
+  HumanMessage,
+  ToolMessage,
+} from "langchain";
 import { ChatMistralAI } from "@langchain/mistralai";
 // mistral - large - 2512;
 const model = new ChatGoogleGenerativeAI({
@@ -20,7 +25,6 @@ const model = new ChatGoogleGenerativeAI({
 //   apiKey: process.env.MISTRAL_TOKEN,
 //   temperature: 0.1,
 // });
-
 export async function finalSummary(state: AppStateType) {
   try {
     const isDetailed = state.queryType === "detailed";
@@ -41,19 +45,18 @@ export async function finalSummary(state: AppStateType) {
     }
     const toolsUsed = toolres.map((val) => val.tool);
 
-    console.log("tools used are\n   ", JSON.stringify(toolsUsed));
-
     const stream = await model.stream([
       systemPrompt,
       new HumanMessage(`
       Fetched Data Context:\n${JSON.stringify(toolres)}\n
       User Query: ${state.userQuery}\n
       Company: ${state.companyName} \n
-      query type: ${state.queryType}
-  `),
+      query type: ${state.queryType}`),
     ]);
 
     let finalText = "";
+    let aggregatedChunk: AIMessageChunk | undefined;
+
     for await (const chunk of stream) {
       const piece =
         typeof chunk.content === "string"
@@ -62,13 +65,19 @@ export async function finalSummary(state: AppStateType) {
             ? chunk.content.map((c: any) => c.text ?? "").join("")
             : "";
       finalText += piece;
+
+      // concat() merges usage_metadata correctly across chunks,
+      // instead of manually summing (which double-counts on some providers)
+      aggregatedChunk = aggregatedChunk ? aggregatedChunk.concat(chunk) : chunk;
     }
 
-    console.log("final response by final summary is  ", finalText);
+    const tokensUsed = aggregatedChunk?.usage_metadata?.total_tokens ?? 0;
+    console.log("token used in report-generator are ", tokensUsed);
 
     return {
       finalResponse: finalText,
       toolsUsed,
+      totalTokenUsed: tokensUsed,
     };
   } catch (error) {
     console.log("error in final-summary");

@@ -4,6 +4,7 @@ import { tools, type AppStateType } from "../agent";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { orchestratorSystemPrompt } from "../prompts/prompt";
+import { sumTokensFromMessages } from "../tokenUsage";
 
 const model = new ChatMistralAI({
   model: "mistral-medium-2508",
@@ -55,7 +56,25 @@ export async function orchestrator(state: AppStateType) {
       { recursionLimit: 15 },
     );
 
-    return { messages: result.messages };
+    let subagentTokens = 0;
+    for (const m of result.messages) {
+      if (m._getType() === "tool") {
+        try {
+          const parsed = JSON.parse((m as ToolMessage).content as string);
+          if (typeof parsed?.totalTokenUsed === "number") {
+            subagentTokens += parsed.totalTokenUsed;
+          }
+        } catch {}
+      }
+    }
+    const tokenUsed = sumTokensFromMessages(result.messages);
+
+    console.log("token used in orchestrator are ", tokenUsed);
+
+    return {
+      messages: result.messages,
+      totalTokenUsed: tokenUsed + subagentTokens,
+    };
   } catch (error) {
     console.log("error in llm_with_tools ", error);
     return { messages: [new AIMessage("I encountered an error")] };

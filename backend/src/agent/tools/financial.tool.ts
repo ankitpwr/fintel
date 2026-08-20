@@ -9,7 +9,7 @@ export const yahooFinance = new YahooFinance({
 
 export async function fetchStockInfo(symbol: string) {
   try {
-    console.log("input symbol to fetch stock tool ", symbol);
+    // console.log("input symbol to fetch stock tool ", symbol);
 
     const data = await yahooFinance.quoteSummary(`${symbol}.NS`, {
       modules: [
@@ -54,7 +54,7 @@ export async function fetchStockInfo(symbol: string) {
       returnOnEquity: data.financialData?.returnOnEquity,
     };
 
-    console.log("extract-stock-info ", filteredData);
+    // console.log("extract-stock-info ", filteredData);
 
     return {
       success: true,
@@ -76,7 +76,7 @@ export async function fetchPeersInfo(symbol: string) {
       `/NextApi/apiClient/GetQuoteApi?functionName=getPeerComparisonData&symbol=${symbol}&type=S&quarter=2025-12&param=industry&index=`,
     );
 
-    console.log("extract-peers-info  for symbol ", data);
+    // console.log("extract-peers-info  for symbol ", data);
     return {
       success: true,
       peerInfo: data.map((peer: any) => ({
@@ -150,7 +150,7 @@ export async function fetchBalanceSheet(
 
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
-    console.log("start and end is  ", start, " ", end);
+    // console.log("start and end is  ", start, " ", end);
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
       period1: start,
       period2: end,
@@ -162,7 +162,7 @@ export async function fetchBalanceSheet(
       symbol,
       companyName,
     }));
-    console.log(`balance sheet data for ${symbol}  `, dataWithSymbol);
+    // console.log(`balance sheet data for ${symbol}  `, dataWithSymbol);
     return { success: true, balanceSheetData: dataWithSymbol };
   } catch (error) {
     console.error("Error fetching balance sheet:", error);
@@ -182,14 +182,14 @@ export async function fetchCashFlow(
   period2?: string,
 ) {
   try {
-    console.log(
-      "input symbol to cash flow tool ",
-      symbol,
-      " ",
-      period1,
-      " ",
-      period2,
-    );
+    // console.log(
+    //   "input symbol to cash flow tool ",
+    //   symbol,
+    //   " ",
+    //   period1,
+    //   " ",
+    //   period2,
+    // );
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
@@ -203,7 +203,7 @@ export async function fetchCashFlow(
       symbol,
       companyName,
     }));
-    console.log(`cash flow data for ${symbol}  `, dataWithSymbol);
+    // console.log(`cash flow data for ${symbol}  `, dataWithSymbol);
     return { success: true, cashFlowData: dataWithSymbol };
   } catch (error) {
     console.error("Error cash flow tool:", error);
@@ -222,14 +222,14 @@ export async function fetchIncomeStatement(
   period2?: string,
 ) {
   try {
-    console.log(
-      "input symbol income statement tool ",
-      symbol,
-      " ",
-      period1,
-      " ",
-      period2,
-    );
+    // console.log(
+    //   "input symbol income statement tool ",
+    //   symbol,
+    //   " ",
+    //   period1,
+    //   " ",
+    //   period2,
+    // );
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];
     const result = await yahooFinance.fundamentalsTimeSeries(`${symbol}.NS`, {
@@ -243,7 +243,7 @@ export async function fetchIncomeStatement(
       symbol,
       companyName,
     }));
-    console.log(`income statement data for ${symbol}  `, dataWithSymbol);
+    // console.log(`income statement data for ${symbol}  `, dataWithSymbol);
 
     return { success: false, incomeStatementData: dataWithSymbol };
   } catch (error) {
@@ -268,7 +268,7 @@ export async function fetchPriceHistory(
       period1: start,
       interval: interval || "3mo",
     });
-    console.log(`price history data for ${symbol}  `, response.quotes);
+    // console.log(`price history data for ${symbol}  `, response.quotes);
     return { success: true, priceHistoryData: response.quotes };
   } catch (error) {
     console.log("error in fech_price_history");

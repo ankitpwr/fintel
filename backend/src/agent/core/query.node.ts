@@ -5,6 +5,9 @@ import { queryAnalyzerSystemPrompt } from "../prompts/prompt";
 import type { AppStateType } from "../agent";
 import { z } from "zod";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { sumTokensFromMessages } from "../tokenUsage";
+import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatOpenAI } from "@langchain/openai";
 
 const Answer = z.object({
   relevent: z
@@ -31,18 +34,11 @@ const Answer = z.object({
     ),
 });
 
-// const model = new ChatGroq({
-//   model: "llama-3.3-70b-versatile",
-//   maxRetries: 2,
-//   temperature: 0,
-//   apiKey: process.env.GROQ_API_KEY,
-// });
-
-const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.1-flash-lite",
+const model = new ChatOpenAI({
+  model: "gpt-5.4-nano",
   maxRetries: 2,
   temperature: 0,
-  apiKey: process.env.GOOGLE_API_KEY,
+  apiKey: process.env.OPENAI_TOKEN,
 });
 
 export async function queryAnalyzerSubagent(state: AppStateType) {
@@ -59,16 +55,21 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
 
     const response = await subagent.invoke({ messages: messages });
 
+    const tokenUsed = sumTokensFromMessages(response.messages);
+    console.log("token used in query-node are ", tokenUsed);
+
     if (response.structuredResponse.relevent) {
       return {
         symbol: response.structuredResponse.symbol,
         companyName: response.structuredResponse.companies,
         relevent: response.structuredResponse.relevent,
+        totalTokenUsed: tokenUsed,
       };
     }
 
     return {
       finalResponse: response.structuredResponse.error,
+      totalTokenUsed: tokenUsed,
     };
   } catch (error) {
     console.log("error occured in query analyzer subagent", error);

@@ -8,9 +8,10 @@ import {
 import { createAgent, HumanMessage, ToolMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { fundamentalSubagentPrompt } from "../prompts/prompt";
+import { sumTokensFromMessages } from "../tokenUsage";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.1-flash-lite",
+  model: "gemini-3.5-flash-lite",
   maxRetries: 2,
   apiKey: process.env.GOOGLE_API_KEY,
 });
@@ -21,8 +22,11 @@ export async function fundamentalSubagent(
   comapanyName: string,
 ) {
   try {
-    console.log("input for fundamental subagent  ", JSON.stringify(task));
-
+    console.log("input for fundamental subagent", {
+      task,
+      symbol,
+      companyName: comapanyName,
+    });
     const subagent = createAgent({
       model,
       tools: [
@@ -47,6 +51,9 @@ export async function fundamentalSubagent(
       { recursionLimit: 15 },
     );
 
+    const tokenUsed = sumTokensFromMessages(response.messages);
+    console.log("token used in fundamental subagent are ", tokenUsed);
+
     const toolres = [];
     for (const m of response.messages) {
       if (m._getType() === "tool") {
@@ -57,7 +64,7 @@ export async function fundamentalSubagent(
       }
     }
 
-    return { success: true, data: toolres };
+    return { success: true, data: toolres, totalTokenUsed: tokenUsed };
   } catch (error) {
     console.log("error in quantitative tool ", error);
     return {
