@@ -21,6 +21,7 @@ import type {
   SystemMessage,
   ToolMessage,
 } from "langchain";
+import { start } from "node:repl";
 
 export const AppState = Annotation.Root({
   userQuery: Annotation<string>,
@@ -111,6 +112,14 @@ export async function startAgent(
       JSON.stringify({ userId, type: "done", message: finalText }),
     );
 
+    console.log("userQuery--> ", query);
+    console.log(
+      "final response --> ",
+      lastState?.finalResponse || finalText || "",
+    );
+    console.log("tool used --> ", lastState?.toolsUsed ?? []);
+    console.log("token used --> ", lastState?.totalTokenUsed || 0);
+
     return {
       userQuery: query,
       userId,
@@ -125,10 +134,3 @@ export async function startAgent(
     return undefined;
   }
 }
-
-const res = await startAgent(
-  "Across Aarti Industries and Navin Fluorine, which undertook the largest FY25 capex as percentage of operating cash flow at consolidated level, and give each proportion",
-  "brief",
-);
-
-console.log(`The agent response  \n`, JSON.stringify(res));

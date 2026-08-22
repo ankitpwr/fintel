@@ -20,7 +20,7 @@ export async function technicalSubagent(
   comapanyName: string,
 ) {
   try {
-    console.log("input for technical subagent  ", JSON.stringify(task));
+    // console.log("input for technical subagent  ", JSON.stringify(task));
 
     const subagent = createAgent({
       model,
@@ -41,7 +41,7 @@ export async function technicalSubagent(
     );
 
     const tokenUsed = sumTokensFromMessages(response.messages);
-    console.log("token used in technical subagent are ", tokenUsed);
+    // console.log("token used in technical subagent are ", tokenUsed);
 
     const toolres = [];
     for (const m of response.messages) {

@@ -22,11 +22,11 @@ export async function fundamentalSubagent(
   comapanyName: string,
 ) {
   try {
-    console.log("input for fundamental subagent", {
-      task,
-      symbol,
-      companyName: comapanyName,
-    });
+    // console.log("input for fundamental subagent", {
+    //   task,
+    //   symbol,
+    //   companyName: comapanyName,
+    // });
     const subagent = createAgent({
       model,
       tools: [
@@ -52,7 +52,7 @@ export async function fundamentalSubagent(
     );
 
     const tokenUsed = sumTokensFromMessages(response.messages);
-    console.log("token used in fundamental subagent are ", tokenUsed);
+    // console.log("token used in fundamental subagent are ", tokenUsed);
 
     const toolres = [];
     for (const m of response.messages) {

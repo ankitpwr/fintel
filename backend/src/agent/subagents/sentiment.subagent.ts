@@ -17,7 +17,7 @@ const model = new ChatMistralAI({
 });
 export async function sentimentSubagent(query: string) {
   try {
-    console.log("input for sentimental subagent  ", query);
+    // console.log("input for sentimental subagent  ", query);
 
     const subagent = createAgent({
       model,
@@ -30,9 +30,9 @@ export async function sentimentSubagent(query: string) {
     const response = await subagent.invoke({ messages }, { recursionLimit: 5 });
 
     const tokenUsed = sumTokensFromMessages(response.messages);
-    console.log("token used in sentimental subagent are ", tokenUsed);
+    // console.log("token used in sentimental subagent are ", tokenUsed);
 
-    console.log("response message is ", response.messages.at(-1)?.text);
+    // console.log("response message is ", response.messages.at(-1)?.text);
     return {
       success: false,
       summary: response.messages.at(-1)?.text,

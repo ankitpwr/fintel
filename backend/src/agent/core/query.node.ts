@@ -35,7 +35,7 @@ const Answer = z.object({
 });
 
 const model = new ChatOpenAI({
-  model: "gpt-5.4-nano",
+  model: "gpt-5.4-mini",
   maxRetries: 2,
   temperature: 0,
   apiKey: process.env.OPENAI_TOKEN,
@@ -43,7 +43,7 @@ const model = new ChatOpenAI({
 
 export async function queryAnalyzerSubagent(state: AppStateType) {
   try {
-    console.log("in query analyzer subagent state is ", JSON.stringify(state));
+    // console.log("in query analyzer subagent state is ", JSON.stringify(state));
     const subagent = createAgent({
       model,
       tools: [symbolTool],
@@ -56,7 +56,7 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
     const response = await subagent.invoke({ messages: messages });
 
     const tokenUsed = sumTokensFromMessages(response.messages);
-    console.log("token used in query-node are ", tokenUsed);
+    // console.log("token used in query-node are ", tokenUsed);
 
     if (response.structuredResponse.relevent) {
       return {

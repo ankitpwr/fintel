@@ -139,14 +139,14 @@ export async function fetchBalanceSheet(
   period2?: string,
 ) {
   try {
-    console.log(
-      "input symbol to balanceSheet tool ",
-      symbol,
-      " ",
-      period1,
-      " ",
-      period2,
-    );
+    // console.log(
+    //   "input symbol to balanceSheet tool ",
+    //   symbol,
+    //   " ",
+    //   period1,
+    //   " ",
+    //   period2,
+    // );
 
     const start = period1 || "2026-01-01";
     const end = period2 || new Date().toISOString().split("T")[0];

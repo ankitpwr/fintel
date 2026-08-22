@@ -23,7 +23,7 @@ const model = new ChatMistralAI({
 
 export async function orchestrator(state: AppStateType) {
   try {
-    console.log("in supervisor state is  ", state);
+    // console.log("in supervisor state is  ", state);
 
     const agent = createAgent({
       model: model,
@@ -69,7 +69,7 @@ export async function orchestrator(state: AppStateType) {
     }
     const tokenUsed = sumTokensFromMessages(result.messages);
 
-    console.log("token used in orchestrator are ", tokenUsed);
+    // console.log("token used in orchestrator are ", tokenUsed);
 
     return {
       messages: result.messages,

@@ -14,7 +14,7 @@ import {
 import { ChatMistralAI } from "@langchain/mistralai";
 // mistral - large - 2512;
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.1-flash-lite", //gemini-3.5-flash-lite
+  model: "gemini-3.5-flash-lite",
   maxRetries: 2,
   temperature: 0.1,
   apiKey: process.env.GOOGLE_API_KEY,
@@ -66,13 +66,10 @@ export async function finalSummary(state: AppStateType) {
             : "";
       finalText += piece;
 
-      // concat() merges usage_metadata correctly across chunks,
-      // instead of manually summing (which double-counts on some providers)
       aggregatedChunk = aggregatedChunk ? aggregatedChunk.concat(chunk) : chunk;
     }
 
     const tokensUsed = aggregatedChunk?.usage_metadata?.total_tokens ?? 0;
-    console.log("token used in report-generator are ", tokensUsed);
 
     return {
       finalResponse: finalText,

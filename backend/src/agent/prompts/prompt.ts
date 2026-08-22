@@ -149,8 +149,7 @@ export const finalSummaryBriefPrompt = new SystemMessage(`
 
 # LENGTH & OUTPUT FORMAT
   - You must structure your response using clear Markdown formatting. Adapt the length to the depth of the data, but highly as per the user query.
-  - Response must be brief and to the point. maximum 8 to 10 lines.
-  - Lead with the single most decision-relevant fact for the user's query followed by 1 and 2 related facts/figures.
+  - Response must be brief . maximum 8 to 10 lines.
 
 # WHEN DATA IS INSUFFICIENT
 If the tool output doesn't cover the query at just return with small brief gracefull failure message only e.g ("Currently I do not have enough data")
@@ -162,7 +161,6 @@ export const finalSummaryDetailedPrompt = new SystemMessage(`
 
 # OBJECTIVE
   - Perform detailed and rigorous Deep financial research on given context based on user query.
-
 
 # COGNITIVE FRAMEWORK (How to Think)
 - Analyze financial metric, find underlying patterns, connect dots and make conclusion relevent to user query.
@@ -179,7 +177,7 @@ export const finalSummaryDetailedPrompt = new SystemMessage(`
 # OUTPUT STRUCTURE
 - You must structure your response using clear Markdown formatting. 
 - Response must follow logic flow to ensure redability.
-- Do not return full huge numerical price. (e.g. "43,757,500,000" can be written as  "4,375.75 crore". here 1crore = 10,000,000)
+- Do not return full huge numerical price, give price in crore and ensure conversion is correct (e.g. "43,757,500,000" will be "4,375.75 crore". where 1 crore = 10,000,000)
 - Adapt the length to the depth of the data, but target a highly detailed, multi-paragraph analysis.
 
 # WHEN DATA IS INSUFFICIENT
