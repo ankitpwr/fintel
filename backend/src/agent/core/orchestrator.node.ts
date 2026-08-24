@@ -1,10 +1,8 @@
 import { createAgent, AIMessage, HumanMessage, ToolMessage } from "langchain";
-import { ChatOpenAI } from "@langchain/openai";
 import { tools, type AppStateType } from "../agent";
 import { ChatMistralAI } from "@langchain/mistralai";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { orchestratorSystemPrompt } from "../prompts/prompt";
-import { sumTokensFromMessages } from "../tokenUsage";
+import { orchestratorSystemPrompt } from "../utils/prompt";
+import { calculateTokenUsage } from "../utils/tokenUsage";
 
 const model = new ChatMistralAI({
   model: "mistral-medium-2508",
@@ -67,7 +65,7 @@ export async function orchestrator(state: AppStateType) {
         } catch {}
       }
     }
-    const tokenUsed = sumTokensFromMessages(result.messages);
+    const tokenUsed = calculateTokenUsage(result.messages);
 
     // console.log("token used in orchestrator are ", tokenUsed);
 

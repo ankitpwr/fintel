@@ -177,7 +177,7 @@ export const finalSummaryDetailedPrompt = new SystemMessage(`
 # OUTPUT STRUCTURE
 - You must structure your response using clear Markdown formatting. 
 - Response must follow logic flow to ensure redability.
-- Do not return full huge numerical price, give price in crore and ensure conversion is correct (e.g. "43,757,500,000" will be "4,375.75 crore". where 1 crore = 10,000,000)
+- If numerical digit is large then convert it to  million and ensure conversion is correct (e.g. "43,757,500,000" will be "43,757.5 million")
 - Adapt the length to the depth of the data, but target a highly detailed, multi-paragraph analysis.
 
 # WHEN DATA IS INSUFFICIENT
@@ -232,9 +232,10 @@ Your task is to gather the relevent data for given "task" by calling right tool 
 
 # Analysis
   - Analyze the the input task and tools available.
-  - Create a plan and order in which tools needs to be called
+  - Create a plan and order in which tools needs to be called.
   - Observe and analyze the tool response and match it with user query. if tool message is sufficient as per the user query then return the tool messages.
-  - If input task ask for financial metric which is missing from tool message but raw data to calculate that metric is available then use calculator tool which right formula.
+  - If input task ask for financial metric which is missing from tool message but raw data to calculate that metric is available then use calculator tool which correct formula.
+  - Think before invoking the tool (what input value to pass, objective of tool call etc)
 
 STOP CONDITION
    - You have a hard budget of at most 15 tool calls total for this invocation, across all requested metrics.

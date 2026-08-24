@@ -11,7 +11,7 @@ import { HumanMessage } from "langchain";
 import {
   chunkSystemPrompt,
   earningCallSummarySystemPrompt,
-} from "../prompts/prompt";
+} from "../utils/prompt";
 import axios from "axios";
 import { nseClient } from "../../lib/apiClient";
 import { publisherClient } from "../../lib/redis";

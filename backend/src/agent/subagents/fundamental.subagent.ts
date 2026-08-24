@@ -7,8 +7,8 @@ import {
 } from "../tools/tools.registry";
 import { createAgent, HumanMessage, ToolMessage } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { fundamentalSubagentPrompt } from "../prompts/prompt";
-import { sumTokensFromMessages } from "../tokenUsage";
+import { fundamentalSubagentPrompt } from "../utils/prompt";
+import { calculateTokenUsage } from "../utils/tokenUsage";
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-3.5-flash-lite",
@@ -51,7 +51,7 @@ export async function fundamentalSubagent(
       { recursionLimit: 15 },
     );
 
-    const tokenUsed = sumTokensFromMessages(response.messages);
+    const tokenUsed = calculateTokenUsage(response.messages);
     // console.log("token used in fundamental subagent are ", tokenUsed);
 
     const toolres = [];

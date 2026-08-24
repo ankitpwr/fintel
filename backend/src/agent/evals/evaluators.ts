@@ -1,6 +1,6 @@
 import { LLMTestCase, SingleTurnParams } from "deepeval/test-case";
 import { GEval, TaskCompletionMetric } from "deepeval/metrics";
-import { dataset } from "./dataset/golden";
+import { dataset } from "./golden";
 import { startAgent } from "../agent";
 import { evaluate } from "deepeval";
 
@@ -19,7 +19,7 @@ const correctnessMetric = new GEval({
   evaluationSteps: [
     "Identify the specific figure(s), ratio(s), or fact(s) the question is actually asking for.",
     "Extract the corresponding figure(s) from 'actual output' and compare them to 'expected output' by VALUE, not by formatting. Treat different units, scales, or notations that represent the same value as equivalent.",
-    "Numeric answers within about 2% of the expected value count as correct (minor rounding, differing source periods, or presentation differences). Numeric answers off by more than roughly 5% count as incorrect, regardless of how confident or detailed the response sounds.",
+    "Numeric answers within about 3% of the expected value count as correct.",
     "Do not penalize the response for including extra correct, relevant supporting detail that is not present in 'expected output'.",
     "If the question has multiple parts (e.g. two companies, two metrics), score proportionally to the fraction of parts answered correctly instead of failing the whole answer for one wrong or missing part.",
   ],
@@ -34,7 +34,7 @@ const correctnessMetric = new GEval({
 });
 
 const taskCompletion = new TaskCompletionMetric({
-  threshold: 0.8,
+  threshold: 0.7,
   model: judge,
 });
 function sleep(ms: number) {

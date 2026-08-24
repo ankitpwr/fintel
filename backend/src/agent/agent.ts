@@ -125,7 +125,7 @@ export async function startAgent(
       userId,
       queryType,
       finalResponse: lastState?.finalResponse || finalText || "",
-      tokenUsed: lastState?.totalTokenUsed || 0,
+      totalTokenUsed: lastState?.totalTokenUsed || 0,
       toolsUsed: lastState?.toolsUsed ?? [],
     };
   } catch (error) {

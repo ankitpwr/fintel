@@ -4,14 +4,13 @@ import {
   finalSummaryBriefPrompt,
   finalSummaryDetailedPrompt,
   finalSummaryMarketOverviewPrompt,
-} from "../prompts/prompt";
+} from "../utils/prompt";
 import {
   AIMessage,
   AIMessageChunk,
   HumanMessage,
   ToolMessage,
 } from "langchain";
-import { ChatMistralAI } from "@langchain/mistralai";
 // mistral - large - 2512;
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-3.5-flash-lite",

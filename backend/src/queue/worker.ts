@@ -21,6 +21,7 @@ const queryWorker = new Worker(
         finalResponse: response!.finalResponse,
         toolInvoked: response!.toolsUsed,
         userId: response!.userId,
+        totalTokensUsed: response!.totalTokenUsed,
       },
     });
   },

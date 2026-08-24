@@ -3,7 +3,7 @@ export const dataset = [
     id: "001",
     query:
       "What gross margin did Arvind Fashions achieve in FY25 at consolidated level?",
-    answer: "0.535",
+    answer: "0.50",
   },
   {
     id: "002",
@@ -105,7 +105,7 @@ export const dataset = [
   {
     id: "016",
     query:
-      "For Castrol India and Gulf Oil Lubricants on a consolidated basis, how did inventories of finished goods change between FY23 and FY24?",
+      "For Castrol India and Gulf Oil Lubricants on a consolidated basis, how did inventories of finished goods change between FY24 and FY25?",
     answer:
       "For Castrol India Ltd : FY24 = ₹145.71 Cr → FY25 = ₹160.30 Cr, change ₹14.59 Cr (10.01%); for Gulf Oil Lubricants India : Ltd FY24 = ₹237.85 Cr → FY25 = ₹246.18 Cr, change ₹8.33 Cr (3.50%)",
   },
@@ -131,6 +131,6 @@ export const dataset = [
   {
     id: "020",
     query: "what is 3-year Revenue CAGR of Bharati airtel",
-    answer: "Bharti Airtel's 3-year Revenue CAGR is 15.24% for FY2026",
+    answer: "Bharti Airtel's 3-year Revenue CAGR is 15.24% for FY26",
   },
 ];

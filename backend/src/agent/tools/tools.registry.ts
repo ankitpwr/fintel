@@ -446,7 +446,7 @@ export const calculatorTool = tool(
       config.writer?.({
         status: `Calculating...`,
       });
-      const data = await calculator(expression);
+      const data = calculator(expression);
       return JSON.stringify(data);
     } catch (error) {
       console.log("error in calculator tool ", error);

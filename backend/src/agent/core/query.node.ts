@@ -1,12 +1,9 @@
-import { ChatGroq } from "@langchain/groq";
 import { createAgent, HumanMessage } from "langchain";
 import { symbolTool } from "../tools/tools.registry";
-import { queryAnalyzerSystemPrompt } from "../prompts/prompt";
+import { queryAnalyzerSystemPrompt } from "../utils/prompt";
 import type { AppStateType } from "../agent";
 import { z } from "zod";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { sumTokensFromMessages } from "../tokenUsage";
-import { ChatMistralAI } from "@langchain/mistralai";
+import { calculateTokenUsage } from "../utils/tokenUsage";
 import { ChatOpenAI } from "@langchain/openai";
 
 const Answer = z.object({
@@ -55,7 +52,7 @@ export async function queryAnalyzerSubagent(state: AppStateType) {
 
     const response = await subagent.invoke({ messages: messages });
 
-    const tokenUsed = sumTokensFromMessages(response.messages);
+    const tokenUsed = calculateTokenUsage(response.messages);
     // console.log("token used in query-node are ", tokenUsed);
 
     if (response.structuredResponse.relevent) {
