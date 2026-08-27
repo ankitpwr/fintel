@@ -4,7 +4,7 @@ import { loginSchema, signupSchema } from "../../lib/zodSchema";
 import { prisma } from "../../lib/prisma";
 import type { CustomRequest } from "../../middleware/auth.middleware";
 import { googleClient } from "../../lib/apiClient";
-
+//signup
 export const signup = async (req: Request, res: Response) => {
   try {
     const parsedBody = signupSchema.safeParse(req.body);
