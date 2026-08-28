@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router";
 import useUserStore from "@/store/useUserStore";
 import { toast } from "./ui/toast";

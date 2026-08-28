@@ -80,7 +80,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
     value: ele.price,
   }));
 
-  const [rawSymbol, exchangeSuffix] = symbol.split(".");
+  const [rawSymbol] = symbol.split(".");
   const cleanSymbol = rawSymbol;
 
   const openPrice = chartData[0]?.value || 0;

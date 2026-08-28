@@ -1,10 +1,8 @@
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router";
 import useUserStore from "@/store/useUserStore";
 
 export function GoogleLogin() {
-  const navigate = useNavigate();
   const { signup, signin } = useUserStore();
 
   const responseSignup = async (authResult: any) => {

@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCommodity } from "@/hooks/useMarket";
-import type { TopMover } from "@/types/types";
 
 export function CommodityTable() {
   const { data, isLoading, isError } = useCommodity();

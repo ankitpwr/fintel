@@ -25,14 +25,13 @@ const ChatStore: StateCreator<ChatStoreType> = (set) => ({
   agentUpdates: null,
   isStreaming: false,
 
-  setUserQuery: (query) => set((state) => ({ userQuery: query })),
-  setChatMode: (mode: ChatModeType) => set((state) => ({ chatMode: mode })),
+  setUserQuery: (query) => set({ userQuery: query }),
+  setChatMode: (mode: ChatModeType) => set({ chatMode: mode }),
   setAgentResponse: (response: string) =>
     set((state) => ({
       agentResponse: (state.agentResponse ?? "").concat(response),
     })),
-  setAgentUpdate: (update: string) =>
-    set((state) => ({ agentUpdates: update })),
+  setAgentUpdate: (update: string) => set({ agentUpdates: update }),
   finishStream: () => set(() => ({ isStreaming: false })),
   resetStream: () =>
     set(() => ({ agentResponse: null, agentUpdates: null, isStreaming: true })),

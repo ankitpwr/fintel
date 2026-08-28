@@ -1,4 +1,3 @@
-import React from "react";
 import { useLatestNews } from "@/hooks/useMarket";
 
 interface NewsItem {

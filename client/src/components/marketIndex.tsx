@@ -1,9 +1,8 @@
-import React from "react";
 import { IndexChart } from "./indexChart";
 import { useIndex } from "@/hooks/useMarket";
 
 export default function MarketIndex() {
-  const { data, isLoading, isError, error } = useIndex();
+  const { data, isLoading, isError } = useIndex();
 
   if (isLoading) {
     return <div>Loading ....</div>;
