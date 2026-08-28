@@ -2,6 +2,14 @@ FROM oven/bun:1.3.12-alpine AS build
 
 WORKDIR /build
 
+ARG VITE_CLIENT_ID
+
+ARG VITE_BASE_URL
+
+ENV VITE_CLIENT_ID=${VITE_CLIENT_ID}
+
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+
 COPY package.json bun.lock ./
 
 RUN bun install --frozen-lockfile
@@ -9,14 +17,6 @@ RUN bun install --frozen-lockfile
 COPY . .
 
 RUN bun run build
-
-ARG VITE_CLIENT_ID
-
-ARG VITE_BACKEND_URL
-
-ENV VITE_CLIENT_ID=${VITE_CLIENT_ID}
-
-ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 FROM nginx:alpine-otel
 

@@ -1,8 +1,10 @@
-FROM oven/bun:1-alpine AS build
+FROM oven/bun:1.3.12-alpine AS build
 
 WORKDIR /app
 
 COPY package.json bun.lock ./
+
+COPY src/agent/evals/scripts/patch-deepeval.mjs ./src/agent/evals/scripts/patch-deepeval.mjs
 
 RUN bun install --frozen-lockfile
 
@@ -10,7 +12,7 @@ COPY . .
 
 RUN DATABASE_URL=postgresql://dummy:dummy@localhost/dummy bunx prisma generate
 
-FROM oven/bun:1-alpine AS production
+FROM oven/bun:1.3.12-alpine AS production
 
 WORKDIR /app
 

@@ -105,10 +105,14 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
         `${import.meta.env.VITE_BASE_URL}/auth/me`,
         { withCredentials: true },
       );
+      const user = response.data?.data;
+      if (!user) {
+        throw new Error("Invalid user details response");
+      }
       set({
-        username: response.data.data.username,
-        email: response.data.data.email,
-        profilepic: response.data.data.profilepic,
+        username: user.username ?? null,
+        email: user.email ?? null,
+        profilepic: user.profilepic ?? null,
         isAuthenticated: true,
         hasCheckedAuth: true,
       });

@@ -1,6 +1,6 @@
 import Redis from "ioredis";
 
-const HOST = "localhost";
+const HOST = "alpine-redis";
 
 export const redisClient = new Redis({
   host: HOST,
