@@ -19,6 +19,18 @@ services:
     depends_on:
       - redis
 
+  worker:
+    image: ankitpwr/fintel-agent
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fintel-agent
+    command: ["bun", "run", "worker"]
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+
   frontend:
     image: ankitpwr/fintel-frontend
     build:
