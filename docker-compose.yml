@@ -38,7 +38,7 @@ services:
       dockerfile: Dockerfile
       args:
         - VITE_CLIENT_ID=558738573808-3l6ciqpu6clqp69miea1hkhhs1gshft9.apps.googleusercontent.com
-        - VITE_BASE_URL=http://localhost:3000/api/v1
+        - VITE_BASE_URL=https://orbitbackend.sketch.qzz.io/api/v1
     container_name: fintel-frontend
     ports:
       - 5173:80

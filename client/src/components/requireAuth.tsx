@@ -1,10 +1,17 @@
 import { Navigate, Outlet } from "react-router";
+import { useEffect } from "react";
 import useUserStore from "@/store/useUserStore";
 import { toast } from "./ui/toast";
 import { ThinkingOrb } from "thinking-orbs";
 
 export default function RequireAuth() {
   const { isAuthenticated, hasCheckedAuth } = useUserStore();
+
+  useEffect(() => {
+    if (hasCheckedAuth && !isAuthenticated) {
+      toast.add({ type: "error", description: "Unauthorized user" });
+    }
+  }, [hasCheckedAuth, isAuthenticated]);
 
   if (!hasCheckedAuth) {
     return (
@@ -13,9 +20,9 @@ export default function RequireAuth() {
       </div>
     );
   }
+
   if (!isAuthenticated) {
-    toast.add({ type: "error", description: "please signin first" });
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

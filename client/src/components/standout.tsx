@@ -110,19 +110,19 @@ export function StandoutTick({ symbol }: { symbol: string }) {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex flex-col gap-0.5">
-              <h1 className="text-[18px] font-semibold text-white leading-tight font-googleSans">
+              <h1 className="text-sm md:text-[18px] font-semibold text-white leading-tight font-googleSans">
                 {data.name}
               </h1>
-              <h2 className="text-[12px]  text-zinc-300">{symbol}.NS</h2>
+              <h2 className="text-[10px]  text-zinc-300">{symbol}.NS</h2>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-semibold text-white tabular-nums tracking-tight">
+            <span className="text-[18px] md:text-2xl font-semibold text-white tabular-nums tracking-tight">
               ₹{formatRupee(latestPrice, 0)}
             </span>
             <div
-              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium tabular-nums border ${
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] md:text-xs font-medium tabular-nums border ${
                 isPositive
                   ? "bg-[#31f6b8]/10 text-[#00d492] border-[#31f6b8]/20"
                   : "bg-rose-500/10 text-rose-400 border-rose-500/20"

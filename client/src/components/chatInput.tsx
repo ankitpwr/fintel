@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, SpinnerIcon } from "@phosphor-icons/react";
 import useChatStore from "@/store/useChatStore";
 import RotatingText from "./RotatingText";
 import axios from "axios";
@@ -54,18 +54,18 @@ export default function ChatInput({
           { withCredentials: true },
         );
 
-        navigate("/chat");
+        setUserQuery("");
+        navigate("/chat", { state: { initialQuery: userQuery } });
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          toast.add({
-            type: "success",
-            description: error.response?.data.error,
-          });
+          const message =
+            error.response?.data?.error ??
+            error.response?.data?.message ??
+            "Unauthorized user";
+          toast.add({ type: "error", description: message });
+        } else {
+          toast.add({ type: "error", description: "Something went wrong" });
         }
-        toast.add({
-          type: "success",
-          description: "Error occured",
-        });
       } finally {
         setIsSubmitting(false);
       }
@@ -101,10 +101,16 @@ export default function ChatInput({
 
             <button
               type="submit"
-              disabled={!userQuery.trim()}
-              className="px-6 py-2.5 bg-zinc-200 hover:bg-zinc-300 rounded-full font-medium transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer shadow-md"
+              disabled={!userQuery.trim() || isSubmitting}
+              aria-label={isSubmitting ? "Processing query" : "Send query"}
+              aria-busy={isSubmitting}
+              className="px-6 py-2.5 bg-zinc-200 hover:bg-zinc-300 disabled:opacity-60 disabled:cursor-not-allowed rounded-full font-medium transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer shadow-md"
             >
-              <ArrowRightIcon className="w-4 h-4 text-black" />
+              {isSubmitting ? (
+                <SpinnerIcon className="w-4 h-4 text-black animate-spin" />
+              ) : (
+                <ArrowRightIcon className="w-4 h-4 text-black" />
+              )}
             </button>
           </div>
 
@@ -116,7 +122,7 @@ export default function ChatInput({
                   activeSuggestions[suggestionIndex] ?? activeSuggestions[0],
                 )
               }
-              className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer"
+              className="flex items-center px-3.5 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2e2d2c] hover:border-[#4a4947] hover:bg-[#222120] text-[10px] md:text-xs text-gray-400 hover:text-gray-200 transition-all duration-150 text-left overflow-hidden whitespace-nowrap cursor-pointer"
             >
               <RotatingText
                 key={chatMode}
@@ -142,7 +148,7 @@ export default function ChatInput({
                 <button
                   type="button"
                   onClick={() => setChatMode("brief")}
-                  className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 ${
+                  className={`relative px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-200 z-10 ${
                     chatMode === "brief"
                       ? "text-white"
                       : "text-gray-400 hover:text-gray-200"
@@ -165,7 +171,7 @@ export default function ChatInput({
                 <button
                   type="button"
                   onClick={() => setChatMode("detailed")}
-                  className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 ${
+                  className={`relative px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-medium transition-colors duration-200 z-10 ${
                     chatMode === "detailed"
                       ? "text-white"
                       : "text-gray-400 hover:text-gray-200"

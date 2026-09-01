@@ -45,10 +45,14 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
       toast.add({ type: "success", description: "sign up successful" });
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.add({ type: "success", description: error.response?.data.error });
+        const message =
+          error.response?.data?.error ??
+          error.response?.data?.message ??
+          "Something went wrong";
+        toast.add({ type: "error", description: message });
       } else {
         console.log("Unexpected error:", error);
-        toast.add({ type: "error", description: "Error occured" });
+        toast.add({ type: "error", description: "Something went wrong" });
       }
     }
   },
@@ -71,9 +75,14 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
       toast.add({ type: "success", description: "sign in successful" });
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.add({ type: "success", description: error.response?.data.error });
+        const message =
+          error.response?.data?.error ??
+          error.response?.data?.message ??
+          "Something went wrong";
+        toast.add({ type: "error", description: message });
       } else {
         console.log("Unexpected error:", error);
+        toast.add({ type: "error", description: "Something went wrong" });
       }
     }
   },

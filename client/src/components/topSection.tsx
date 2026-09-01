@@ -16,7 +16,7 @@ export default function TopSection({ title }: { title: string }) {
   const naviagte = useNavigate();
 
   return (
-    <div className="flex items-center justify-between gap-4 pb-3 border-b border-[#2b2a29] animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex items-center justify-between gap-4 pb-3 border-b border-[#2b2a29]">
       <div className="flex justify-center items-center gap-4">
         {title == "Chats" && (
           <ArrowLeftIcon
@@ -26,7 +26,7 @@ export default function TopSection({ title }: { title: string }) {
           />
         )}
 
-        <h1 className="font-googleSans font-semibold tracking-wide text-2xl md:text-3xl text-white">
+        <h1 className="font-googleSans font-semibold tracking-wide text-lg md:text-3xl text-white">
           {title}
         </h1>
       </div>

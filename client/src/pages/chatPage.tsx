@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router";
 import ChatInput from "../components/chatInput";
 import useChatStore from "@/store/useChatStore";
 import axios from "axios";
@@ -34,6 +35,7 @@ const MARKDOWN_CLASSES =
   "prose-table:text-sm prose-th:text-[#8a8987] prose-td:border-[#2b2a29]";
 
 export default function ChatPage() {
+  const location = useLocation();
   const userQuery = useChatStore((s) => s.userQuery);
   const isStreaming = useChatStore((s) => s.isStreaming);
   const agentResponse = useChatStore((s) => s.agentResponse);
@@ -41,6 +43,10 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const hasSentInitialQuery = useRef(false);
+  const initialQuery =
+    typeof location.state?.initialQuery === "string"
+      ? location.state.initialQuery
+      : "";
 
   useEffect(() => {
     const sse = new EventSource(
@@ -73,16 +79,16 @@ export default function ChatPage() {
   }, []);
 
   useEffect(() => {
-    if (userQuery && !hasSentInitialQuery.current) {
+    if (initialQuery && !hasSentInitialQuery.current) {
       hasSentInitialQuery.current = true;
       setMessages((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), role: "user", content: userQuery },
+        { id: crypto.randomUUID(), role: "user", content: initialQuery },
       ]);
       useChatStore.getState().resetStream();
       window.history.replaceState({}, document.title);
     }
-  }, []);
+  }, [initialQuery]);
 
   const handleNewMessage = async () => {
     const { userQuery, chatMode, resetStream } = useChatStore.getState();
@@ -92,6 +98,7 @@ export default function ChatPage() {
       ...prev,
       { id: crypto.randomUUID(), role: "user", content: userQuery },
     ]);
+    useChatStore.getState().setUserQuery("");
     resetStream();
 
     try {

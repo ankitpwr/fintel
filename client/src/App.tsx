@@ -10,6 +10,8 @@ function App() {
   const { userDetails } = useUserStore();
 
   useEffect(() => {
+    document.documentElement.classList.add("dark");
+    document.documentElement.style.colorScheme = "dark";
     userDetails();
   }, []);
 
