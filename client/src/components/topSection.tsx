@@ -5,12 +5,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeftIcon, SignOutIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, SignOutIcon, SpinnerIcon } from "@phosphor-icons/react";
 import { GoogleAuthWrapper } from "./googleAuth";
 import { useNavigate } from "react-router";
 
 export default function TopSection({ title }: { title: string }) {
-  const { username, email, profilepic, isAuthenticated, logout } =
+  const { username, email, profilepic, isAuthenticated, isLoggingOut, logout } =
     useUserStore();
 
   const naviagte = useNavigate();
@@ -64,9 +64,16 @@ export default function TopSection({ title }: { title: string }) {
             <TooltipTrigger>
               <button
                 onClick={() => logout()}
-                className="flex items-center justify-center w-8 h-8 rounded-full text-[#8a8987] hover:text-rose-400 hover:bg-rose-500/10 transition-colors duration-200 cursor-pointer"
+                disabled={isLoggingOut}
+                aria-label={isLoggingOut ? "Logging out" : "Log out"}
+                aria-busy={isLoggingOut}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-[#8a8987] hover:text-rose-400 hover:bg-rose-500/10 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200 cursor-pointer"
               >
-                <SignOutIcon className="w-4 h-4" weight="bold" />
+                {isLoggingOut ? (
+                  <SpinnerIcon className="w-4 h-4 animate-spin" />
+                ) : (
+                  <SignOutIcon className="w-4 h-4" weight="bold" />
+                )}
               </button>
             </TooltipTrigger>
             <TooltipContent className="bg-[#171615] border border-[#2b2a29] text-white px-2.5 py-1.5 rounded-md text-xs shadow-2xl font-googleSans">

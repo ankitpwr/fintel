@@ -8,6 +8,9 @@ interface UserState {
   profilepic: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isSigningUp: boolean;
+  isSigningIn: boolean;
+  isLoggingOut: boolean;
   hasCheckedAuth: boolean;
 }
 
@@ -26,8 +29,12 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
   email: null,
   profilepic: null,
   isLoading: false,
+  isSigningUp: false,
+  isSigningIn: false,
+  isLoggingOut: false,
   hasCheckedAuth: false,
   signup: async (authcode: string) => {
+    set({ isSigningUp: true });
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/signup`,
@@ -54,10 +61,13 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
         console.log("Unexpected error:", error);
         toast.add({ type: "error", description: "Something went wrong" });
       }
+    } finally {
+      set({ isSigningUp: false });
     }
   },
 
   signin: async (authcode: string) => {
+    set({ isSigningIn: true });
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/login`,
@@ -84,10 +94,13 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
         console.log("Unexpected error:", error);
         toast.add({ type: "error", description: "Something went wrong" });
       }
+    } finally {
+      set({ isSigningIn: false });
     }
   },
 
   logout: async () => {
+    set({ isLoggingOut: true });
     try {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/auth/logout`,
@@ -102,6 +115,7 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
         username: null,
         email: null,
         profilepic: null,
+        isLoggingOut: false,
       });
       toast.add({ type: "success", description: "Logged out" });
     }
