@@ -11,11 +11,9 @@ const judge = new OpenAIModel({
   temperature: 0,
 });
 
-//metrics
 const correctnessMetric = new GEval({
   name: "Correctness",
-  // Explicit steps instead of free-text `criteria` so the judge doesn't
-  // silently regenerate strict, exact-match reasoning on every run.
+
   evaluationSteps: [
     "Identify the specific figure(s), ratio(s), or fact(s) the question is actually asking for.",
     "Extract the corresponding figure(s) from 'actual output' and compare them to 'expected output' by VALUE, not by formatting. Treat different units, scales, or notations that represent the same value as equivalent.",

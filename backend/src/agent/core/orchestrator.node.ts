@@ -3,21 +3,22 @@ import { tools, type AppStateType } from "../agent";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { orchestratorSystemPrompt } from "../utils/prompt";
 import { calculateTokenUsage } from "../utils/tokenUsage";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
-const model = new ChatMistralAI({
-  model: "mistral-medium-2508",
-  apiKey: process.env.MISTRAL_TOKEN,
-  temperature: 0.1,
-  tags: ["nostream"],
-  maxRetries: 1,
-});
-
-// const model = new ChatGoogleGenerativeAI({
-//   model: "gemini-3.5-flash-lite", //gemini-3.5-flash-lite
-//   maxRetries: 1,
+// const model = new ChatMistralAI({
+//   model: "mistral-medium-2508",
+//   apiKey: process.env.MISTRAL_TOKEN,
 //   temperature: 0.1,
-//   apiKey: process.env.GOOGLE_API_KEY,
+//   tags: ["nostream"],
+//   maxRetries: 1,
 // });
+
+const model = new ChatGoogleGenerativeAI({
+  model: "gemini-3.6-flash", //gemini-3.5-flash-lite
+  maxRetries: 1,
+  temperature: 0.1,
+  apiKey: process.env.GOOGLE_API_KEY,
+});
 
 export async function orchestrator(state: AppStateType) {
   try {

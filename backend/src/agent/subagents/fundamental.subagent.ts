@@ -11,7 +11,7 @@ import { fundamentalSubagentPrompt } from "../utils/prompt";
 import { calculateTokenUsage } from "../utils/tokenUsage";
 
 const model = new ChatGoogleGenerativeAI({
-  model: "gemini-3.5-flash-lite",
+  model: "gemini-3.1-flash-lite",
   maxRetries: 2,
   apiKey: process.env.GOOGLE_API_KEY,
 });

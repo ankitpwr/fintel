@@ -140,7 +140,7 @@ export const login = async (req: Request, res: Response) => {
 
     const { id } = user;
     const token = jwt.sign({ id, email }, process.env.JWT_SECRET!, {
-      expiresIn: "20d",
+      expiresIn: "5d",
     });
 
     res.cookie("token", token, {
@@ -150,8 +150,6 @@ export const login = async (req: Request, res: Response) => {
       path: "/",
       maxAge: 1000 * 60 * 60 * 480,
     });
-
-    console.log("token in login is  ", token);
 
     return res.status(200).json({
       message: "Login successful",

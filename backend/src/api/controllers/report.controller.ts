@@ -4,6 +4,7 @@ import { reportSchemaBody } from "../../lib/zodSchema";
 import { queryQueue } from "../../queue/queue";
 import crypto from "crypto";
 import { subscriber } from "../../lib/redis";
+import { prisma } from "../../lib/prisma";
 
 export const generateReport = async (req: Request, res: Response) => {
   try {
@@ -41,6 +42,46 @@ export const generateReport = async (req: Request, res: Response) => {
     return res.status(500).json({
       error: "Internal server error",
     });
+  }
+};
+
+export const historicChats = async (req: Request, res: Response) => {
+  try {
+    const { id } = req as CustomRequest;
+    const response = await prisma.report.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+      select: { userQuery: true, finalResponse: true, id: true },
+    });
+    return res.status(200).json({
+      data: response,
+    });
+  } catch (error) {
+    console.log("error in generateReport");
+    console.log(error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+};
+
+export const historicChat = async (req: Request, res: Response) => {
+  try {
+    const { id: userId } = req as CustomRequest;
+    const response = await prisma.report.findFirst({
+      where: { id: req.params.chatId, userId },
+      select: { userQuery: true, finalResponse: true, id: true },
+    });
+
+    if (!response) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+
+    return res.status(200).json({ data: response });
+  } catch (error) {
+    console.log("error in historicChat");
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 

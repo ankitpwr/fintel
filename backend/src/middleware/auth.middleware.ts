@@ -19,6 +19,7 @@ export function authMiddleware(
 ) {
   try {
     const token = req.cookies.token || "";
+    console.log("token in middleware is ", token);
     if (!token || token == "") {
       return res.status(401).json({
         message: "Invalid user",

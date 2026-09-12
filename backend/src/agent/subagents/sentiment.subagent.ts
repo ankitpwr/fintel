@@ -3,18 +3,19 @@ import { newsAggregatorTool } from "../tools/tools.registry";
 import { sentimentExpertPrompt } from "../utils/prompt";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { calculateTokenUsage } from "../utils/tokenUsage";
+import { ChatOpenAI } from "@langchain/openai";
 
-// const model = new ChatGroq({
-//   model: "llama-3.3-70b-versatile",
-//   maxRetries: 2,
-//   temperature: 0,
-//   apiKey: process.env.GROQ_API_KEY,
-// });
-const model = new ChatMistralAI({
-  model: "mistral-small-2603",
-  apiKey: process.env.MISTRAL_TOKEN,
+const model = new ChatOpenAI({
+  model: "gpt-5.4-mini",
+  maxRetries: 2,
   temperature: 0,
+  apiKey: process.env.OPENAI_TOKEN,
 });
+// const model = new ChatMistralAI({
+//   model: "mistral-small-2603",
+//   apiKey: process.env.MISTRAL_TOKEN,
+//   temperature: 0,
+// });
 export async function sentimentSubagent(query: string) {
   try {
     // console.log("input for sentimental subagent  ", query);
@@ -34,7 +35,7 @@ export async function sentimentSubagent(query: string) {
 
     // console.log("response message is ", response.messages.at(-1)?.text);
     return {
-      success: false,
+      success: true,
       summary: response.messages.at(-1)?.text,
       totalTokenUsed: tokenUsed,
     };
