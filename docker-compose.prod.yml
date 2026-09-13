@@ -1,0 +1,39 @@
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: alpine-redis
+    ports:
+      - 6379:6379
+
+  api:
+    image: ankitpwr/fintel-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fintel-api
+    command: ["bun", "run", "start"]
+    ports:
+      - 3000:3000
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+
+  worker:
+    image: ankitpwr/fintel-agent
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fintel-agent
+    command: ["bun", "run", "worker"]
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+
+  frontend:
+    image: ankitpwr/fintel-frontend
+    container_name: fintel-frontend
+    restart: unless-stopped
+    ports:
+      - 5173:80

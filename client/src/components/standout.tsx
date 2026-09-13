@@ -105,7 +105,7 @@ export function StandoutTick({ symbol }: { symbol: string }) {
   } satisfies ChartConfig;
 
   return (
-    <Card className="w-full bg-[#1e1d1c] border border-[#2b2a29] rounded-xl overflow-hidden shadow-xl">
+    <Card className="w-full bg-[#1e1d1c] border border-[#2b2a29] rounded-xl overflow-hidden shadow-md">
       <CardContent className="p-6 pt-0 flex flex-col gap-5">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
