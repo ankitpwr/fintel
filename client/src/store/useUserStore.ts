@@ -7,7 +7,7 @@ interface UserState {
   email: string | null;
   profilepic: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  isLoadingUserDetails: boolean;
   isSigningUp: boolean;
   isSigningIn: boolean;
   isLoggingOut: boolean;
@@ -28,7 +28,7 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
   username: null,
   email: null,
   profilepic: null,
-  isLoading: false,
+  isLoadingUserDetails: false,
   isSigningUp: false,
   isSigningIn: false,
   isLoggingOut: false,
@@ -123,7 +123,7 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
 
   userDetails: async () => {
     try {
-      set({ isLoading: true });
+      set({ isLoadingUserDetails: true });
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/auth/me`,
         { withCredentials: true },
@@ -143,7 +143,7 @@ const UserStore: StateCreator<UserStoreType> = (set) => ({
       set({ isAuthenticated: false, hasCheckedAuth: true });
       console.log("Unexpected error:", error);
     } finally {
-      set({ isLoading: false });
+      set({ isLoadingUserDetails: false });
     }
   },
 });

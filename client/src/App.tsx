@@ -5,6 +5,8 @@ import ChatPage from "./pages/chatPage";
 import RequireAuth from "./components/requireAuth";
 import useUserStore from "./store/useUserStore";
 import { useEffect } from "react";
+import History from "./pages/history";
+import HistoricChatPage from "./pages/historicChatPage";
 
 function App() {
   const { userDetails } = useUserStore();
@@ -21,8 +23,10 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route element={<RequireAuth />}>
-              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/chat/:chatId" element={<HistoricChatPage />} />
+              <Route path="/history" element={<History />} />
             </Route>
           </Route>
         </Routes>

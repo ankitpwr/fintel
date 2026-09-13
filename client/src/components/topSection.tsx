@@ -5,25 +5,35 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeftIcon, SignOutIcon, SpinnerIcon } from "@phosphor-icons/react";
+import {
+  ArrowLeftIcon,
+  ClockCounterClockwiseIcon,
+  SignOutIcon,
+  SpinnerIcon,
+} from "@phosphor-icons/react";
 import { GoogleAuthWrapper } from "./googleAuth";
 import { useNavigate } from "react-router";
+import useChatStore from "@/store/useChatStore";
 
 export default function TopSection({ title }: { title: string }) {
   const { username, email, profilepic, isAuthenticated, isLoggingOut, logout } =
     useUserStore();
+  const { fetchHistoricChats } = useChatStore();
 
   const naviagte = useNavigate();
 
   return (
     <div className="flex items-center justify-between gap-4 pb-3 border-b border-[#2b2a29]">
       <div className="flex justify-center items-center gap-4">
-        {title == "Chats" && (
-          <ArrowLeftIcon
-            size={32}
+        {(title === "Chats" || title === "History") && (
+          <button
+            type="button"
             onClick={() => naviagte("/")}
-            className="cursor-pointer"
-          />
+            aria-label="Back to home"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[#8a8987] transition-colors hover:bg-[#262524] hover:text-white"
+          >
+            <ArrowLeftIcon size={24} />
+          </button>
         )}
 
         <h1 className="font-googleSans font-semibold tracking-wide text-lg md:text-3xl text-white">
@@ -57,6 +67,25 @@ export default function TopSection({ title }: { title: string }) {
           <span className="hidden font-googleSans md:block text-sm font-medium text-white pl-1 pr-1 max-w-[120px] truncate">
             {username}
           </span>
+
+          <div className="w-px h-5 bg-[#2b2a29] mx-0.5 hidden md:block" />
+
+          <Tooltip>
+            <TooltipTrigger>
+              <button
+                onClick={() => naviagte("/history")}
+                disabled={isLoggingOut}
+                aria-label={isLoggingOut ? "Logging out" : "Log out"}
+                aria-busy={isLoggingOut}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-[#8a8987] hover:text-blue-400 hover:bg-blue-500/10 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200 cursor-pointer"
+              >
+                <ClockCounterClockwiseIcon className="w-4 h-4" weight="bold" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="bg-[#171615] border border-[#2b2a29] text-white px-2.5 py-1.5 rounded-md text-xs shadow-2xl font-googleSans">
+              History
+            </TooltipContent>
+          </Tooltip>
 
           <div className="w-px h-5 bg-[#2b2a29] mx-0.5 hidden md:block" />
 

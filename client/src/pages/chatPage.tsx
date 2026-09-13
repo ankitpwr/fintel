@@ -36,7 +36,6 @@ const MARKDOWN_CLASSES =
 
 export default function ChatPage() {
   const location = useLocation();
-  const userQuery = useChatStore((s) => s.userQuery);
   const isStreaming = useChatStore((s) => s.isStreaming);
   const agentResponse = useChatStore((s) => s.agentResponse);
   const agentUpdate = useChatStore((s) => s.agentUpdates);
