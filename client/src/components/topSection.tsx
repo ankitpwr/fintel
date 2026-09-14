@@ -13,12 +13,10 @@ import {
 } from "@phosphor-icons/react";
 import { GoogleAuthWrapper } from "./googleAuth";
 import { useNavigate } from "react-router";
-import useChatStore from "@/store/useChatStore";
 
 export default function TopSection({ title }: { title: string }) {
   const { username, email, profilepic, isAuthenticated, isLoggingOut, logout } =
     useUserStore();
-  const { fetchHistoricChats } = useChatStore();
 
   const naviagte = useNavigate();
 

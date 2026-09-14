@@ -1,6 +1,6 @@
 import TopSection from "@/components/topSection";
 import useChatStore from "@/store/useChatStore";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRightIcon, ChatCircleDotsIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router";
