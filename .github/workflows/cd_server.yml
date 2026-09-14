@@ -45,17 +45,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            set -euo pipefail
             echo "enter the fintel directory"
             cd /home/ubuntu/fintel
 
             echo "login to docker"
-            sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
+            echo '${{ secrets.DOCKER_PASSWORD }}' | sudo docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
 
             echo "pulling latest image"
             sudo docker compose -f docker-compose.prod.yml pull api
 
             echo "docker compose up"
             sudo docker compose -f docker-compose.prod.yml up -d api worker
+
+            sudo docker compose -f docker-compose.prod.yml ps
 
             echo "cleaning old images"
             sudo docker image prune -f
