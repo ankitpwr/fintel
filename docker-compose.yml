@@ -20,7 +20,7 @@ services:
       - redis
 
   worker:
-    image: ankitpwr/fintel-agent
+    image: ankitpwr/fintel-api
     build:
       context: ./backend
       dockerfile: Dockerfile
