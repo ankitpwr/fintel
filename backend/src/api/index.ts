@@ -7,7 +7,7 @@ import { marketRouter } from "./routes/market.route";
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://orbitfrontend.sketch.qzz.io"],
+    origin: [process.env.CLIENT_ORIGIN_URL!],
     credentials: true,
   }),
 );
@@ -17,6 +17,18 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/report", reportRouter);
 app.use("/api/v1/market", marketRouter);
+app.use("/health-check", (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "all good !",
+    });
+  } catch (error) {
+    console.log("error", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+});
 app.listen(3000, () => {
   console.log("up and running");
 });
