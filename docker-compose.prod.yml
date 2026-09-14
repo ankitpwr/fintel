@@ -2,32 +2,29 @@ services:
   redis:
     image: redis:7.0-alpine
     container_name: alpine-redis
+    restart: unless-stopped
     ports:
       - 6379:6379
 
   api:
     image: ankitpwr/fintel-api
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
     container_name: fintel-api
     command: ["bun", "run", "start"]
+    restart: unless-stopped
     ports:
       - 3000:3000
     env_file:
-      - ./backend/.env
+      - /home/ubuntu/fintel/server.env
     depends_on:
       - redis
 
   worker:
-    image: ankitpwr/fintel-agent
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ankitpwr/fintel-api
     container_name: fintel-agent
     command: ["bun", "run", "worker"]
+    restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - /home/ubuntu/fintel/server.env
     depends_on:
       - redis
 
