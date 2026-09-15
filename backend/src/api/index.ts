@@ -7,7 +7,11 @@ import { marketRouter } from "./routes/market.route";
 const app = express();
 app.use(
   cors({
-    origin: [process.env.CLIENT_ORIGIN_URL!],
+    origin: [
+      process.env.CLIENT_ORIGIN_URL!,
+      "https://orbitfrontend.sketch.qzz.io",
+      "http://localhost:5173",
+    ],
     credentials: true,
   }),
 );

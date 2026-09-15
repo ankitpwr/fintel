@@ -79,5 +79,7 @@ export function useCommodity() {
     queryKey: ["market", "commodity"],
     queryFn: () => getCommodity(),
     staleTime: 1000 * 60 * 60 * 4,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 }

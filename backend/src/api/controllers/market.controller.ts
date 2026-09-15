@@ -296,7 +296,16 @@ export const commodity = async (req: Request, res: Response) => {
       });
     }
     const response = await mcxClient.get("/GetTickerData?culture=en");
-    const parsedData = JSON.parse(response.data.Data).Data;
+    const payload =
+      typeof response.data.Data === "string"
+        ? JSON.parse(response.data.Data)
+        : response.data.Data;
+    const parsedData = payload?.Data;
+
+    if (!Array.isArray(parsedData)) {
+      throw new Error("MCX response did not contain a Data array");
+    }
+
     const commodityData = parsedData.filter((obj: any) =>
       ["SILVER", "GOLD", "CRUDEOIL", "NATURALGAS"].includes(obj.Symbol),
     );
@@ -312,10 +321,19 @@ export const commodity = async (req: Request, res: Response) => {
       data: commodityData,
     });
   } catch (error) {
-    console.log("error in commodity");
-    console.log(error);
-    return res.status(500).json({
-      error: "Internal server error",
+    if (axios.isAxiosError(error)) {
+      console.error("MCX commodity request failed", {
+        status: error.response?.status,
+        contentType: error.response?.headers["content-type"],
+        response: error.response?.data,
+        message: error.message,
+      });
+    } else {
+      console.error("MCX commodity response could not be parsed", error);
+    }
+
+    return res.status(503).json({
+      error: "MCX commodity provider is currently unavailable",
     });
   }
 };

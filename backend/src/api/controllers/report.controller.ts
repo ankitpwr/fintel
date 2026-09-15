@@ -17,7 +17,6 @@ export const generateReport = async (req: Request, res: Response) => {
       });
     }
 
-    console.log("query type is ", parsedBody.data.queryType, " id is ", id);
     // custom jobids
     await queryQueue.add(
       "user-queury",
@@ -68,8 +67,13 @@ export const historicChats = async (req: Request, res: Response) => {
 export const historicChat = async (req: Request, res: Response) => {
   try {
     const { id: userId } = req as CustomRequest;
+    const { chatId } = req.params;
+    if (typeof chatId !== "string" || chatId.length === 0) {
+      return res.status(400).json({ error: "Invalid chat id" });
+    }
+
     const response = await prisma.report.findFirst({
-      where: { id: req.params.chatId, userId },
+      where: { id: chatId, userId },
       select: { userQuery: true, finalResponse: true, id: true },
     });
 
@@ -120,7 +124,6 @@ export const streamResponse = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     console.log("error in stream response");
-    console.log(error);
     return res.status(500).json({
       error: "Internal server error",
     });

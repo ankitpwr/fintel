@@ -1,6 +1,7 @@
 import "dotenv/config";
 import axios from "axios";
 import { OAuth2Client } from "google-auth-library";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
 export const nseClient = axios.create({
   baseURL: process.env.BASE_URL,
