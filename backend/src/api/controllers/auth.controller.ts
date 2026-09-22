@@ -4,6 +4,7 @@ import { loginSchema, signupSchema } from "../../lib/zodSchema";
 import { prisma } from "../../lib/prisma";
 import type { CustomRequest } from "../../middleware/auth.middleware";
 import { googleClient } from "../../lib/apiClient";
+import { Prisma } from "@prisma/client/extension";
 //signup
 export const signup = async (req: Request, res: Response) => {
   try {

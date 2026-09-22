@@ -104,8 +104,9 @@ export const topIndices = async (req: Request, res: Response) => {
     const result = await Promise.all(
       indices.map((symbol) => yahooFinance.quote(symbol)),
     );
+
     const data = result
-      .filter((index) => index.longName && index.longName != "")
+      .filter((index) => index?.longName && index?.longName != "")
       .map((index) => {
         return {
           name: index.longName,

@@ -39,6 +39,8 @@ export function useTopIndices() {
     queryKey: ["market", "indices", "top"],
     queryFn: getTopIndices,
     staleTime: 1000 * 60 * 60,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 }
 

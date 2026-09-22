@@ -2,15 +2,15 @@ import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { useTopIndices } from "@/hooks/useMarket";
 
 export default function Topindices() {
-  const { data, isLoading, isError } = useTopIndices();
+  const { data, isPending, isError } = useTopIndices();
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="h-24 w-full animate-pulse bg-[#1e1d1c] rounded-xl border border-[#2b2a29]"></div>
     );
   }
 
-  if (isError) {
+  if (isError || !data) {
     return (
       <div className="h-24 w-full flex items-center justify-center bg-[#1e1d1c] rounded-xl border border-[#2b2a29] text-rose-400 text-sm">
         Error loading indices data
